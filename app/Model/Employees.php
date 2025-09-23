@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Model;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Employees extends Model
+{
+    protected $table = 'employees';
+    protected $primaryKey = 'emp_id';
+
+    protected $fillable = ['emp_id','name','email','phone','alter_phone','father_name','dob','date_of_joining','aadhar','gender','marital_status','p_district','p_city','p_address','c_district','c_city','c_address','bank','acc_no','ifc_code','branch','esic_no','uan_no','nominee','esic_pf','highest_qualification','weight','height','experience','employment_status','post_applied','salary_expectations','other_post_applied','time_preference','remarks','filled_by','referd_by','photo','kyc_doc','kyc_file','status'];
+
+}
