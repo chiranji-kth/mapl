@@ -84,7 +84,7 @@ class CompanyController extends Controller
                     'contact_person_name' => $company->contact_person_name,
                     'contact_person_phone' => $company->contact_person_phone,
                     'created_at' => $company->created_at->format('Y-m-d'),
-                    'status' => '<a href="' . route('company.toggleStatus', $company->company_id) . '" class="btn btn-xs ' . ($company->status == 1 ? 'btn-success' : 'btn-danger') . '">' . ($company->status == 1 ? 'Active' : 'Inactive') . '</a>',
+                    'status' => '<a href="' . route('company.toggleStatus', $company->company_id) . '" class="btn ' . ($company->status == 1 ? 'btn-success btn-xs btnColor' : 'btn-danger btn-xs btnColor') . '">' . ($company->status == 1 ? 'Active' : 'Inactive') . '</a>',
                     'photo' => $company->site_photo_1 && file_exists(public_path('uploads/companyPhoto/' . $company->site_photo_1))
                         ? '<a href="' . route('employees.show', $company->emp_id) . '"><img src="' . asset('uploads/companyPhoto/' . $company->site_photo_1) . '" class="img-circle" style="width:70px"></a>'
                         : '<a href="' . route('employees.show', $company->emp_id) . '"><img src="' . asset('admin_assets/img/default.png') . '" class="img-circle" style="width:70px"></a>',
