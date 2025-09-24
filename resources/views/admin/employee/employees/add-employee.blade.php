@@ -346,37 +346,9 @@ Create Employee
                                                 class="validateRq">*</span></label>
                                         <select name="post_applied" class="form-control post_applied select2">
                                             <option value="">--- @lang('common.please_select') ---</option>
-                                            <option value="WEEKLY OFF"
-                                                @if ('WEEKLY OFF'==$empModeData->post_applied ) {{ 'selected' }} @endif>
-                                                WEEKLY OFF</option>
-
-                                            <option value="SUPERVISOR"
-                                                @if ('SUPERVISOR'==$empModeData->post_applied ) {{ 'selected' }} @endif>
-                                                SUPERVISOR</option>
-                                            <option value="GUARD"
-                                                @if ('GUARD'==$empModeData->post_applied ) {{ 'selected' }} @endif>
-                                                GUARD</option>
-                                            <option value="BOUNCER"
-                                                @if ('BOUNCER'==$empModeData->post_applied ) {{ 'selected' }} @endif>
-                                                BOUNCER</option>
-                                            <option value="GUNMAN"
-                                                @if ('GUNMAN'==$empModeData->post_applied ) {{ 'selected' }} @endif>
-                                                GUNMAN</option>
-                                            <option value="OFFICE BOY"
-                                                @if ('OFFICE BOY'==$empModeData->post_applied ) {{ 'selected' }} @endif>
-                                                OFFICE BOY</option>
-                                            <option value="DATA ENTRY OPERATOR"
-                                                @if ('DATA ENTRY OPERATOR'==$empModeData->post_applied) {{ 'selected' }} @endif>
-                                                DATA ENTRY OPERATOR</option>
-                                            <option value="DRIVER"
-                                                @if ('DRIVER'==$empModeData->post_applied) {{ 'selected' }} @endif>
-                                                DRIVER</option>
-                                            <option value="HOUSEKEEPING"
-                                                @if ('HOUSEKEEPING'==$empModeData->post_applied) {{ 'selected' }} @endif>
-                                                HOUSEKEEPING</option>
-                                            <option value="OTHER"
-                                                @if ('OTHER'==$empModeData->post_applied) {{ 'selected' }} @endif>
-                                                OTHER</option>
+                                            @foreach ($jobs as $job)
+                                            <option value="{{ $job->job_id }}" @if ($job->job_id == $empModeData->post_applied) selected @endif>{{ $job->post }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EmployeesRequest;
 use App\Model\CareerApplicant;
 use App\Model\Employees;
+use App\Model\Job;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -25,10 +26,10 @@ class EmployeesController extends Controller
     public function index(Request $request)
     {
 
-        $results = Employees::orderBy('emp_id', 'DESC')->get();
+        $results = Employees::with('job')->orderBy('emp_id', 'DESC')->get();
 
         if (request()->ajax()) {
-            
+
             if ($request->employee_name != '') {
                 $results = Employees::where(function ($query) use ($request) {
                     $query->where('name', 'like', '%' . $request->employee_name . '%');
@@ -80,8 +81,9 @@ class EmployeesController extends Controller
 
     public function makeemployee($id)
     {
+        $jobs = Job::where('status', true)->orderBy('created_at', 'desc')->get();
         $empModeData = CareerApplicant::findOrFail($id);
-        return view('admin.employee.employees.add-employee', ['empModeData' => $empModeData]);
+        return view('admin.employee.employees.add-employee', ['empModeData' => $empModeData, 'jobs' => $jobs]);
     }
 
     public function store(EmployeesRequest $request)
@@ -99,7 +101,7 @@ class EmployeesController extends Controller
             $employeeKycDoc['kyc_file'] = $kycName;
         }
         $employeeDataFormat = $this->employeesRepositories->makeEmployeePersonalInformationDataFormat($request->all());
-        
+
         if (isset($employeePhoto)) {
             $employeeData = $employeeDataFormat + $employeePhoto;
         } else {
@@ -110,14 +112,14 @@ class EmployeesController extends Controller
         } else {
             $employeeData = $employeeData;
         }
-// echo "<pre>"; print_r($employeeData); exit;
+        // echo "<pre>"; print_r($employeeData); exit;
         try {
             $childData = Employees::create($employeeData);
-            
-            if(!empty($childData)){
-                
-                   $data = CareerApplicant::FindOrFail($request->applicant_id); 
-                   $result = $data->delete();
+
+            if (!empty($childData)) {
+
+                $data = CareerApplicant::FindOrFail($request->applicant_id);
+                $result = $data->delete();
             }
             return ajaxResponse(200, 'Employee information successfully saved.');
         } catch (\Exception $e) {
@@ -129,13 +131,13 @@ class EmployeesController extends Controller
     public function edit($id)
     {
         $editModeData       = Employees::findOrFail($id);
-
+        $jobs = Job::where('status', true)->orderBy('created_at', 'desc')->get();
         $data = [
             'empModeData'  => $editModeData,
+            'jobs'         => $jobs
         ];
 
         return view('admin.employee.employees.editEmployee', $data);
-
     }
 
     public function update(EmployeesRequest $request, $id)
@@ -154,7 +156,7 @@ class EmployeesController extends Controller
         if ($kyc_file) {
             $kycName = md5(str_random(30) . time() . '_' . $request->file('kyc_file')) . '.' . $request->file('kyc_file')->getClientOriginalExtension();
             $request->file('kyc_file')->move('uploads/employeeKycDoc/', $kycName);
-             if (file_exists('uploads/employeeKycDoc/' . $employee->kyc_file) and !empty($employee->kyc_file)) {
+            if (file_exists('uploads/employeeKycDoc/' . $employee->kyc_file) and !empty($employee->kyc_file)) {
                 unlink('uploads/employeeKycDoc/' . $employee->kyc_file);
             }
             $employeeKycDoc['kyc_file'] = $kycName;
@@ -222,6 +224,4 @@ class EmployeesController extends Controller
             echo 'error';
         }
     }
-
-
 }

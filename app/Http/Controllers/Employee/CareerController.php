@@ -24,28 +24,30 @@ class CareerController extends Controller
 
     public function index(Request $request)
     {
-        // Start query builder with job relation
-        $query = CareerApplicant::with('job')->orderBy('career_applicant_id', 'DESC');
+        $results = CareerApplicant::with('job')
+            ->orderBy('career_applicant_id', 'DESC');
 
-        // Filter by employee name
-        if ($request->filled('employee_name')) {
-            $query->where('name', 'like', '%' . $request->employee_name . '%');
-        }
+        if (request()->ajax()) {
 
-        // Filter by job_id
-        if ($request->filled('job_id')) {
-            $query->where('job_id', $request->job_id);
-        }
+            if (!empty($request->employee_name)) {
+                $results->where(function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->employee_name . '%');
+                });
+            }
 
-        $results = $query->get();
+            $results = $results->get();
 
-        if ($request->ajax()) {
             return view('admin.recruitment.career.pagination', compact('results'))->render();
         }
 
-        return view('admin.recruitment.career.index', compact('results'));
-    }
+        $results = $results->get();
 
+        return view('admin.recruitment.career.index', compact('results'));
+
+
+        // $results = CareerApplicant::orderBy('career_applicant_id', 'DESC')->paginate(10);
+        // return view('admin.recruitment.career.index', ['results' => $results]);
+    }
 
     public function show($id)
     {

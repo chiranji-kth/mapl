@@ -19,7 +19,7 @@
             @foreach ($results as $value)
             <tr class="{!! $value->job_id !!}">
                 <td style="width: 70px;">{!! ++$sl !!}</td>
-                <td>{{ $value->post_applied }}
+                <td>{{ $value->job->post ?? 'N/A' }}
                     <br /><span class="text-muted">
                         Exp: {{ $value->experience ? \Illuminate\Support\Str::limit($value->experience, 10, '...') : 'None' }}
                     </span>

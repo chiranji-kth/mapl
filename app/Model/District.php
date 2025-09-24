@@ -8,7 +8,7 @@ class District extends Model
 {
     protected $table = 'master_districts';
     protected $primaryKey = 'dist_id';
-    protected $fillable = ['state_id', 'dist_name'];
+    protected $fillable = ['dist_id', 'state_id', 'dist_name'];
 
     public function state()
     {

@@ -78,35 +78,7 @@
 			pageLength: 25
 		});
 
-		// Status filter
-		$('#status_filter').on('change', function() {
-			let status = $(this).val();
-
-			$.ajax({
-				url: "{{ route('company.index') }}",
-				type: "GET",
-				data: {
-					status: status
-				},
-				success: function(data) {
-					// Destroy existing DataTable before replacing HTML
-					table.destroy();
-
-					// Replace table body only
-					$('#example tbody').html(data);
-
-					// Re-initialize DataTable
-					table = $('#example').DataTable({
-						language: {
-							searchPlaceholder: "Search records",
-							search: ""
-						},
-						pageLength: 25
-					});
-				}
-			});
-		});
-	});	
+	});
 </script>
 
 @endsection

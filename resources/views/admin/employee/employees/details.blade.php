@@ -11,26 +11,27 @@ View Applicant
 		box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 		padding: 10px 15px;
 	}
-	.item{
+
+	.item {
 		padding: 13px 21px;
 	}
-
 </style>
 <div class="container-fluid">
 	<div class="row bg-title">
 		<div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-		   <ol class="breadcrumb">
+			<ol class="breadcrumb">
 				<li class="active breadcrumbColor"><a href="{{ url('dashboard') }}"><i class="fa fa-home"></i> @lang('dashboard.dashboard')</a></li>
 				<li>Employee Detail</li>
 			</ol>
-		</div>	
+		</div>
 
 	</div>
-                
+
 	<div class="row">
 		<div class="col-sm-12">
-			<div class="panel panel-info"><div class="panel-heading"><i class="mdi mdi-table fa-fw"></i> 
-            Employee Profile</div>
+			<div class="panel panel-info">
+				<div class="panel-heading"><i class="mdi mdi-table fa-fw"></i>
+					Employee Profile</div>
 				<div class="panel-wrapper collapse in" aria-expanded="true">
 					<div class="panel-body">
 						<div class="panel-body">
@@ -45,27 +46,30 @@ View Applicant
 									</div>
 								</div>
 								<div class="col-xs-6 col-sm-6 col-md-3">
-										<p> <b>Joining Date :</b>   {{$result->date_of_joining}}</p><p>
-										<p><b>KYC :</b> {{$result->kyc_doc}}</p><p>
-										<p> <b>KYC Doc :</b>   
-										    <?php
-                                        	if($result->kyc_file!=''){
-                                            ?>
-    											<a href="{!! asset('uploads/employeeKycDoc/'.$result->kyc_file) !!}" dounload target="_blank"> View</a>
-                                            <?php  } ?>
-										</p><p>
+									<p> <b>Joining Date :</b> {{$result->date_of_joining}}</p>
+									<p>
+									<p><b>KYC :</b> {{$result->kyc_doc}}</p>
+									<p>
+									<p> <b>KYC Doc :</b>
+										<?php
+										if ($result->kyc_file != '') {
+										?>
+											<a href="{!! asset('uploads/employeeKycDoc/'.$result->kyc_file) !!}" dounload target="_blank"> View</a>
+										<?php  } ?>
+									</p>
+									<p>
 
-										</p>
+									</p>
 								</div>
 								<div class="col-xs-6 col-sm-6 col-md-4">
 									<div class="applicant_pic text-right">
-                                        <?php
-                                        	if($result->photo!=''){
-                                        ?>
+										<?php
+										if ($result->photo != '') {
+										?>
 											<img style="width: 124px;height:135px" src="{!! asset('uploads/employeePhoto/'.$result->photo) !!}">
-                                        <?php  }else{ ?>
+										<?php  } else { ?>
 											<img style="width: 124px;height:135px" src="{!! asset('admin_assets/img/default.png') !!}">
-                                        <?php } ?>
+										<?php } ?>
 									</div>
 									<br>
 								</div>
@@ -81,7 +85,7 @@ View Applicant
 									</div>
 									<div class="row">
 										<div class="personal_info">
-										    <div class="item">
+											<div class="item">
 												<div class="col-xs-2 col-sm-2 col-md-3">Alter Phone</div>
 												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->alter_phone}}</div>
 											</div>
@@ -101,7 +105,7 @@ View Applicant
 												<div class="col-xs-2 col-sm-2 col-md-3">Branch</div>
 												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->branch}}</div>
 											</div>
-											
+
 											<div class="item">
 												<div class="col-xs-2 col-sm-2 col-md-3">Esic No</div>
 												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->esic_no}}</div>
@@ -118,9 +122,9 @@ View Applicant
 												<div class="col-xs-2 col-sm-2 col-md-3">BANK DETAILS OF ESIC/PF</div>
 												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->esic_pf}}</div>
 											</div>
-											
-											
-											
+
+
+
 											<div class="item">
 												<div class="col-xs-2 col-sm-2 col-md-3">Marital Status</div>
 												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->marital_status}}</div>
@@ -146,8 +150,8 @@ View Applicant
 												<div class="col-xs-2 col-sm-2 col-md-3">Aadhar No</div>
 												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->aadhar}}</div>
 											</div>
-											
-											
+
+
 											<div class="item">
 												<div class="col-xs-2 col-sm-2 col-md-3">Highest Qualification</div>
 												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->highest_qualification}}</div>
@@ -159,16 +163,18 @@ View Applicant
 											<div class="item">
 												<div class="col-xs-2 col-sm-2 col-md-3">Height</div>
 												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->height}} FEET</div>
-											</div><div class="item">
+											</div>
+											<div class="item">
 												<div class="col-xs-2 col-sm-2 col-md-3">Experience</div>
 												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->experience}}</div>
 											</div>
 											<div class="item">
 												<div class="col-xs-2 col-sm-2 col-md-3">Employment Status</div>
 												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->employment_status}}</div>
-											</div><div class="item">
+											</div>
+											<div class="item">
 												<div class="col-xs-2 col-sm-2 col-md-3">Post Applied</div>
-												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->post_applied}}</div>
+												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;{{$result->job->post ?? 'N/A'}}</div>
 											</div>
 											<div class="item">
 												<div class="col-xs-2 col-sm-2 col-md-3">Salary</div>
@@ -197,9 +203,9 @@ View Applicant
 											<!--<div class="item">-->
 											<!--	<div class="col-xs-2 col-sm-2 col-md-3">Status</div>-->
 											<!--	<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;<span-->
-           <!--                                             class="label label-{{ $result->status == '1' ? 'success' : 'danger' }}">{{ $result->status == '1' ? __('recruitement.employeeyed') : __('Rejected') }}</span></div>-->
+											<!--                                             class="label label-{{ $result->status == '1' ? 'success' : 'danger' }}">{{ $result->status == '1' ? __('recruitement.employeeyed') : __('Rejected') }}</span></div>-->
 											<!--</div>-->
-											
+
 										</div>
 									</div>
 								</div>
@@ -214,9 +220,9 @@ View Applicant
 
 							</div>
 						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
-@endsection
+	@endsection

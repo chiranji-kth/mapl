@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyRequest;
 use App\Model\Company;
 use App\Model\Branch;
+use App\Model\State;
+use App\Model\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,31 +26,97 @@ class CompanyController extends Controller
 
     public function index(Request $request)
     {
-        // Eager load branch relation
-        $results = Company::with('branch')->orderBy('company_id', 'DESC');
+        $branches = Branch::all();
+        $states = State::all();
+        $districts = District::all();
 
-        // Apply filters if AJAX request
         if ($request->ajax()) {
-            if ($request->company_name != '') {
-                $results->where('company_name', 'like', '%' . $request->company_name . '%');
+            $query = Company::with(['branch', 'states', 'districts']);
+
+            // Status filter
+            if ($request->has('status') && $request->status !== '') {
+                $query->where('status', $request->status);
             }
 
-            if ($request->status != '') {
-                $results->where('status', $request->status);
+            // Branch filter
+            if ($request->has('branch_id') && $request->branch_id !== '') {
+                $query->where('branch_id', $request->branch_id);
             }
 
-            $results = $results->get();
-            return view('admin.company.pagination', ['results' => $results])->render();
+            // State filter (✅ fixed column name)
+            if ($request->has('state_id') && $request->state_id !== '') {
+                $query->where('state', $request->state_id);
+            }
+
+            // District filter (✅ fixed column name)
+            if ($request->has('district_id') && $request->district_id !== '') {
+                $query->where('district', $request->district_id);
+            }
+
+            if ($request->has('created_from')) {
+                $query->whereDate('created_at', '>=', $request->created_from);
+            }
+
+            if ($request->has('created_to')) {
+                $query->whereDate('created_at', '<=', $request->created_to);
+            }
+
+            if ($request->has('updated_from')) {
+                $query->whereDate('updated_at', '>=', $request->updated_from);
+            }
+
+            if ($request->has('updated_to')) {
+                $query->whereDate('updated_at', '<=', $request->updated_to);
+            }
+
+            $results = $query->get();
+
+            $data = $results->map(function ($company) {
+                return [
+                    'company_name' => $company->company_name,
+                    'branch_name' => $company->branch->branch_name ?? '',
+                    'state_name' => $company->states['state_name'] ?? '',
+                    'district_name' => $company->districts['dist_name'] ?? '',
+                    'email' => $company->email,
+                    'phone' => $company->phone,
+                    'owner_name' => $company->owner_name,
+                    'owner_phone' => $company->owner_phone,
+                    'contact_person_name' => $company->contact_person_name,
+                    'contact_person_phone' => $company->contact_person_phone,
+                    'created_at' => $company->created_at->format('Y-m-d'),
+                    'status' => '<a href="' . route('company.toggleStatus', $company->company_id) . '" class="btn btn-xs ' . ($company->status == 1 ? 'btn-success' : 'btn-danger') . '">' . ($company->status == 1 ? 'Active' : 'Inactive') . '</a>',
+                    'photo' => $company->site_photo_1 && file_exists(public_path('uploads/companyPhoto/' . $company->site_photo_1))
+                        ? '<a href="' . route('employees.show', $company->emp_id) . '"><img src="' . asset('uploads/companyPhoto/' . $company->site_photo_1) . '" class="img-circle" style="width:70px"></a>'
+                        : '<a href="' . route('employees.show', $company->emp_id) . '"><img src="' . asset('admin_assets/img/default.png') . '" class="img-circle" style="width:70px"></a>',
+                    'actions' => '<a href="' . route('company.show', $company->company_id) . '" class="btn btn-primary btn-xs btnColor"><i class="glyphicon glyphicon-th-large"></i></a>
+                      <a href="' . route('company.edit', $company->company_id) . '" class="btn btn-success btn-xs btnColor"><i class="fa fa-pencil-square-o"></i></a>
+                      <a href="' . route('company.delete', $company->company_id) . '" data-token="' . csrf_token() . '" data-id="' . $company->company_id . '" class="delete btn btn-danger btn-xs btnColor"><i class="fa fa-trash-o"></i></a>'
+                ];
+            });
+
+
+            return response()->json(['data' => $data]);
         }
 
-        // Non-AJAX: apply status filter from query string if present
-        if ($request->status != '') {
-            $results->where('status', $request->status);
-        }
+        return view('admin.company.index', compact('branches', 'states', 'districts'));
+    }
 
-        $results = $results->get();
+    // Get all states for dropdown
+    public function getStates()
+    {
+        $states = State::all();
+        return response()->json($states);
+    }
 
-        return view('admin.company.index', ['results' => $results]);
+    // Get districts by state_id for dropdown
+    public function getDistricts($state_id)
+    {
+        $districts = District::where('state_id', $state_id)
+            ->select('dist_id', 'dist_name')
+            ->orderBy('dist_name')
+            ->get();
+
+        return response()->json($districts);
     }
 
 

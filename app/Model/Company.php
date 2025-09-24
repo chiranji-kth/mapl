@@ -47,4 +47,13 @@ class Company extends Model
     {
         return $this->belongsTo(\App\Model\Branch::class, 'branch_id', 'branch_id');
     }
+    public function states()
+    {
+        return $this->belongsTo(State::class, 'state', 'state_id');
+    }
+
+    public function districts()
+    {
+        return $this->belongsTo(District::class, 'district', 'dist_id');
+    }
 }
