@@ -370,6 +370,7 @@ $front_setting = getFrontData();
                             <li><a href="<?= route('careerJob.index'); ?>"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hideMenu">Careers</span></a></li>
                             <li><a href="<?= route('employees.index'); ?>"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hideMenu">Employees</span></a></li>
                             <li><a href="<?= route('assignJob.index'); ?>"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hideMenu">Assign Job</span></a></li>
+                            <li><a href="<?= route('attendance.index'); ?>"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hideMenu">Attendance </span></a></li>
                             <li><a href="<?= route('payroll.index'); ?>"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hideMenu">Payroll</span></a></li>
 
                         </ul>

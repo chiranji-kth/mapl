@@ -10,16 +10,30 @@ class AssignJob extends Model
     protected $primaryKey = 'job_id';
 
     protected $fillable = [
-        'job_id', 'emp_id', 'company_id', 'perday_wages', 'deduction', 'from_date', 'to_date', 'created_at', 'updated_at', 'status'
+        'job_id',
+        'emp_id',
+        'company_id',
+        'gender',
+        'job_role',
+        'shift',
+        'shift_timing',
+        'salary',
+        'perday_wages',
+        'deduction',
+        'from_date',
+        'to_date',
+        'created_at',
+        'updated_at',
+        'status'
     ];
-    
-    public function employees(){
-        return $this->belongsTo(Employees::class,'emp_id');
+
+    public function employees()
+    {
+        return $this->belongsTo(Employees::class, 'emp_id');
     }
 
-    public function company(){
-        return $this->belongsTo(Company::class,'company_id');
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
-    
-
 }

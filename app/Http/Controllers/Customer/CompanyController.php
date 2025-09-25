@@ -101,13 +101,6 @@ class CompanyController extends Controller
         return view('admin.company.index', compact('branches', 'states', 'districts'));
     }
 
-    // Get all states for dropdown
-    public function getStates()
-    {
-        $states = State::all();
-        return response()->json($states);
-    }
-
     // Get districts by state_id for dropdown
     public function getDistricts($state_id)
     {

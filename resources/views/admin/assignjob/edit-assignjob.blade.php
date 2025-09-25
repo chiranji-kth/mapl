@@ -1,7 +1,7 @@
 @extends('admin.master')
 @section('content')
 @section('title')
-    Edit Assign Job
+Edit Assign Job
 @endsection
 <style>
     .appendBtnColor {
@@ -34,44 +34,114 @@
                     <div class="panel-body">
 
                         {{ Form::open(['route' => ['assignJob.update', $editModeData->job_id], 'method'=>'PUT', 'enctype' => 'multipart/form-data', 'class' => ' ajaxFormSubmit', 'id' => 'promotionForm', 'data-redirect' => route('assignJob.index')]) }}
-            
+
 
                         <div class="form-body">
 
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">Employee<span
                                                 class="validateRq">*</span></label>
                                         <select name="emp_id" class="form-control required select2">
                                             <option value="">--- select employee ---</option>
                                             @foreach ($employeeList as $value)
-                                                <option value="{{ $value->emp_id }}"
-                                                    @if ($value->emp_id == $editModeData->emp_id) {{ 'selected' }} @endif>
-                                                    {{ $value->name }}</option>
+                                            <option value="{{ $value->emp_id }}"
+                                                @if ($value->emp_id == $editModeData->emp_id) {{ 'selected' }} @endif>
+                                                {{ $value->name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">Company<span
                                                 class="validateRq">*</span></label>
                                         <select name="company_id" class="form-control required select2">
                                             <option value="">--- select company ---</option>
                                             @foreach ($companyList as $value)
-                                                <option value="{{ $value->company_id }}"
-                                                    @if ($value->company_id == $editModeData->company_id) {{ 'selected' }} @endif>
-                                                    {{ $value->company_name }}</option>
+                                            <option value="{{ $value->company_id }}"
+                                                @if ($value->company_id == $editModeData->company_id) {{ 'selected' }} @endif>
+                                                {{ $value->company_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="exampleInput">@lang('employee.gender')<span
+                                                class="validateRq">*</span></label>
+                                        <select name="gender" class="form-control gender select2">
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            <option value="male" @if ('male'==$editModeData->gender) {{ 'selected' }} @endif>
+                                                MALE</option>
+                                            <option value="female" @if ('female'==$editModeData->gender) {{ 'selected' }} @endif>
+                                                FEMALE</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="exampleInput">Job Role<span
+                                                class="validateRq">*</span></label>
+                                        <select name="job_role" class="form-control job_role select2">
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            @foreach ($jobs as $job)
+                                            <option value="{{ $job->job_id }}" @if ($job->job_id == $editModeData->job_role) {{ 'selected' }} @endif>{{ $job->post }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="exampleInput">Shift<span
+                                                class="validateRq">*</span></label>
+                                        <select name="shift" class="form-control shift select2">
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            <option value="DAY" @if ('DAY'==$editModeData->shift) {{ 'selected' }} @endif>
+                                                DAY</option>
+                                            <option value="NIGHT" @if ('NIGHT'==$editModeData->shift) {{ 'selected' }} @endif>
+                                                NIGHT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="shift_timing">Shift Timing (hrs.)<span class="validateRq">*</span></label>
+                                        {!! Form::text(
+                                        'shift_timing',
+                                        old('shift_timing', $editModeData->shift_timing),
+                                        [
+                                        'class' => 'form-control required shift_timing',
+                                        'id' => 'shift_timing',
+                                        'placeholder' => 'Shift Timing',
+                                        ]
+                                        ) !!}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="salary">Salary (per month)<span class="validateRq">*</span></label>
+                                        {!! Form::text(
+                                        'salary',
+                                        old('salary', $editModeData->salary),
+                                        [
+                                        'class' => 'form-control required salary',
+                                        'id' => 'salary',
+                                        'placeholder' => 'Salary',
+                                        ]
+                                        ) !!}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">Wages (Per day)<span
                                                 class="validateRq">*</span></label>
-                                                <input class="form-control required user_name" id="perday_wages"
+                                        <input class="form-control required user_name" id="perday_wages"
                                             placeholder="Wages" name="perday_wages" type="text"
                                             value="{{ $editModeData->perday_wages }}">
                                     </div>
@@ -79,35 +149,48 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
-                                    <label for="exampleInput">From<span
-                                            class="validateRq">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                        <input class="form-control required dateField" id="from_date"
-                                            placeholder="From Date" name="from_date" type="text"
-                                            value="{{ $editModeData->from_date }}">
-                                    </div>
+                                        <label for="exampleInput">From<span
+                                                class="validateRq">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input class="form-control required dateField" id="from_date"
+                                                placeholder="From Date" name="from_date" type="text"
+                                                value="{{ $editModeData->from_date }}">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
-                                    <label for="exampleInput">To</label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                        <input class="form-control dateField" id="to_date"
-                                            placeholder="To Date" name="to_date" type="text"
-                                            value="{{ $editModeData->to_date }}">
-                                    </div>
+                                        <label for="exampleInput">To</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input class="form-control dateField" id="to_date"
+                                                placeholder="To Date" name="to_date" type="text"
+                                                value="{{ $editModeData->to_date }}">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">Deduction</label><br />
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="PF" <?= in_array('PF', explode(',',  $editModeData->deduction)) ? 'checked' : '' ?>> PF
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="ESI" <?= in_array('ESI', explode(',',  $editModeData->deduction)) ? 'checked' : '' ?>> ESI
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="TDS" <?= in_array('TDS', explode(',',  $editModeData->deduction)) ? 'checked' : '' ?>> TDS
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="exampleInput">Status<span
+                                                class="validateRq">*</span></label>
+                                        <select name="status" class="form-control status select2">
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            <option value="1" @if ('1'==$editModeData->status) {{ 'selected' }} @endif>
+                                                ACTIVE</option>
+                                            <option value="0" @if ('0'==$editModeData->status) {{ 'selected' }} @endif>
+                                                INACTIVE</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -116,7 +199,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <button type="submit" class="btn btn-info btn_style"><i
-                                                    class="fa fa-check"></i> @lang('common.save')</button>
+                                                class="fa fa-check"></i> @lang('common.save')</button>
                                     </div>
                                 </div>
                             </div>
@@ -131,4 +214,3 @@
 </div>
 </div>
 @endsection
-

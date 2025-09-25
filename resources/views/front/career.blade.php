@@ -818,7 +818,7 @@ $front_setting = getFrontData();
         stateDropdown.on("change", function() {
             let stateId = $(this).val();
             districtDropdown.empty().append('<option value="">-- Select District --</option>');
-            console.log(stateId);
+
             if (stateId) {
                 $.get("{{ url('/get-districts') }}/" + stateId, function(districts) {
                     districts.forEach(district => {

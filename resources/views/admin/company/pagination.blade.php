@@ -86,10 +86,6 @@
 @section('page_scripts')
 <script>
     $(document).ready(function() {
-        $('#status_filter, #branch_filter, #state_filter, #district_filter, #created_from, #created_to, #updated_from, #updated_to').change(function() {
-            table.ajax.reload();
-        });
-
 
         var table = $('#example').DataTable({
             ajax: {
@@ -160,7 +156,7 @@
         });
 
         // Reload table on filter change
-        $('#status_filter, #branch_filter, #state_filter, #district_filter').change(function() {
+        $('#status_filter, #branch_filter, #state_filter, #district_filter, #created_from, #created_to, #updated_from, #updated_to').change(function() {
             table.ajax.reload();
         });
 
@@ -172,9 +168,9 @@
             $district.html('<option value="">-- All Districts --</option>');
 
             if (state_id) {
-                $.get("{{ url('company/get-districts') }}/" + state_id, function(data) {
+                $.get("{{ url('get-districts') }}/" + state_id, function(data) {
                     $.each(data, function(i, district) {
-                        $district.append('<option value="' + district.dist_id + '">' + district.dist_name + '</option>');
+                        $district.append('<option value="' + district.dist_id + '">' + district.name + '</option>');
                     });
                 });
             }

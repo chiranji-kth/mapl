@@ -25,9 +25,6 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::delete('/{company}/delete', ['as' => 'company.delete', 'uses' => 'Customer\CompanyController@destroy']);
         // Route::get('/updateStatus', 'Lead\LeadController@updateStatus');
         Route::get('/toggle-status/{id}', ['as' => 'company.toggleStatus', 'uses' => 'Customer\CompanyController@toggleStatus']);
-
-        Route::get('/get-states', ['as' => 'company.getStates', 'uses' => 'Customer\CompanyController@getStates']);
-        Route::get('/get-districts/{state_id}', ['as' => 'company.getDistricts', 'uses' => 'Customer\CompanyController@getDistricts']);
     });
 
     Route::group(['prefix' => 'quotation'], function () {

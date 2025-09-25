@@ -7,6 +7,7 @@ use App\Http\Requests\AssignJobRequest;
 use App\Model\Company;
 use App\Model\Employees;
 use App\Model\AssignJob;
+use App\Model\Job;
 use App\Repositories\CommonRepository;
 use App\Repositories\AssignjobRepository;
 use Illuminate\Http\Request;
@@ -27,34 +28,58 @@ class AssignJobController extends Controller
         $this->assignjobRepository = $assignjobRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $results = AssignJob::with(['employees', 'company'])->get();
-        
-        // echo "<pre>"; print_r($results[0]->employees->name); exit;  
-        
-        if (request()->ajax()) {
-            
-            if ($request->employee_name != '') {
-                $results = AssignJob::where(function ($query) use ($request) {
-                    $query->where('name', 'like', '%' . $request->employee_name . '%');
+        $query = AssignJob::with(['employees', 'company'])->where('status', true)->orderBy('job_id', 'DESC');
+
+        if ($request->ajax()) {
+            if (!empty($request->employee_name)) {
+                $query->whereHas('employees', function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->employee_name . '%');
                 });
             }
 
-            $results = $results->get();
-            return View('admin.recruitment.career.pagination', ['results' => $results])->render();
+            $results = $query->get();
+
+            return view('admin.recruitment.career.pagination', compact('results'))->render();
         }
-        return view('admin.assignjob.index', ['results' => $results]);
+
+        $results = $query->get();
+        return view('admin.assignjob.index', compact('results'));
     }
+
+
+    public function inactive(Request $request)
+    {
+        $query = AssignJob::with(['employees', 'company'])->where('status', false)->orderBy('job_id', 'DESC');
+
+        if ($request->ajax()) {
+            if (!empty($request->employee_name)) {
+                $query->whereHas('employees', function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->employee_name . '%');
+                });
+            }
+
+            $results = $query->get();
+
+            return view('admin.recruitment.career.pagination', compact('results'))->render();
+        }
+
+        $results = $query->get();
+        return view('admin.assignjob.index', compact('results'));
+    }
+
 
     public function create()
     {
+        $jobs = Job::where('status', true)->orderBy('created_at', 'desc')->get();
         $employeesList    = $this->commonRepository->employeesList();
         $companyList    = $this->commonRepository->companyList();
-        
-         $data            = [
+
+        $data            = [
             'employeeList'    => $employeesList,
             'companyList'    => $companyList,
+            'jobs'           => $jobs
         ];
         return view('admin.assignjob.form', $data);
     }
@@ -63,18 +88,23 @@ class AssignJobController extends Controller
     {
         $input = array();
         $input = [
-                
-                'emp_id'         => $request->emp_id,
-                'company_id'     => $request->company_id,
-                'perday_wages'   => $request->perday_wages,
-                'from_date'      => dateConvertFormtoDB($request->from_date),
-                'to_date'        => dateConvertFormtoDB($request->to_date),
-                'deduction'      => (!is_array($request->deduction)) ? '' : implode(',', $request->deduction),
-                'status'         => 1
-            
-            ];
-        
-        
+
+            'emp_id'         => $request->emp_id,
+            'company_id'     => $request->company_id,
+            'gender'         => $request->gender,
+            'job_role'       => $request->job_role,
+            'shift'          => $request->shift,
+            'shift_timing'   => $request->shift_timing,
+            'salary'         => $request->salary,
+            'perday_wages'   => $request->perday_wages,
+            'from_date'      => dateConvertFormtoDB($request->from_date),
+            'to_date'        => dateConvertFormtoDB($request->to_date),
+            'deduction'      => (!is_array($request->deduction)) ? '' : implode(',', $request->deduction),
+            'status'         => $request->status,
+
+        ];
+
+
         // $input = $this->assignjobRepository->makeAssignjobDataFormat($request->all());
         try {
             AssignJob::create($input);
@@ -87,16 +117,18 @@ class AssignJobController extends Controller
 
     public function edit($id)
     {
+        $jobs = Job::where('status', true)->orderBy('created_at', 'desc')->get();
         $employeesList    = Employees::get();
         $companyList    = Company::get();
         $editModeData = AssignJob::findOrFail($id);
         // echo "<pre>"; print_r($companyList); exit;
-         $data            = [
+        $data            = [
             'employeeList'    => $employeesList,
             'companyList'    => $companyList,
             'editModeData'   => $editModeData,
+            'jobs'           => $jobs
         ];
-        
+
         return view('admin.assignjob.edit-assignjob', $data);
     }
 
@@ -105,17 +137,22 @@ class AssignJobController extends Controller
         $data  = AssignJob::findOrFail($id);
         $input = array();
         $input = [
-                
-                'emp_id'         => $request->emp_id,
-                'company_id'     => $request->company_id,
-                'perday_wages'   => $request->perday_wages,
-                'from_date'      => dateConvertFormtoDB($request->from_date),
-                'to_date'        => dateConvertFormtoDB($request->to_date),
-                'deduction'      => (!is_array($request->deduction)) ? '' : implode(',', $request->deduction),
-                'status'         => 1
-            
-            ];
-            
+
+            'emp_id'         => $request->emp_id,
+            'company_id'     => $request->company_id,
+            'gender'         => $request->gender,
+            'job_role'       => $request->job_role,
+            'shift'          => $request->shift,
+            'shift_timing'   => $request->shift_timing,
+            'salary'         => $request->salary,
+            'perday_wages'   => $request->perday_wages,
+            'from_date'      => dateConvertFormtoDB($request->from_date),
+            'to_date'        => dateConvertFormtoDB($request->to_date),
+            'deduction'      => (!is_array($request->deduction)) ? '' : implode(',', $request->deduction),
+            'status'         => $request->status,
+
+        ];
+
         try {
             $data->update($input);
             return ajaxResponse(200, 'JobAssign Successfully Updated.');
@@ -130,7 +167,7 @@ class AssignJobController extends Controller
 
         $count = AssignJob::where('job_id', '=', $id)->count();
 
-        
+
 
         try {
             $job = AssignJob::findOrFail($id);
@@ -148,31 +185,28 @@ class AssignJobController extends Controller
             echo 'error';
         }
     }
-    
+
     public function changestatus(Request $req)
     {
         try {
             if (Auth::guard('web')->check()) {
-                
-                if($req->status == 'Terminated'){
+
+                if ($req->status == 'Terminated') {
                     $data = array(
                         'status' => 0,
                         'updated_at' => Carbon::now(),
                     );
                     DB::table('assignjob')->where('job_id', '=', $req->id)->update($data);
-                }
-                else if($req->status == 'Active'){
-                    
+                } else if ($req->status == 'Active') {
+
                     $data = array(
-                    'status' => 1,
-                    'updated_at' => Carbon::now(),
+                        'status' => 1,
+                        'updated_at' => Carbon::now(),
                     );
                     DB::table('assignjob')->where('job_id', '=', $req->id)->update($data);
-                    
                 }
-                
+
                 return redirect('assignJob');
-            
             } else {
                 return redirect(LOGINPATH);
             }
@@ -181,5 +215,4 @@ class AssignJobController extends Controller
             return ajaxResponse(500, 'Internal Server Error');
         }
     }
-
 }

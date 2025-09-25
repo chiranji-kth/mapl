@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CareerRequest;
 use Illuminate\Http\Request;
 use App\Model\Job;
+use App\Model\State;
+use App\Model\District;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -24,30 +26,96 @@ class CareerController extends Controller
 
     public function index(Request $request)
     {
-        $results = CareerApplicant::with('job')
-            ->orderBy('career_applicant_id', 'DESC');
+        $jobs = Job::all();
+        $states = State::all();
+        $districts = District::all();
 
-        if (request()->ajax()) {
+        if ($request->ajax()) {
+            $query = CareerApplicant::with(['job', 'states', 'districts'])
+                ->orderBy('career_applicant_id', 'DESC');
 
-            if (!empty($request->employee_name)) {
-                $results->where(function ($query) use ($request) {
-                    $query->where('name', 'like', '%' . $request->employee_name . '%');
-                });
+            // if ($request->filled('employee_name')) {
+            //     $query->where('name', 'like', '%' . $request->employee_name . '%');
+            // }
+
+            if ($request->has('job_id')) {
+                $query->where('post_applied', $request->job_id);
             }
 
-            $results = $results->get();
+            if ($request->has('state_id')) {
+                $query->where('p_state', $request->state_id);
+            }
 
-            return view('admin.recruitment.career.pagination', compact('results'))->render();
+            if ($request->has('district_id')) {
+                $query->where('p_district', $request->district_id);
+            }
+
+            if ($request->has('created_from')) {
+                $query->whereDate('created_at', '>=', $request->created_from);
+            }
+
+            if ($request->has('created_to')) {
+                $query->whereDate('created_at', '<=', $request->created_to);
+            }
+
+            if ($request->has('updated_from')) {
+                $query->whereDate('updated_at', '>=', $request->updated_from);
+            }
+
+            if ($request->has('updated_to')) {
+                $query->whereDate('updated_at', '<=', $request->updated_to);
+            }
+
+            $results = $query->get();
+
+            $data = $results->map(function ($applicant) {
+                return [
+                    'job_post' => ($applicant->job['post'] ?? 'N/A') .
+                        '<br /><span class="text-muted">Exp: ' .
+                        ($applicant->experience ? \Illuminate\Support\Str::limit($applicant->experience, 10, '...') : 'None') .
+                        '</span>',
+                    'name' => $applicant->name . '<br /><span class="text-muted">Email: ' . $applicant->email . '</span>',
+                    'phone' => $applicant->phone . '<br /><span class="text-muted">Gender: ' . $applicant->gender . '</span>',
+                    'father_name' => $applicant->father_name ?? 'N/A',
+                    'dob' => (!empty($applicant->dob) && strtotime($applicant->dob))
+                        ? \Carbon\Carbon::parse($applicant->dob)->format('d/m/y') . '<br /><span class="text-muted">Aadhar: ' . ($applicant->aadhar ?? 'N/A') . ' </span>'
+                        : 'N/A <br /><span class="text-muted">Aadhar: ' . ($applicant->aadhar ?? 'N/A') . ' </span>',
+                    'employment_status' => $applicant->employment_status ?? 'N/A',
+                    'state_name' => $applicant->states['state_name'] ?? '',
+                    'district_name' => $applicant->districts['dist_name'] ?? '',
+                    'created_at' => $applicant->created_at
+                        ? $applicant->created_at->format('Y-m-d')
+                        : '',
+                    'actions' => '<a href="' . route('employees.makeemployee', $applicant->career_applicant_id) . '"
+                                class="btn btn-success btn-xs btnColor">
+                                Make a Employee
+                              </a>
+                              <a title="View" href="' . route('careerJob.show', $applicant->career_applicant_id) . '"
+                                class="btn btn-primary btn-xs btnColor">
+                                <i class="glyphicon glyphicon-th-large" aria-hidden="true"></i>
+                              </a>
+                              <a href="' . route('careerJob.delete', $applicant->career_applicant_id) . '"
+                                data-token="' . csrf_token() . '"
+                                data-id="' . $applicant->career_applicant_id . '"
+                                class="delete btn btn-danger btn-xs deleteBtn btnColor">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                              </a>
+                              <a href="' . route('careerJob.edit', $applicant->career_applicant_id) . '"
+                                class="btn btn-success btn-xs btnColor">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                              </a>',
+                ];
+            });
+
+            return response()->json(['data' => $data->toArray()]);
         }
 
-        $results = $results->get();
-
-        return view('admin.recruitment.career.index', compact('results'));
-
-
-        // $results = CareerApplicant::orderBy('career_applicant_id', 'DESC')->paginate(10);
-        // return view('admin.recruitment.career.index', ['results' => $results]);
+        return view('admin.recruitment.career.index', compact('jobs', 'states', 'districts'));
     }
+
+
+
+
 
     public function show($id)
     {

@@ -7,6 +7,8 @@ use App\Http\Requests\EmployeesRequest;
 use App\Model\CareerApplicant;
 use App\Model\Employees;
 use App\Model\Job;
+use App\Model\State;
+use App\Model\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,21 +28,99 @@ class EmployeesController extends Controller
     public function index(Request $request)
     {
 
-        $results = Employees::with('job')->orderBy('emp_id', 'DESC')->get();
+        $jobs = Job::all();
+        $states = State::all();
+        $districts = District::all();
 
-        if (request()->ajax()) {
+        $query = Employees::with(['job', 'states', 'districts'])
+            ->orderBy('emp_id', 'DESC');
+        $results = $query->get();
 
-            if ($request->employee_name != '') {
-                $results = Employees::where(function ($query) use ($request) {
-                    $query->where('name', 'like', '%' . $request->employee_name . '%');
-                });
+        // echo "<pre>";
+        // print_r($results->toArray());
+        // exit;
+
+
+        if ($request->ajax()) {
+            $query = Employees::with(['job', 'states', 'districts'])
+                ->orderBy('emp_id', 'DESC');
+
+            // if ($request->filled('employee_name')) {
+            //     $query->where('name', 'like', '%' . $request->employee_name . '%');
+            // }
+
+            if ($request->has('job_id')) {
+                $query->where('post_applied', $request->job_id);
             }
 
-            $results = $results->get();
-            return View('admin.employee.employees.pagination', ['results' => $results])->render();
+            if ($request->has('state_id')) {
+                $query->where('p_state', $request->state_id);
+            }
+
+            if ($request->has('district_id')) {
+                $query->where('p_district', $request->district_id);
+            }
+
+            if ($request->has('created_from')) {
+                $query->whereDate('created_at', '>=', $request->created_from);
+            }
+
+            if ($request->has('created_to')) {
+                $query->whereDate('created_at', '<=', $request->created_to);
+            }
+
+            if ($request->has('updated_from')) {
+                $query->whereDate('updated_at', '>=', $request->updated_from);
+            }
+
+            if ($request->has('updated_to')) {
+                $query->whereDate('updated_at', '<=', $request->updated_to);
+            }
+
+            $results = $query->get();
+
+            $data = $results->map(function ($employee) {
+                return [
+                    'employee_id' => $employee->employee_id ?? 'N/A',
+                    'job_post' => ($employee->job['post'] ?? 'N/A') .
+                        '<br /><span class="text-muted">Exp: ' .
+                        ($employee->experience ? \Illuminate\Support\Str::limit($employee->experience, 10, '...') : 'None') .
+                        '</span>',
+                    'name' => $employee->name . '<br /><span class="text-muted">Email: ' . $employee->email . '</span>',
+                    'phone' => $employee->phone . '<br /><span class="text-muted">Gender: ' . $employee->gender . '</span>',
+                    'father_name' => $employee->father_name ?? 'N/A',
+                    'joining_date' => (!empty($employee->date_of_joining) && strtotime($employee->date_of_joining))
+                        ? \Carbon\Carbon::parse($employee->date_of_joining)->format('d/m/y')
+                        : 'N/A',
+                    'state_name' => $employee->states['state_name'] ?? '',
+                    'district_name' => $employee->districts['dist_name'] ?? '',
+                    'created_at' => $employee->created_at
+                        ? $employee->created_at->format('Y-m-d')
+                        : '',
+                    'photo' => $employee->photo && file_exists(public_path('uploads/employeePhoto/' . $employee->photo))
+                        ? '<a href="' . route('employees.show', $employee->emp_id) . '"><img src="' . asset('uploads/employeePhoto/' . $employee->photo) . '" class="img-circle" style="width:70px"></a>'
+                        : '<a href="' . route('employees.show', $employee->emp_id) . '"><img src="' . asset('admin_assets/img/default.png') . '" class="img-circle" style="width:70px"></a>',
+                    'actions' => '<a title="View" href="' . route('employees.show', $employee->emp_id) . '"
+                                class="btn btn-primary btn-xs btnColor">
+                                <i class="glyphicon glyphicon-th-large" aria-hidden="true"></i>
+                              </a>
+                              <a href="' . route('employees.delete', $employee->emp_id) . '"
+                                data-token="' . csrf_token() . '"
+                                data-id="' . $employee->career_applicant_id . '"
+                                class="delete btn btn-danger btn-xs deleteBtn btnColor">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                              </a>
+                              <a href="' . route('employees.edit', $employee->emp_id) . '"
+                                class="btn btn-success btn-xs btnColor">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                              </a>',
+                ];
+            });
+
+            return response()->json(['data' => $data->toArray()]);
         }
 
-        return view('admin.employee.employees.index', ['results' => $results]);
+        return view('admin.employee.employees.index', compact('jobs', 'states', 'districts'));
     }
 
     // // printing employee list
@@ -112,6 +192,11 @@ class EmployeesController extends Controller
         } else {
             $employeeData = $employeeData;
         }
+
+        $lastEmployee = Employees::orderBy('emp_id', 'desc')->first();
+        $newNumber = $lastEmployee ? ((int) str_replace('MAPL/', '', $lastEmployee->employee_id) + 1) : 1;
+        $employeeData['employee_id'] = 'MAPL/' . str_pad($newNumber, 5, '0', STR_PAD_LEFT);
+
         // echo "<pre>"; print_r($employeeData); exit;
         try {
             $childData = Employees::create($employeeData);

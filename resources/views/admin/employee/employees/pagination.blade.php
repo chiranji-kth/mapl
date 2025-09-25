@@ -1,9 +1,69 @@
+<div class="row mb-5">
+    <!-- <div class="col-md-3">
+            <label for="status_filter">Filter by Status</label>
+            <select id="status_filter" class="form-control">
+                <option value="">-- All Status --</option>
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+            </select>
+        </div> -->
+
+    <div class="col-md-4">
+        <label for="job_filter">Filter by Job</label>
+        <select id="job_filter" class="form-control">
+            <option value="">-- All Jobs --</option>
+            @foreach($jobs as $job)
+            <option value="{{ $job->job_id }}">{{ $job->post }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label for="state_filter">Filter by State</label>
+        <select id="state_filter" class="form-control">
+            <option value="">-- All States --</option>
+            @foreach($states as $state)
+            <option value="{{ $state->state_id }}">{{ $state->state_name }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label for="district_filter">Filter by District</label>
+        <select id="district_filter" class="form-control">
+            <option value="">-- All Districts --</option>
+            <!-- districts will load dynamically -->
+        </select>
+    </div>
+
+</div>
+<div class="row mb-3">
+    <div class="col-md-3">
+        <label for="created_from">Created From</label>
+        <input type="date" id="created_from" class="form-control">
+    </div>
+    <div class="col-md-3">
+        <label for="created_to">Created To</label>
+        <input type="date" id="created_to" class="form-control">
+    </div>
+    <div class="col-md-3">
+        <label for="updated_from">Updated From</label>
+        <input type="date" id="updated_from" class="form-control">
+    </div>
+    <div class="col-md-3">
+        <label for="updated_to">Updated To</label>
+        <input type="date" id="updated_to" class="form-control">
+    </div>
+</div>
+
+<div class="mb-3">&nbsp;</div>
 <div class="table-responsive">
     <table class="table table-hover manage-u-table" id="example">
         <thead>
             <tr>
                 <th>#</th>
                 <th>@lang('employee.photo')</th>
+                <th>EMP ID</th>
                 <th>Job</th>
                 <th>Name</th>
                 <th>Phone</th>
@@ -13,78 +73,88 @@
             </tr>
         </thead>
         <tbody>
-            {!! $sl = null !!}
-            @foreach ($results as $value)
-            <tr class="{!! $value->employee_id !!}">
-                <td style="width: 100px;">{!! ++$sl !!}</td>
-                <td>
-                    @if ($value->photo != '' && file_exists('uploads/employeePhoto/' . $value->photo))
-                    <a href="{!! route('employees.show', $value->employee_id) !!}"><img style=" width: 70px; " src="{!! asset('uploads/employeePhoto/' . $value->photo) !!}"
-                            alt="user-img" class="img-circle"></a>
-                    @else
-                    <a href="{!! route('employees.show', $value->employee_id) !!}"> <img style=" width: 70px; " src="{!! asset('admin_assets/img/default.png') !!}"
-                            alt="user-img" class="img-circle"></a>
-                    @endif
-                </td>
-                <td>
-                    <span class="font-medium">
-                        {{ $value->job->post ?? 'N/A' }}
-                    </span>
-                    <br /><span class="text-muted">Exp :
-                        {{$value->experience ? $value->experience : 'None'}}
-                    </span>
-                </td>
-                <td>
-                    <span class="font-medium">
-                        {{ $value->name }}
-                    </span>
-                    <br /><span class="text-muted">Email:
-                        {{ $value->email }}
-                    </span>
-                </td>
-                <td>
-                    <span class="font-medium">
-                        {{ $value->phone }}
-                    </span>
-                    <br /><span class="text-muted">Gender:
-                        {{ $value->gender }}
-                    </span>
-                </td>
-                <td>
-                    <span class="font-medium">
-                        {{ dateConvertDBtoForm($value->date_of_joining) }}
-                    </span>
-                </td>
-                <td>
-                    <span class="font-medium">
-                        {{ $value->created_at }}
-                    </span>
-                </td>
-                <!--<td>-->
-                <!--    @if ($value->status == 1)-->
-                <!--        <span class="label label-success">@lang('common.active')</span>-->
-                <!--        </span>-->
-                <!--    @elseif($value->status == 2)-->
-                <!--        <span class="label label-warning">@lang('common.inactive')</span>-->
-                <!--    @else-->
-                <!--        <span class="label label-danger">@lang('common.terminated')</span>-->
-                <!--    @endif-->
-                <!--</td>-->
 
-                <td style="width: 150px">
-                    <a title="Profile" href="{!! route('employees.show', $value->emp_id) !!}" class="btn btn-primary btn-xs btnColor">
-                        <i class="glyphicon glyphicon-th-large" aria-hidden="true"></i>
-                    </a>
-                    <a href="{!! route('employees.edit', $value->emp_id) !!}" class="btn btn-success btn-xs btnColor">
-                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    </a>
-                    <a href="{!! route('employees.delete', $value->emp_id) !!}" data-token="{!! csrf_token() !!}"
-                        data-id="{!! $value->emp_id !!}"
-                        class="delete btn btn-danger btn-xs deleteBtn btnColor"><i class="fa fa-trash-o"
-                            aria-hidden="true"></i></a>
-                </td>
-            </tr>
-            @endforeach
         </tbody>
     </table>
+
 </div>
+
+@section('page_scripts')
+<script>
+    $(document).ready(function() {
+
+        var table = $('#example').DataTable({
+            ajax: {
+                url: "{{ route('employees.index') }}",
+                data: function(d) {
+                    d.job_id = $('#job_filter').val();
+                    d.state_id = $('#state_filter').val();
+                    d.district_id = $('#district_filter').val();
+                    d.created_from = $('#created_from').val();
+                    d.created_to = $('#created_to').val();
+                    d.updated_from = $('#updated_from').val();
+                    d.updated_to = $('#updated_to').val();
+                }
+            },
+            columns: [{
+                    data: null,
+                    render: (data, type, row, meta) => meta.row + 1
+
+                }, // Serial
+                {
+                    data: 'photo',
+                    orderable: false,
+                    searchable: false,
+                    render: data => data
+                }, // Photo
+                {
+                    data: 'employee_id'
+                }, // employee id
+                {
+                    data: 'job_post'
+                }, // Job
+                {
+                    data: 'name'
+                }, // Name
+                {
+                    data: 'phone'
+                }, // Phone
+                {
+                    data: 'joining_date'
+                }, // Joining date
+                {
+                    data: 'created_at'
+                }, // Created
+                {
+                    data: 'actions',
+                    orderable: false,
+                    searchable: false,
+                    render: data => data
+                } // Action
+            ]
+        });
+
+        // Reload table on filter change
+        $('#job_filter, #state_filter, #district_filter, #created_from, #created_to, #updated_from, #updated_to').change(function() {
+            table.ajax.reload();
+        });
+
+        // Dynamic districts based on selected state
+        // When state dropdown changes
+        $('#state_filter').on('change', function() {
+            var state_id = $(this).val();
+            var $district = $('#district_filter');
+            $district.html('<option value="">-- All Districts --</option>');
+
+            if (state_id) {
+                $.get("{{ url('get-districts') }}/" + state_id, function(data) {
+                    $.each(data, function(i, district) {
+                        $district.append('<option value="' + district.dist_id + '">' + district.name + '</option>');
+                    });
+                });
+            }
+        });
+
+    });
+</script>
+@endsection

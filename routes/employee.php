@@ -101,6 +101,7 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
 
     Route::group(['prefix' => 'assignJob'], function () {
         Route::get('/', ['as' => 'assignJob.index', 'uses' => 'Employee\AssignJobController@index']);
+        Route::get('/inactive', ['as' => 'assignJob.inactive', 'uses' => 'Employee\AssignJobController@inactive']);
         Route::get('/create', ['as' => 'assignJob.create', 'uses' => 'Employee\AssignJobController@create']);
         Route::post('/store', ['as' => 'assignJob.store', 'uses' => 'Employee\AssignJobController@store']);
         Route::post('/changestatus', ['as' => 'assignJob.changestatus', 'uses' => 'Employee\AssignJobController@changestatus']);
@@ -110,6 +111,13 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::put('/{jobID}', ['as' => 'assignJob.update', 'uses' => 'Employee\AssignJobController@update']);
         Route::delete('/{jobID}/delete', ['as' => 'assignJob.delete', 'uses' => 'Employee\AssignJobController@destroy']);
     });
+    Route::group(['prefix' => 'attendance'], function () {
+        Route::get('/', ['as' => 'attendance.index', 'uses' => 'Employee\AttendanceController@index']);
+        Route::get('/calculateEmployeeSalary', ['as' => 'attendance.calculateEmployeeSalary', 'uses' => 'Employee\AttendanceController@calculateEmployeeSalary']);
+        Route::get('/salarys', ['as' => 'attendance.salarys', 'uses' => 'Employee\AttendanceController@salary']);
+        Route::post('/salarys', ['as' => 'attendance.salarys', 'uses' => 'Employee\AttendanceController@salary']);
+    });
+
     Route::group(['prefix' => 'payroll'], function () {
         Route::get('/', ['as' => 'payroll.index', 'uses' => 'Employee\PayrollController@index']);
         Route::get('/calculateEmployeeSalary', ['as' => 'payroll.calculateEmployeeSalary', 'uses' => 'Employee\PayrollController@calculateEmployeeSalary']);

@@ -1,81 +1,165 @@
-<div class="table-responsive">
-    <table class="table table-hover manage-u-table" id="example">
-        <thead>
-            <tr>
-                <th>@lang('common.serial')</th>
-                <th>Job</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Father</th>
-                <th>DOB</th>
-                <th>Employment</th>
-                <th>Apply</th>
-                <th>@lang('common.action')</th>
-            </tr>
-        </thead>
-        <tbody>
-            {!! $sl = null !!}
-            @if (count($results) > 0)
-            @foreach ($results as $value)
-            <tr class="{!! $value->job_id !!}">
-                <td style="width: 70px;">{!! ++$sl !!}</td>
-                <td>{{ $value->job->post ?? 'N/A' }}
-                    <br /><span class="text-muted">
-                        Exp: {{ $value->experience ? \Illuminate\Support\Str::limit($value->experience, 10, '...') : 'None' }}
-                    </span>
-                </td>
-                <td>
-                    {{ $value->name }}
-                    <br /><span class="text-muted">Email:
-                        {{ $value->email }} </span>
-                </td>
-                <td>
-                    {{ $value->phone }}
-                    <br /><span class="text-muted">Gender:
-                        {{ $value->gender }} </span>
-                </td>
-                <td>
-                    {{ $value->father_name }}
-                </td>
-                <td>
-                    {{ date('d/m/Y', strtotime($value->dob)) }}
-                    <br /><span class="text-muted">Aadhar:
-                        {{ $value->aadhar }} </span>
-                </td>
-                <td>
-                    {{ $value->employment_status }}
-                </td>
-                <td>
-                    {{ date('d M Y', strtotime($value->created_at)) }}
-                </td>
-                <td style="width: 100px;">
-                    <a href="{!! route('employees.makeemployee', $value->career_applicant_id) !!}"
-                        class="btn btn-success btn-xs btnColor">
-                        Make a Employee
-                    </a>
-                    <a title="View"
-                        href="{{ route('careerJob.show', $value->career_applicant_id) }}"
-                        class="btn btn-primary btn-xs btnColor">
-                        <i class="glyphicon glyphicon-th-large" aria-hidden="true"></i>
-                    </a>
-                    <a href="{!! route('careerJob.delete', $value->career_applicant_id) !!}"
-                        data-token="{!! csrf_token() !!}"
-                        data-id="{!! $value->career_applicant_id !!}"
-                        class="delete btn btn-danger btn-xs deleteBtn btnColor"><i
-                            class="fa fa-trash-o" aria-hidden="true"></i>
-                    </a>
-                    <a href="{!! route('careerJob.edit', $value->career_applicant_id) !!}" class="btn btn-success btn-xs btnColor">
-                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    </a>
-                </td>
-            </tr>
-            @endforeach
-            @else
-            <tr>
-                <td colspan="6">@lang('common.no_data_available')</td>
-            </tr>
-            @endif
-        </tbody>
-    </table>
+    <div class="row mb-5">
+        <!-- <div class="col-md-3">
+            <label for="status_filter">Filter by Status</label>
+            <select id="status_filter" class="form-control">
+                <option value="">-- All Status --</option>
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+            </select>
+        </div> -->
 
-</div>
+        <div class="col-md-4">
+            <label for="job_filter">Filter by Job</label>
+            <select id="job_filter" class="form-control">
+                <option value="">-- All Jobs --</option>
+                @foreach($jobs as $job)
+                <option value="{{ $job->job_id }}">{{ $job->post }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="state_filter">Filter by State</label>
+            <select id="state_filter" class="form-control">
+                <option value="">-- All States --</option>
+                @foreach($states as $state)
+                <option value="{{ $state->state_id }}">{{ $state->state_name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="district_filter">Filter by District</label>
+            <select id="district_filter" class="form-control">
+                <option value="">-- All Districts --</option>
+                <!-- districts will load dynamically -->
+            </select>
+        </div>
+
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="created_from">Created From</label>
+            <input type="date" id="created_from" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="created_to">Created To</label>
+            <input type="date" id="created_to" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="updated_from">Updated From</label>
+            <input type="date" id="updated_from" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="updated_to">Updated To</label>
+            <input type="date" id="updated_to" class="form-control">
+        </div>
+    </div>
+
+    <div class="mb-3">&nbsp;</div>
+    <div class="table-responsive">
+        <table class="table table-hover manage-u-table" id="example">
+            <thead>
+                <tr>
+                    <th>Serial</th>
+                    <th>Job</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Father</th>
+                    <th>DOB</th>
+                    <th>Employment</th>
+                    <th>State</th>
+                    <th>District</th>
+                    <th>Created</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            </tbody>
+        </table>
+
+    </div>
+
+    @section('page_scripts')
+    <script>
+        $(document).ready(function() {
+
+            var table = $('#example').DataTable({
+                ajax: {
+                    url: "{{ route('careerJob.index') }}",
+                    data: function(d) {
+                        d.job_id = $('#job_filter').val();
+                        d.state_id = $('#state_filter').val();
+                        d.district_id = $('#district_filter').val();
+                        d.created_from = $('#created_from').val();
+                        d.created_to = $('#created_to').val();
+                        d.updated_from = $('#updated_from').val();
+                        d.updated_to = $('#updated_to').val();
+                    }
+                },
+                columns: [{
+                        data: null,
+                        render: (data, type, row, meta) => meta.row + 1
+                    },
+                    {
+                        data: 'job_post'
+                    },
+                    {
+                        data: 'name'
+                    },
+                    {
+                        data: 'phone'
+                    },
+                    {
+                        data: 'father_name'
+                    },
+                    {
+                        data: 'dob',
+                    },
+                    {
+                        data: 'employment_status',
+                    },
+                    {
+                        data: 'state_name'
+                    },
+                    {
+                        data: 'district_name'
+                    },
+                    {
+                        data: 'created_at'
+                    },
+                    {
+                        data: 'actions',
+                        orderable: false,
+                        searchable: false,
+                        render: data => data
+                    }
+                ]
+            });
+
+            // Reload table on filter change
+            $('#job_filter, #state_filter, #district_filter, #created_from, #created_to, #updated_from, #updated_to').change(function() {
+                table.ajax.reload();
+            });
+
+            // Dynamic districts based on selected state
+            // When state dropdown changes
+            $('#state_filter').on('change', function() {
+                var state_id = $(this).val();
+                var $district = $('#district_filter');
+                $district.html('<option value="">-- All Districts --</option>');
+
+                if (state_id) {
+                    $.get("{{ url('get-districts') }}/" + state_id, function(data) {
+                        $.each(data, function(i, district) {
+                            $district.append('<option value="' + district.dist_id + '">' + district.name + '</option>');
+                        });
+                    });
+                }
+            });
+
+        });
+    </script>
+    @endsection
