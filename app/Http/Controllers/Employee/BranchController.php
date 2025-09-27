@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\JobRequest;
-use App\Model\Job;
+use App\Http\Requests\BranchRequest;
+use App\Model\Branch;
+use App\Model\Employee;
 use Illuminate\Support\Facades\Log;
 
 class BranchController extends Controller
@@ -17,21 +18,21 @@ class BranchController extends Controller
 
     public function index()
     {
-        $results = Job::get();
-        return view('admin.employee.job.index', ['results' => $results]);
+        $results = Branch::get();
+        return view('admin.employee.branch.index', ['results' => $results]);
     }
 
     public function create()
     {
-        return view('admin.employee.job.form');
+        return view('admin.employee.branch.form');
     }
 
-    public function store(JobRequest $request)
+    public function store(BranchRequest $request)
     {
         $input = $request->all();
         try {
-            Job::create($input);
-            return ajaxResponse(200, 'Job Successfully saved.');
+            Branch::create($input);
+            return ajaxResponse(200, 'Branch Successfully saved.');
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return ajaxResponse(500, 'Internal Server Error');
@@ -40,17 +41,17 @@ class BranchController extends Controller
 
     public function edit($id)
     {
-        $editModeData = Job::findOrFail($id);
-        return view('admin.employee.job.form', ['editModeData' => $editModeData]);
+        $editModeData = Branch::findOrFail($id);
+        return view('admin.employee.branch.form', ['editModeData' => $editModeData]);
     }
 
-    public function update(JobRequest $request, $id)
+    public function update(BranchRequest $request, $id)
     {
-        $job = Job::findOrFail($id);
+        $branch = Branch::findOrFail($id);
         $input  = $request->all();
         try {
-            $job->update($input);
-            return ajaxResponse(200, 'Job Successfully Updated.');
+            $branch->update($input);
+            return ajaxResponse(200, 'Branch Successfully Updated.');
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return ajaxResponse(500, 'Internal Server Error');
@@ -60,7 +61,7 @@ class BranchController extends Controller
     public function destroy($id)
     {
 
-        $count = Job::where('job_id', '=', $id)->count();
+        $count = Employee::where('branch_id', '=', $id)->count();
 
         if ($count > 0) {
 
@@ -68,8 +69,8 @@ class BranchController extends Controller
         }
 
         try {
-            $job = Job::findOrFail($id);
-            $job->delete();
+            $branch = Branch::findOrFail($id);
+            $branch->delete();
             $bug = 0;
         } catch (\Exception $e) {
             $bug = $e->errorInfo[1];

@@ -1,7 +1,7 @@
 @extends('admin.master')
 @section('content')
 @section('title')
-Employees Salarys
+Attendance
 @endsection
 
 <div class="container-fluid">
@@ -13,9 +13,9 @@ Employees Salarys
 			</ol>
 		</div>
 		<div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
-			<a href="{{ route('payroll.index') }}"
+			<a href="{{ route('attendance.create') }}"
 				class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
-				<i class="fa fa-plus-circle" aria-hidden="true"></i> @lang('salary_sheet.generate_salary_sheet')</a>
+				<i class="fa fa-plus-circle" aria-hidden="true"></i> Add Attendance</a>
 
 			<!--	<a href="{{route('generateSalarySheet.bulk')}}"-->
 			<!--class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">-->
@@ -60,7 +60,7 @@ Employees Salarys
 						<!--</div>-->
 						<br>
 						<div class="data">
-							@include('admin.salary.pagination')
+							@include('admin.attendance.pagination')
 						</div>
 
 					</div>

@@ -42,21 +42,21 @@
                                     <div class="form-group">
                                         <label for="exampleInput">Company<span
                                                 class="validateRq">*</span></label>
-                                        {{ Form::select('company_id', $companyList, Input::old('company_id'), ['class' => 'form-control companyId required select2']) }}
+                                        {{ Form::select('company_id', $companyList, Input::old('company_id'), ['class' => 'form-control companyId required']) }}
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">Employee<span
                                                 class="validateRq">*</span></label>
-                                        {{ Form::select('emp_id', $employeeList, Input::old('emp_id'), ['class' => 'form-control employeeId required select2']) }}
+                                        {{ Form::select('emp_id', $employeeList, Input::old('emp_id'), ['class' => 'form-control employeeId required']) }}
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.gender')<span
                                                 class="validateRq">*</span></label>
-                                        <select name="gender" class="form-control gender select2">
+                                        <select name="gender" class="form-control">
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             <option value="male">
                                                 MALE</option>
@@ -69,7 +69,7 @@
                                     <div class="form-group">
                                         <label for="exampleInput">Job Role<span
                                                 class="validateRq">*</span></label>
-                                        <select name="job_role" class="form-control job_role select2">
+                                        <select name="job_role" class="form-control">
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             @foreach ($jobs as $job)
                                             <option value="{{ $job->job_id }}">{{ $job->post }}</option>
@@ -81,7 +81,7 @@
                                     <div class="form-group">
                                         <label for="exampleInput">Shift<span
                                                 class="validateRq">*</span></label>
-                                        <select name="shift" class="form-control shift select2">
+                                        <select name="shift" class="form-control">
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             <option value="DAY">
                                                 DAY</option>
@@ -183,7 +183,7 @@
                                     <div class="form-group">
                                         <label for="exampleInput">Status<span
                                                 class="validateRq">*</span></label>
-                                        <select name="status" class="form-control status select2">
+                                        <select name="status" class="form-control">
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             <option value="1">
                                                 ACTIVE</option>

@@ -39,105 +39,18 @@ class PayrollController extends Controller
         $this->payrollRepository = $payrollRepository;
     }
 
-    public function index(Request $request)
+    // public function index(Request $request)
+    // {
+
+    //     $employeeList = $this->commonRepository->jobEmployeesList();
+    //     return view('admin.salary.index', ['employeeList' => $employeeList]);
+    // }
+
+    public function index()
     {
-        
-        $employeeList = $this->commonRepository->jobEmployeesList();
-        return view('admin.salary.index', ['employeeList' => $employeeList]);
-    }
 
-    public function calculateEmployeeSalary(Request $request)
-    {
-
-        // $query = DB::table('assignjob')
-        //                 ->whereYear('from_date', '=', $request->year)
-        //                 ->whereMonth('from_date', '=', $request->month)
-        //                 ->where('emp_id', '=', $request->employee_id)
-        //                 ->get();
-        
-        $deduction = $request->deduction;
-        $wages_perday = $request->wages;
-        $workingDays = $request->days;                
-        // echo "<pre>"; print_r(count($query)); exit;
-        
-        if ($workingDays <= 0) {
-            return redirect('payroll')->with('error', 'fill more days');
-        }
-
-        $queryResult = EmployeesSalary::where('emp_id', $request->employee_id)->where('month', $request->month)->count();
-        if ($queryResult > 0) {
-            return redirect('payroll')->with('error', 'Salary already generated for this month.');
-        }
-        
-        
-        $employeeDetails = Employees::where('emp_id', $request->employee_id)->first();
-        
-
-            $oneday_salary = round($employeeDetails->salary_expectations / Carbon::now()->month($request->month)->daysInMonth);
-            
-            $payble_Salary = round($oneday_salary * $workingDays);
-            $basic_Salary = round($wages_perday * $workingDays);
-            
-            if(!empty($deduction)){
-                if(in_array('PF', $deduction)){
-                    
-                    $emppf = (12 / 100 ) * $basic_Salary;
-                    $empesi = (0.75 / 100 ) * $basic_Salary;
-                    
-                }
-                if(in_array('ESI', $deduction)){
-                    $emprpf  = (13 / 100 ) * $basic_Salary;
-                    $empresi = (3.25 / 100 ) * $basic_Salary;
-                }
-            }else{
-                
-                $emppf = 0;
-                $emprpf = 0;
-                
-                $empesi = 0;
-                $empresi = 0;
-            }
-            
-            $advance = $dress = $allowance = 0;
-            
-            $advance = $request->advance;
-            $dress = $request->dress;
-            $allowance = round($payble_Salary - $basic_Salary);
-            
-            $totalSalary =  $payble_Salary - ($advance + $dress + $emppf + $empesi);
-            
-            $data = [
-                'emp_id'           => $employeeDetails->emp_id,
-                'salary'           => $employeeDetails->salary_expectations,
-                'basic'            => $basic_Salary,
-                'month'            => $request->month,
-                'year'             => $request->year,
-                'month_days'       => Carbon::now()->month($request->month)->daysInMonth,
-                'working_days'     => $workingDays,
-                'per_day'          => $wages_perday,
-                'emp_pf'           => $emppf,
-                'empr_pf'          => $emprpf,
-                'emp_esi'          => $empesi,
-                'empr_esi'         => $empresi,
-                'advance'          => $advance,
-                'dress'            => $dress,
-                'allowance'        => $allowance,
-                'totalSalary'      => $totalSalary,
-            ];
-            
-            DB::beginTransaction();
-            
-            $parentData = EmployeesSalary::create($data);
-            
-            DB::commit();
-       return redirect('payroll');
-        // return view('admin.payroll.salarySheet.generateSalarySheet', $data);
-    }
-
-    public function salary(){
-        
         $results = EmployeesSalary::with('employees')->orderBy('id', 'DESC')->get();
-        
+
         if (request()->ajax()) {
 
             $results = EmployeesSalary::with('employees')->orderBy('id', 'DESC');
@@ -154,7 +67,121 @@ class PayrollController extends Controller
 
             return View('admin.salary.pagination', compact('results'))->render();
         }
-        
+
+        $employeestList = $this->commonRepository->employeesList();
+        // echo "<pre>"; print_r($results); exit;
+        return view('admin.salary.salaryDetails', ['results' => $results, 'employeestList' => $employeestList]);
+    }
+
+    public function calculateEmployeeSalary(Request $request)
+    {
+
+        // $query = DB::table('assignjob')
+        //                 ->whereYear('from_date', '=', $request->year)
+        //                 ->whereMonth('from_date', '=', $request->month)
+        //                 ->where('emp_id', '=', $request->employee_id)
+        //                 ->get();
+
+        $deduction = $request->deduction;
+        $wages_perday = $request->wages;
+        $workingDays = $request->days;
+        // echo "<pre>"; print_r(count($query)); exit;
+
+        if ($workingDays <= 0) {
+            return redirect('payroll')->with('error', 'fill more days');
+        }
+
+        $queryResult = EmployeesSalary::where('emp_id', $request->employee_id)->where('month', $request->month)->count();
+        if ($queryResult > 0) {
+            return redirect('payroll')->with('error', 'Salary already generated for this month.');
+        }
+
+
+        $employeeDetails = Employees::where('emp_id', $request->employee_id)->first();
+
+
+        $oneday_salary = round($employeeDetails->salary_expectations / Carbon::now()->month($request->month)->daysInMonth);
+
+        $payble_Salary = round($oneday_salary * $workingDays);
+        $basic_Salary = round($wages_perday * $workingDays);
+
+        if (!empty($deduction)) {
+            if (in_array('PF', $deduction)) {
+
+                $emppf = (12 / 100) * $basic_Salary;
+                $empesi = (0.75 / 100) * $basic_Salary;
+            }
+            if (in_array('ESI', $deduction)) {
+                $emprpf  = (13 / 100) * $basic_Salary;
+                $empresi = (3.25 / 100) * $basic_Salary;
+            }
+        } else {
+
+            $emppf = 0;
+            $emprpf = 0;
+
+            $empesi = 0;
+            $empresi = 0;
+        }
+
+        $advance = $dress = $allowance = 0;
+
+        $advance = $request->advance;
+        $dress = $request->dress;
+        $allowance = round($payble_Salary - $basic_Salary);
+
+        $totalSalary =  $payble_Salary - ($advance + $dress + $emppf + $empesi);
+
+        $data = [
+            'emp_id'           => $employeeDetails->emp_id,
+            'salary'           => $employeeDetails->salary_expectations,
+            'basic'            => $basic_Salary,
+            'month'            => $request->month,
+            'year'             => $request->year,
+            'month_days'       => Carbon::now()->month($request->month)->daysInMonth,
+            'working_days'     => $workingDays,
+            'per_day'          => $wages_perday,
+            'emp_pf'           => $emppf,
+            'empr_pf'          => $emprpf,
+            'emp_esi'          => $empesi,
+            'empr_esi'         => $empresi,
+            'advance'          => $advance,
+            'dress'            => $dress,
+            'allowance'        => $allowance,
+            'totalSalary'      => $totalSalary,
+        ];
+
+        DB::beginTransaction();
+
+        $parentData = EmployeesSalary::create($data);
+
+        DB::commit();
+        return redirect('payroll');
+        // return view('admin.payroll.salarySheet.generateSalarySheet', $data);
+    }
+
+    public function salary()
+    {
+
+        $results = EmployeesSalary::with('employees')->orderBy('id', 'DESC')->get();
+
+        if (request()->ajax()) {
+
+            $results = EmployeesSalary::with('employees')->orderBy('id', 'DESC');
+
+            if ($request->monthField != '') {
+                $results->where('month', $request->monthField);
+            }
+
+            // if ($request->status != '') {
+            //     $results->where('status', $request->status);
+            // }
+
+            $results = $results->get();
+
+            return View('admin.salary.pagination', compact('results'))->render();
+        }
+
         $employeestList = $this->commonRepository->employeesList();
         // echo "<pre>"; print_r($results); exit;
         return view('admin.salary.salaryDetails', ['results' => $results, 'employeestList' => $employeestList]);
@@ -197,11 +224,10 @@ class PayrollController extends Controller
         } else {
             return redirect('generateSalarySheet')->with('error', 'Something Error Found !, Please try again.');
         }
-
     }
-    
-    
-        public function monthSalary(Request $request)
+
+
+    public function monthSalary(Request $request)
     {
         $results = SalaryDetails::with(['employee' => function ($query) {
             $query->with('payGrade');
@@ -303,7 +329,8 @@ class PayrollController extends Controller
                         $employeeDetails->pay_grade_id
                     );
                     $employeeAllInfo = $this->payrollRepository->getEmployeeOtmAbsLvLtAndWokDays(
-                        $employeeDetails->employee_id, $month,
+                        $employeeDetails->employee_id,
+                        $month,
                         $employeeDetails->payGrade->overtime_rate,
                         $employeeDetails->payGrade->basic_salary
                     );
@@ -324,7 +351,6 @@ class PayrollController extends Controller
 
                     $input = $this->payrollRepository->makeMonthlyBulkDataFormat($data);
                     $done += 1;
-
                 } else {
 
                     // hourly salary
@@ -341,7 +367,6 @@ class PayrollController extends Controller
 
                     $input = $this->payrollRepository->makeHourlyBulkDataFormat($hourlyData);
                     $done += 1;
-
                 }
 
                 // insert all
@@ -365,7 +390,6 @@ class PayrollController extends Controller
                 if (count($employeeSalaryDetailsToLeave) > 0) {
                     SalaryDetailsToLeave::insert($employeeSalaryDetailsToLeave);
                 }
-
             }
             DB::commit();
 
@@ -378,7 +402,6 @@ class PayrollController extends Controller
             DB::rollback();
 
             return redirect('generateSalarySheet')->with('error', $e->getMessage());
-
         }
     }
 
@@ -545,7 +568,7 @@ class PayrollController extends Controller
                 'printHeadSetting' => $printHeadSetting,
                 'logo_setting'     => $setting,
             ];
-//          return view('admin.payroll.salarySheet.hourlyPaySlipPdf',$data);
+            //          return view('admin.payroll.salarySheet.hourlyPaySlipPdf',$data);
             $pdf = PDF::loadView('admin.payroll.salarySheet.hourlyPaySlipPdf', $data);
             $pdf->setPaper('A4', 'landscape');
             return $pdf->download("payslip.pdf");
@@ -572,15 +595,22 @@ class PayrollController extends Controller
 
         $pdf->setPaper('A4', 'landscape');
         return $pdf->download("my-payroll-Pdf.pdf");
-
     }
 
     public function paymentHistory(Request $request)
     {
         $results = '';
         if ($request->month) {
-            $results = SalaryDetails::select('salary_details.basic_salary', 'salary_details.gross_salary', 'salary_details.month_of_salary', DB::raw('CONCAT(COALESCE(employee.first_name,\'\'),\' \',COALESCE(employee.last_name,\'\')) AS fullName'),
-                'employee.photo', 'pay_grade.pay_grade_name', 'hourly_salaries.hourly_grade', 'department.department_name')
+            $results = SalaryDetails::select(
+                'salary_details.basic_salary',
+                'salary_details.gross_salary',
+                'salary_details.month_of_salary',
+                DB::raw('CONCAT(COALESCE(employee.first_name,\'\'),\' \',COALESCE(employee.last_name,\'\')) AS fullName'),
+                'employee.photo',
+                'pay_grade.pay_grade_name',
+                'hourly_salaries.hourly_grade',
+                'department.department_name'
+            )
                 ->join('employee', 'employee.employee_id', 'salary_details.employee_id')
                 ->join('department', 'department.department_id', 'employee.department_id')
                 ->leftJoin('pay_grade', 'pay_grade.pay_grade_id', 'employee.pay_grade_id')
@@ -601,5 +631,4 @@ class PayrollController extends Controller
         }])->where('status', 1)->where('employee_id', session('logged_session_data.employee_id'))->orderBy('salary_details_id', 'DESC')->get();
         return view('admin.payroll.report.myPayroll', ['results' => $results]);
     }
-
 }

@@ -8,6 +8,8 @@ class Employees extends Model
 {
     protected $table = 'employees';
     protected $primaryKey = 'emp_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = ['emp_id', 'employee_id', 'name', 'email', 'phone', 'alter_phone', 'father_name', 'dob', 'date_of_joining', 'aadhar', 'gender', 'marital_status', 'p_state', 'p_district', 'p_city', 'p_address', 'c_district', 'c_city', 'c_address', 'bank', 'acc_no', 'ifc_code', 'branch', 'esic_no', 'uan_no', 'nominee', 'esic_pf', 'highest_qualification', 'weight', 'height', 'experience', 'employment_status', 'post_applied', 'salary_expectations', 'other_post_applied', 'time_preference', 'remarks', 'filled_by', 'referd_by', 'photo', 'kyc_doc', 'kyc_file', 'status'];
 
@@ -30,5 +32,10 @@ class Employees extends Model
         return $this->belongsTo(District::class, 'p_district', 'dist_id')->withDefault([
             'dist_name' => 'N/A',
         ]);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
     }
 }

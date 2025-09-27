@@ -113,9 +113,9 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
     });
     Route::group(['prefix' => 'attendance'], function () {
         Route::get('/', ['as' => 'attendance.index', 'uses' => 'Employee\AttendanceController@index']);
-        Route::get('/calculateEmployeeSalary', ['as' => 'attendance.calculateEmployeeSalary', 'uses' => 'Employee\AttendanceController@calculateEmployeeSalary']);
-        Route::get('/salarys', ['as' => 'attendance.salarys', 'uses' => 'Employee\AttendanceController@salary']);
-        Route::post('/salarys', ['as' => 'attendance.salarys', 'uses' => 'Employee\AttendanceController@salary']);
+        Route::get('/create', ['as' => 'attendance.create', 'uses' => 'Employee\AttendanceController@create']);
+        Route::post('/store', ['as' => 'attendance.store', 'uses' => 'Employee\AttendanceController@store']);
+        Route::post('/employees', ['as' => 'attendance.getEmployees', 'uses' => 'Employee\AttendanceController@getCompanyEmployees']);
     });
 
     Route::group(['prefix' => 'payroll'], function () {

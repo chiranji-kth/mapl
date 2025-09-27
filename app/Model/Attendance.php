@@ -5,37 +5,29 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use App\Model\Employees;
 use App\Model\Company;
+use App\Model\AssignJob;
 
-class AssignJob extends Model
+class Attendance extends Model
 {
-    protected $table = 'assignjob';
-    protected $primaryKey = 'job_id';
+    protected $table = 'attendance';
+
+    protected $primaryKey = 'id';
 
     public $incrementing = true;
     protected $keyType = 'int';
 
     protected $fillable = [
-        'job_id',
-        'emp_id',
         'company_id',
-        'gender',
-        'job_role',
-        'shift',
-        'shift_timing',
-        'salary',
-        'perday_wages',
-        'deduction',
-        'from_date',
-        'to_date',
+        'emp_id',
+        'assign_job_id',
+        'month',
+        'year',
+        'days_worked',
         'created_at',
         'updated_at',
         'status'
     ];
 
-    public function employees()
-    {
-        return $this->belongsTo(Employees::class, 'emp_id', 'emp_id');
-    }
     public function employee()
     {
         return $this->belongsTo(Employees::class, 'emp_id', 'emp_id');
@@ -44,11 +36,9 @@ class AssignJob extends Model
     {
         return $this->belongsTo(Company::class, 'company_id', 'company_id');
     }
-    public function job()
+    public function assignJob()
     {
-        return $this->belongsTo(Job::class, 'job_role', 'job_id')->withDefault([
-            'post' => 'N/A',
-        ]);
+        return $this->belongsTo(AssignJob::class, 'assign_job_id', 'job_id');
     }
     public function scopeActive($query)
     {
