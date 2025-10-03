@@ -27,7 +27,7 @@
                     <th>Quotation No</th>
                     <td>{{ $quotation->quotation_no }}</td>
                 </tr>
-                 <tr>
+                <tr>
                     <th>Date</th>
                     <td>{{ $quotation->qdate }}</td>
                 </tr>
@@ -59,7 +59,21 @@
                     <th>State Code</th>
                     <td>{{ $quotation->state_code }}</td>
                 </tr>
-
+                <tr>
+                    <th>Note / Deductions</th>
+                    <td>
+                        @php
+                        $notes = $quotation->note ? explode(', ', $quotation->note) : [];
+                        @endphp
+                        @if(count($notes))
+                        @foreach($notes as $note)
+                        <span>{{ $note }}</span>
+                        @endforeach
+                        @else
+                        <span>None</span>
+                        @endif
+                    </td>
+                </tr>
             </table>
         </div>
     </div>
@@ -92,18 +106,18 @@
         </tbody>
         @php
         $deductions = is_array($quotation->deduction) ? $quotation->deduction : json_decode($quotation->deduction ?? '[]');
-        
+
         $subtotal = $quotation->total_amount;
 
         $pf = in_array('PF', $deductions) ? $subtotal * 0.13 : 0;
         $esi = in_array('ESI', $deductions) ? $subtotal * 0.0325 : 0;
-        
+
         $total = $subtotal + $pf + $esi;
-        
+
         $cgst = in_array('CGST', $deductions) ? $total * 0.09 : 0;
         $sgst = in_array('SGST', $deductions) ? $total * 0.09 : 0;
         $igst = in_array('IGST', $deductions) ? $total * 0.18 : 0;
-        
+
         $finalTotal = $subtotal + $pf + $esi + $cgst + $sgst + $igst;
         @endphp
 
@@ -132,14 +146,14 @@
                 <td>₹ {{ number_format($esi, 2) }}</td>
             </tr>
             @endif
-            
+
             <tr>
                 <td colspan="5"></td>
                 <th><strong>Total</strong></th>
                 <td><strong>₹ {{ number_format($total, 2) }}</strong></td>
             </tr>
-            
-           @if($cgst > 0)
+
+            @if($cgst > 0)
             <tr>
                 <td colspan="5"></td>
                 <th>CGST (9%)</th>

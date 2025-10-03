@@ -31,9 +31,10 @@
                                     <label for="exampleInput">Select Branch<span class="validateRq">*</span></label>
                                     <div class="input-group col-md-12">
                                         <select input class="form-control required branch" required name="branch_id" id="branch_id">
-                                            <option value="">Select Branch</option>
-                                            <option value="1">MAPL</option>
-                                            <option value="2">AASTHA</option>
+                                            <option value="">-- Select Branch --</option>
+                                            @foreach($branches as $branch)
+                                            <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -97,7 +98,7 @@
                                             value="{{ old('address') }}">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <!-- <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="exampleInput">Deduction</label><br />
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="PF"> PF
@@ -106,6 +107,14 @@
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="SGST"> SGST
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="IGST"> IGST
                                     </div>
+                                </div> -->
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="exampleInput">NOTE:</label><br />
+                                    <input type="checkbox" name="note[]" class="form-controle" value="PF & ESI IS INCLUDED & GST IS EXTRA"> PF & ESI IS INCLUDED & GST IS EXTRA<br />
+                                    <input type="checkbox" name="note[]" class="form-controle" value="PF, ESI & GST ARE APPLICABLE AS PER GOVT. NORMS"> PF, ESI & GST ARE APPLICABLE AS PER GOVT. NORMS
                                 </div>
                             </div>
                             <br /><br />
@@ -119,18 +128,10 @@
                                             <label class="text-muted">Particluar <span class="validateRq">*</span></label> <br>
                                             <div class="form-group">
                                                 <select class="form-control" id="particluar" name="items[0][particluar]" required>
-                                                    <option value="">-- Select Post --</option>
-                                                    <option value="WEEKLY OFF" {{ (Input::old("particluar") == 'WEEKLY OFF' ? "selected":"") }}>WEEKLY OFF</option>
-                                                    <option value="SUPERVISOR" {{ (Input::old("particluar") == 'SUPERVISOR' ? "selected":"") }}>SUPERVISOR</option>
-                                                    <option value="GUARD" {{ (Input::old("particluar") == 'GUARD' ? "selected":"") }}>GUARD</option>
-                                                    <option value="BOUNCER" {{ (Input::old("particluar") == 'BOUNCER' ? "selected":"") }}>BOUNCER</option>
-                                                    <option value="GUNMAN" {{ (Input::old("particluar") == 'GUNMAN' ? "selected":"") }}>GUNMAN</option>
-                                                    <option value="OFFICE BOY" {{ (Input::old("particluar") == 'OFFICE BOY' ? "selected":"") }}>OFFICE BOY</option>
-                                                    <option value="DATA ENTRY OPERATOR" {{ (Input::old("particluar") == 'DATA ENTRY OPERATOR' ? "selected":"") }}>DATA ENTRY OPERATOR</option>
-                                                    <option value="DRIVER" {{ (Input::old("particluar") == 'DRIVER' ? "selected":"") }}>DRIVER</option>
-                                                    <option value="HOUSEKEEPING" {{ (Input::old("particluar") == 'HOUSEKEEPING' ? "selected":"") }}>HOUSEKEEPING</option>
-                                                    <option value="MAN POWER SUPPLY FOR WORKSHOP" {{ (Input::old("particluar") == 'MAN POWER SUPPLY FOR WORKSHOP' ? "selected":"") }}>MAN POWER SUPPLY FOR WORKSHOP</option>
-                                                    <option value="OTHER" {{ (Input::old("particluar") == 'OTHER' ? "selected":"") }}>OTHER</option>
+                                                    <option value="">--- @lang('common.please_select') ---</option>
+                                                    @foreach ($jobs as $job)
+                                                    <option value="{{ $job->job_id }}">{{ $job->post }}</option>
+                                                    @endforeach
                                                 </select>
                                                 <span class="text-danger" id="particluar_err"></span>
                                             </div>
@@ -147,23 +148,35 @@
                                             <span class="text-danger" id="gender_err"></span>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
                                         <label class="text-muted">Working Hour <span class="validateRq">*</span></label> <br>
                                         <div class="form-group">
                                             <input type="number" name="items[0][working_hour]" class="form-control" placeholder="Working Hour" required />
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
                                         <label class="text-muted">QTY <span class="validateRq">*</span></label> <br>
                                         <div class="form-group">
-                                            <input type="number" name="items[0][qty]" class="form-control" placeholder="QTY" required />
+                                            <input type="number" name="items[0][qty]" class="form-control qty" placeholder="QTY" required />
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="text-muted">Rate <span class="validateRq">*</span></label> <br>
                                         <div class="form-group">
-                                            <input type="number" name="items[0][rate]" class="form-control" placeholder="rate" required />
+                                            <input type="number" name="items[0][rate]" class="form-control rate" placeholder="rate" required />
                                         </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label>Deductions / Taxes</label><br>
+                                        <input type="checkbox" name="items[0][pf]" class="pf"> PF
+                                        <input type="checkbox" name="items[0][esi]" class="esi"> ESI
+                                        <input type="checkbox" name="items[0][cgst]" class="cgst"> CGST
+                                        <input type="checkbox" name="items[0][sgst]" class="sgst"> SGST
+                                        <input type="checkbox" name="items[0][igst]" class="igst"> IGST
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label>Total</label>
+                                        <input type="text" name="items[0][total]" class="form-control line-total" value="0.00" readonly>
                                     </div>
                                     <div class="col-md-2">
                                         <label class="text-muted"></label> <br>
@@ -197,30 +210,22 @@
     <script>
         let rowCount = 1;
 
+        // Add new row
         $('#add-row').click(function() {
             let newRow = `
-        <div class="row dynamic-row mt-2" style="margin-bottom: 20px;">
-            <div class="col-md-4">
-                                        <div class="form-group app-label">
-                                            <label class="text-muted">Particluar <span class="validateRq">*</span></label> <br>
+                                    <div class="row dynamic-row" style="margin-bottom: 20px;">
+                                        <div class="col-md-4">
+                                            <label class="text-muted">Particluar  <span class="validateRq">*</span></label> <br>
                                             <div class="form-group">
-                                                <select class="form-control" id="particluar" name="items[${rowCount}][particluar]" required>
-                                                    <option value="">-- Select Post --</option>
-                                                    <option value="SUPERVISOR" {{ (Input::old("particluar") == 'SUPERVISOR' ? "selected":"") }}>SUPERVISOR</option>
-                                                    <option value="WEEKLY OFF" {{ (Input::old("particluar") == 'WEEKLY OFF' ? "selected":"") }}>WEEKLY OFF</option>
-                                                    <option value="GUARD" {{ (Input::old("particluar") == 'GUARD' ? "selected":"") }}>GUARD</option>
-                                                    <option value="BOUNCER" {{ (Input::old("particluar") == 'BOUNCER' ? "selected":"") }}>BOUNCER</option>
-                                                    <option value="GUNMAN" {{ (Input::old("particluar") == 'GUNMAN' ? "selected":"") }}>GUNMAN</option>
-                                                    <option value="OFFICE BOY" {{ (Input::old("particluar") == 'OFFICE BOY' ? "selected":"") }}>OFFICE BOY</option>
-                                                    <option value="DATA ENTRY OPERATOR" {{ (Input::old("particluar") == 'DATA ENTRY OPERATOR' ? "selected":"") }}>DATA ENTRY OPERATOR</option>
-                                                    <option value="DRIVER" {{ (Input::old("particluar") == 'DRIVER' ? "selected":"") }}>DRIVER</option>
-                                                    <option value="OTHER" {{ (Input::old("particluar") == 'OTHER' ? "selected":"") }}>OTHER</option>
+                                                <select name="items[${rowCount}][particluar]" class="form-control" required>
+                                                    <option value="">--Select--</option>
+                                                    @foreach ($jobs as $job)
+                                                        <option value="{{ $job->job_id }}">{{ $job->post }}</option>
+                                                    @endforeach
                                                 </select>
-                                                <span class="text-danger" id="particluar_err"></span>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
+                                        <div class="col-md-4">
                                         <label class="text-muted">Gender <span class="validateRq">*</span></label> <br>
                                         <div class="form-group">
                                             <select class="form-control" id="gender" name="items[${rowCount}][gender]" required>
@@ -231,29 +236,45 @@
                                             <span class="text-danger" id="gender_err"></span>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
                                         <label class="text-muted">Working Hour <span class="validateRq">*</span></label> <br>
                                         <div class="form-group">
                                             <input type="number" name="items[${rowCount}][working_hour]" class="form-control" placeholder="Working Hour" required />
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
                                         <label class="text-muted">QTY <span class="validateRq">*</span></label> <br>
                                         <div class="form-group">
-                                            <input type="number" name="items[${rowCount}][qty]" class="form-control" placeholder="QTY" required />
+                                            <input type="number" name="items[${rowCount}][qty]" class="form-control qty" placeholder="QTY" required />
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="text-muted">Rate <span class="validateRq">*</span></label> <br>
                                         <div class="form-group">
-                                            <input type="number" name="items[${rowCount}][rate]" class="form-control" placeholder="rate" required />
+                                            <input type="number" name="items[${rowCount}][rate]" class="form-control rate" placeholder="rate" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="text-muted">Deductions / Taxes</label> <br>
+                                        <div class="form-group">
+                                            <input type="checkbox" name="items[${rowCount}][pf]" class="pf"> PF
+                                            <input type="checkbox" name="items[${rowCount}][esi]" class="esi"> ESI
+                                            <input type="checkbox" name="items[${rowCount}][cgst]" class="cgst"> CGST
+                                            <input type="checkbox" name="items[${rowCount}][sgst]" class="sgst"> SGST
+                                            <input type="checkbox" name="items[${rowCount}][igst]" class="igst"> IGST
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="text-muted">Total <span class="validateRq">*</span></label> <br>
+                                        <div class="form-group">
+                                        <input type="text" name="items[${rowCount}][total]" class="form-control line-total" value="0.00" readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <label class="text-muted"></label> <br>
                                         <button type="button" class="btn btn-danger remove-row"><i class="fa fa-trash"></i></button>
                                     </div>
-        </div>`;
+    </div>`;
             $('#dynamic-rows-wrapper').append(newRow);
             rowCount++;
         });
@@ -261,27 +282,52 @@
         // Remove row
         $(document).on('click', '.remove-row', function() {
             $(this).closest('.dynamic-row').remove();
+            calculateGrandTotal();
         });
-        function checkphone() {
-        const phone = $("#contact").val();
-        
-        if (phone === "") {
-            $("#phone_err").html("Phone number is required");
-            return false;
-        } else if (!/^\d+$/.test(phone)) {
-            $("#phone_err").html("Only numbers are allowed");
-            return false;
-        } else if (phone.length !== 10) {
-            $("#phone_err").html("Phone number must be 10 digits");
-            return false;
-        } else {
-            $("#phone_err").html("");
-            return true;
+
+        // Calculate row total
+        function calculateRowTotal(row) {
+            let qty = parseFloat(row.find('.qty').val()) || 0;
+            let rate = parseFloat(row.find('.rate').val()) || 0;
+
+            let total = qty * rate;
+
+            // Check deductions / taxes
+            let pf = row.find('.pf').is(':checked') ? total * 0.13 : 0;
+            let esi = row.find('.esi').is(':checked') ? total * 0.0325 : 0;
+            let cgst = row.find('.cgst').is(':checked') ? total * 0.09 : 0;
+            let sgst = row.find('.sgst').is(':checked') ? total * 0.09 : 0;
+            let igst = row.find('.igst').is(':checked') ? total * 0.18 : 0;
+
+            let rowTotal = total + pf + esi + cgst + sgst + igst;
+
+            row.find('.line-total').val(rowTotal.toFixed(2));
+            calculateGrandTotal();
         }
-    }
 
-    // Bind the check to input and blur events
-    $("#contact").on("input blur", checkphone);
+        // Calculate grand total
+        function calculateGrandTotal() {
+            let grandTotal = 0;
+            $('.line-total').each(function() {
+                grandTotal += parseFloat($(this).val()) || 0;
+            });
+            $('#grand-total').text(grandTotal.toFixed(2));
+        }
 
+        // Bind events
+        $(document).on('input', '.qty, .rate', function() {
+            let row = $(this).closest('.dynamic-row');
+            calculateRowTotal(row);
+        });
+
+        $(document).on('change', '.pf, .esi, .cgst, .sgst, .igst', function() {
+            let row = $(this).closest('.dynamic-row');
+            calculateRowTotal(row);
+        });
+
+        // Initial calculation
+        $('.dynamic-row').each(function() {
+            calculateRowTotal($(this));
+        });
     </script>
     @endsection

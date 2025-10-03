@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuotationRequest;
 use App\Model\Quotation;
+use App\Model\Branch;
+use App\Model\Job;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -26,7 +28,9 @@ class QuotationController extends Controller
 
     public function create()
     {
-        return view('admin.quotation.form');
+        $branches = Branch::orderBy('branch_name')->get();
+        $jobs = Job::where('status', true)->get();
+        return view('admin.quotation.form', compact('branches', 'jobs'));
     }
 
     public function store(QuotationRequest $request)
@@ -35,43 +39,61 @@ class QuotationController extends Controller
 
         try {
             $input = $request->except('items');
-            
+
+            // Generate quotation number
             $latestQuotation = Quotation::where('branch_id', $request->branch_id)
                 ->orderBy('quotation_no', 'desc')
                 ->first();
-                
+
             $quotation_no = $latestQuotation && is_numeric($latestQuotation->quotation_no)
                 ? str_pad($latestQuotation->quotation_no + 1, 4, '0', STR_PAD_LEFT)
                 : '0101';
-                    
-            
+
             $input['quotation_no'] = $quotation_no;
-            
-            $totalAmount = 0;
+            $input['note'] = $request->has('note') ? implode(', ', $request->note) : null;
+
+            $grandTotal = 0;
 
             // Create quotation first
             $quotation = Quotation::create($input);
 
             foreach ($request->items as $item) {
-                $itemTotal = $item['qty'] * $item['rate'];
+                $qty = $item['qty'];
+                $rate = $item['rate'];
+
+                $rowTotal = $qty * $rate;
+                $pf = 0;
+                $esi = 0;
+                $cgst = 0;
+                $sgst = 0;
+                $igst = 0;
+                // Apply deductions / taxes if passed from frontend
+                if (isset($item['pf']) && $item['pf']) $pf += $qty * $rate * 0.13;       // PF 13%
+                if (isset($item['esi']) && $item['esi']) $esi += $qty * $rate * 0.0325;    // ESI 3.25%
+                if (isset($item['cgst']) && $item['cgst']) $cgst += $qty * $rate * 0.09;    // CGST 9%
+                if (isset($item['sgst']) && $item['sgst']) $sgst += $qty * $rate * 0.09;    // SGST 9%
+                if (isset($item['igst']) && $item['igst']) $igst += $qty * $rate * 0.18;    // IGST 18%
 
                 $quotation->details()->create([
                     'quotation_id'  => $quotation->id,
                     'particluar'    => $item['particluar'],
                     'gender'        => $item['gender'],
                     'working_hour'  => $item['working_hour'],
-                    'qty'           => $item['qty'],
-                    'rate'          => $item['rate'],
-                    'total'         => $itemTotal,
+                    'qty'           => $qty,
+                    'rate'          => $rate,
+                    'pf'            => $pf,
+                    'esi'           => $esi,
+                    'cgst'          => $cgst,
+                    'sgst'          => $sgst,
+                    'igst'          => $igst,
+                    'total'         => $rowTotal,
                 ]);
 
-                $totalAmount += $itemTotal;
+                $grandTotal += $rowTotal;
             }
 
-            // Update using DB
-            DB::table('quotation')
-                ->where('id', $quotation->id)
-                ->update(['total_amount' => $totalAmount]);
+            // Update quotation total
+            $quotation->update(['total_amount' => $grandTotal]);
 
             DB::commit();
 
@@ -89,6 +111,7 @@ class QuotationController extends Controller
 
 
 
+
     public function show($id)
     {
         $quotation = Quotation::with('details')->findOrFail($id);
@@ -98,9 +121,11 @@ class QuotationController extends Controller
     public function edit($id)
     {
         $quotation = Quotation::findOrFail($id);
+        $branches = Branch::orderBy('branch_name')->get();
+        $jobs = Job::where('status', true)->get();
         $details = $quotation->details;
 
-        return view('admin.quotation.editform', compact('quotation', 'details'));
+        return view('admin.quotation.editform', compact('quotation', 'details', 'branches', 'jobs'));
     }
 
     public function update(QuotationRequest $request, $id)
@@ -111,7 +136,7 @@ class QuotationController extends Controller
             $quotation = Quotation::findOrFail($id);
             $input = $request->except('items');
             $input['updated_by'] = Auth::user()->user_id;
-
+            $input['note'] = $request->has('note') ? implode(', ', $request->note) : null;
             $quotation->update($input);
 
             $quotation->details()->delete();

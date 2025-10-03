@@ -13,13 +13,27 @@ class PreventBakButton
      * @param  \Closure  $next
      * @return mixed
      */
+    // public function handle($request, Closure $next)
+    // {
+
+    //     // return $next($request);
+    //     $response = $next($request);
+    //     return $response->header('Cache-Control', 'nocache,no-store,max-age=0,must-revalidate')
+    //         ->header('Pragma', 'no-cache')
+    //         ->header('Expires', 'Sat,01 Jan 1990 00:00:00 GMT');
+    // }
+
     public function handle($request, Closure $next)
     {
-
-        // return $next($request);
         $response = $next($request);
-        return $response->header('Cache-Control', 'nocache,no-store,max-age=0,must-revalidate')
-            ->header('Pragma', 'no-cache')
-            ->header('Expires', 'Sat,01 Jan 1990 00:00:00 GMT');
+
+        // Safely set headers for all response types
+        if (method_exists($response, 'headers')) {
+            $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+        }
+
+        return $response;
     }
 }

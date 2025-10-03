@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Model\Employees;
 use App\Model\EmployeesSalary;
+use App\Model\AssignJob;
+use App\Model\Attendance;
 
 class PayrollController extends Controller
 {
@@ -46,31 +48,82 @@ class PayrollController extends Controller
     //     return view('admin.salary.index', ['employeeList' => $employeeList]);
     // }
 
-    public function index()
+    public function index(Request $request)
     {
+        $query = Attendance::with(['employee', 'company', 'assignJob'])
+            ->orderBy('company_id')
+            ->orderBy('year')
+            ->orderBy('month');
 
-        $results = EmployeesSalary::with('employees')->orderBy('id', 'DESC')->get();
-
-        if (request()->ajax()) {
-
-            $results = EmployeesSalary::with('employees')->orderBy('id', 'DESC');
-
-            if ($request->monthField != '') {
-                $results->where('month', $request->monthField);
-            }
-
-            // if ($request->status != '') {
-            //     $results->where('status', $request->status);
-            // }
-
-            $results = $results->get();
-
-            return View('admin.salary.pagination', compact('results'))->render();
+        // Filter by company if selected
+        if ($request->has('company_id')) {
+            $query->where('company_id', $request->company_id);
         }
 
-        $employeestList = $this->commonRepository->employeesList();
-        // echo "<pre>"; print_r($results); exit;
-        return view('admin.salary.salaryDetails', ['results' => $results, 'employeestList' => $employeestList]);
+        // Filter by month/year
+        if ($request->has('monthField')) {
+            $query->where('month', $request->monthField);
+        }
+        if ($request->has('yearField')) {
+            $query->where('year', $request->yearField);
+        }
+
+        // Filter by date range
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $query->whereBetween(DB::raw("STR_TO_DATE(CONCAT(year,'-',month,'-01'), '%Y-%m-%d')"), [
+                Carbon::parse($request->start_date)->startOfMonth(),
+                Carbon::parse($request->end_date)->endOfMonth(),
+            ]);
+        }
+
+        $results = $query->get();
+
+        // echo "<pre>";
+        // print_r($results->toArray());
+        // exit;
+
+        $netSalary = $pf = $esi = $tds = 0;
+        foreach ($results as $key => $value) {
+            $netSalary = $value->days_worked * $value->assignJob->perday_wages;
+
+            if (!empty($value->assignJob->deduction)) {
+                $deductions = array_map('trim', explode(',', $value->assignJob->deduction));
+
+                if (in_array('PF', $deductions)) {
+                    $pf = (12 / 100) * ($value->days_worked * $value->assignJob->wages_per_day);
+                }
+                if (in_array('ESI', $deductions)) {
+                    $esi = (0.75 / 100) * ($value->days_worked * $value->assignJob->wages_per_day);
+                }
+                if (in_array('TDS', $deductions)) {
+                    $tds = (10 / 100) * ($value->days_worked * $value->assignJob->wages_per_day);
+                }
+            }
+
+
+            $results[$key]->netSalary = round($netSalary - ($pf + $esi + $tds));
+        }
+
+        // echo "<pre>";
+        // print_r($results->toArray());
+        // exit;
+
+        // Group by Company → Month-Year
+        $grouped = $results->groupBy(function ($item) {
+            return $item->company->company_name ?? 'Unknown Company';
+        })->map(function ($companyRecords) {
+            return $companyRecords->groupBy(function ($item) {
+                return sprintf('%02d-%04d', $item->month, $item->year);
+            });
+        });
+
+        if ($request->ajax()) {
+            return view('admin.salary.pagination', compact('grouped'))->render();
+        }
+
+        $companyList = $this->commonRepository->companyList();
+
+        return view('admin.salary.index', compact('grouped', 'companyList'));
     }
 
     public function calculateEmployeeSalary(Request $request)

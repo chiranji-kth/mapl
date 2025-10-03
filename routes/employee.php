@@ -116,6 +116,7 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::get('/create', ['as' => 'attendance.create', 'uses' => 'Employee\AttendanceController@create']);
         Route::post('/store', ['as' => 'attendance.store', 'uses' => 'Employee\AttendanceController@store']);
         Route::post('/employees', ['as' => 'attendance.getEmployees', 'uses' => 'Employee\AttendanceController@getCompanyEmployees']);
+        Route::get('/export', ['as' => 'attendance.export', 'uses' => 'Employee\AttendanceController@exportCsv']);
     });
 
     Route::group(['prefix' => 'payroll'], function () {

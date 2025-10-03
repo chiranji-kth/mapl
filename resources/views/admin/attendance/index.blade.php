@@ -17,6 +17,9 @@ Attendance
 				class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
 				<i class="fa fa-plus-circle" aria-hidden="true"></i> Add Attendance</a>
 
+			<a href="{{ route('attendance.export', request()->all()) }}" class="btn btn-danger pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
+				<i class="fa fa-file-text-o"></i> Export to CSV
+			</a>
 			<!--	<a href="{{route('generateSalarySheet.bulk')}}"-->
 			<!--class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">-->
 			<!--<i class="fa fa-list-ul" aria-hidden="true"></i>  @lang('salary_sheet.Generate Bulk Salary Sheet')</a>-->
@@ -60,6 +63,41 @@ Attendance
 						<!--</div>-->
 						<br>
 						<div class="data">
+							<form method="GET" action="{{ route('attendance.index') }}">
+								<div class="row">
+									<div class="col-md-3">
+										<label>Company</label>
+										<select name="company_id" class="form-control">
+											@foreach($companyList as $id => $name)
+											<option value="{{ $id }}" {{ request('company_id') == $id ? 'selected' : '' }}>
+												{{ $name }}
+											</option>
+											@endforeach
+										</select>
+									</div>
+
+									<div class="col-md-3">
+										<label for="exampleInput">@lang('common.month')<span class="validateRq">*</span></label>
+										<div class="input-group">
+											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+											<input class="form-control monthFieldOnly required" id="month" placeholder="Month" name="month" type="text" value="">
+										</div>
+									</div>
+									<div class="col-md-3">
+										<label for="exampleInput">Year<span class="validateRq">*</span></label>
+										<div class="input-group">
+											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+											<input class="form-control yearField required" id="year" placeholder="Year" name="year" type="text">
+										</div>
+									</div>
+
+									<div class="col-md-3 d-flex align-items-end" style="margin-top: 25px;">
+										<button type="submit" class="btn btn-primary">Filter</button>
+									</div>
+								</div>
+							</form>
+
+							<br /><br />
 							@include('admin.attendance.pagination')
 						</div>
 

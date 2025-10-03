@@ -11,55 +11,55 @@
             margin: 0;
             background: #fff;
         }
-        
+
         .container {
             max-width: 800px;
             margin: 0 auto;
             box-sizing: border-box;
             border: 1px solid #000;
         }
-        
-         .footer {
+
+        .footer {
             max-width: 800px;
             margin: 0 auto;
             box-sizing: border-box;
         }
-        
+
         .header-table {
             width: 100%;
             border-collapse: collapse;
         }
-        
+
         .header-table td {
             border: none;
             vertical-align: top;
         }
-        
-        .amount-words{
+
+        .amount-words {
             text-transform: capitalize;
         }
-        
+
         .company-cell {
             text-align: right;
         }
-        
+
         .company-name {
             font-size: 22px;
             font-weight: bold;
         }
-        
+
         .company-address {
             font-size: 13px;
             margin-top: 2px;
         }
-        
+
         .header {
             display: flex;
             justify-content: end;
             padding-bottom: 8px;
             border-bottom: 2px solid #000;
         }
-        
+
         .section-title {
             text-align: center;
             font-size: 16px;
@@ -67,55 +67,55 @@
             border-top: 1px solid #000;
             border-bottom: 1px solid #000;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
             page-break-inside: avoid;
         }
-        
+
         .details-table {
             border-bottom: 1px solid #000;
         }
-        
+
         .details-table th,
         .details-table td {
             border: none;
         }
-        
+
         th,
         td {
             border: 1px solid #000;
             padding: 3px;
             font-size: 12px;
         }
-        
+
         th {
             background: #f2f2f2;
             font-weight: bold;
         }
-        
+
         .no-border td,
         .no-border th {
             border: none;
             padding: 3px;
         }
-        
+
         .right-align {
             text-align: right;
         }
-        
+
         .sign {
             width: 90px;
             height: auto;
             margin-bottom: 5px;
         }
-        
+
         .footer-table {
             width: 100%;
             border-collapse: collapse;
         }
-        
+
         .footer-notes {
             width: 50%;
             vertical-align: top;
@@ -123,12 +123,12 @@
             padding: 5px 2px 0 2px;
             border: none;
         }
-        
+
         .footer-qr {
             width: 20%;
             border: none;
         }
-        
+
         .footer-sign {
             width: 30%;
             text-align: center;
@@ -136,20 +136,23 @@
             border: none;
             padding: 5px 2px 0 2px;
         }
-        
+
         @media print {
             body {
                 margin: 0;
                 background: #fff;
             }
+
             .container {
                 margin: 0 auto;
                 padding: 0 15px;
             }
+
             .header,
             .footer {
                 page-break-inside: avoid;
             }
+
             table,
             tr,
             td,
@@ -192,7 +195,7 @@
                     <strong>Party Name: </strong>
                 </td>
                 <td style="border: none; vertical-align: top; width: 44%; text-transform:uppercase">
-                    {{ $quotation->name }}<br/> {{ $quotation->address }}
+                    {{ $quotation->name }}<br /> {{ $quotation->address }}
                 </td>
                 <td style="border-top: none; width: 35%;">
                     <table style="border: none;">
@@ -207,49 +210,49 @@
             </tr>
         </table>
 
-    <table>
-    <thead>
-        <tr>
-            <th style="width: 6%;">S.No.</th>
-            <th style="width: 30%;">Particulars</th>
-            <th style="width: 10%;">Gender</th>
-            <th style="width: 16%;">Working Hour</th>
-            <th style="width: 10%;">Qty</th>
-            <th style="width: 14%;">Rate</th>
-            <th style="width: 14%;">Amount (Rs.)</th>
-        </tr>
-    </thead>
-    <tbody>
-        @php $subtotal = 0; @endphp
-        @foreach($quotation->details as $i => $item)
-            @php
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 6%;">S.No.</th>
+                    <th style="width: 30%;">Particulars</th>
+                    <th style="width: 10%;">Gender</th>
+                    <th style="width: 16%;">Working Hour</th>
+                    <th style="width: 10%;">Qty</th>
+                    <th style="width: 14%;">Rate</th>
+                    <th style="width: 14%;">Amount (Rs.)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $subtotal = 0; @endphp
+                @foreach($quotation->details as $i => $item)
+                @php
                 $lineTotal = $item->qty * $item->rate;
                 $subtotal += $lineTotal;
-            @endphp
-            <tr>
-                <td style="width: 6%;">{{ $i + 1 }}</td>
-                <td style="width: 30%;">{{ $item->particluar }}</td>
-                <td style="width: 10%;">{{ $item->gender }}</td>
-                <td style="width: 20%;">{{ $item->working_hour }}</td>
-                <td style="width: 10%;">{{ $item->qty }}</td>
-                <td style="width: 14%;">{{ number_format($item->rate, 2) }}</td>
-                <td style="width: 14%;">{{ number_format($lineTotal, 2) }}</td>
-            </tr>
-        @endforeach
+                @endphp
+                <tr>
+                    <td style="width: 6%;">{{ $i + 1 }}</td>
+                    <td style="width: 30%;">{{ $item->particluar }}</td>
+                    <td style="width: 10%;">{{ $item->gender }}</td>
+                    <td style="width: 20%;">{{ $item->working_hour }}</td>
+                    <td style="width: 10%;">{{ $item->qty }}</td>
+                    <td style="width: 14%;">{{ number_format($item->rate, 2) }}</td>
+                    <td style="width: 14%;">{{ number_format($lineTotal, 2) }}</td>
+                </tr>
+                @endforeach
 
-        @for ($j = count($quotation->details); $j < 10; $j++)
-        <tr>
-            <td style="width: 10%;">{{ $j + 1 }}</td>
-            <td style="width: 30%;">&nbsp;</td>
-            <td style="width: 10%;">&nbsp;</td>
-            <td style="width: 20%;">&nbsp;</td>
-            <td style="width: 10%;">&nbsp;</td>
-            <td style="width: 10%;">&nbsp;</td>
-            <td style="width: 10%;">&nbsp;</td>
-        </tr>
-        @endfor
-    </tbody>
-</table>
+                @for ($j = count($quotation->details); $j < 10; $j++)
+                    <tr>
+                    <td style="width: 10%;">{{ $j + 1 }}</td>
+                    <td style="width: 30%;">&nbsp;</td>
+                    <td style="width: 10%;">&nbsp;</td>
+                    <td style="width: 20%;">&nbsp;</td>
+                    <td style="width: 10%;">&nbsp;</td>
+                    <td style="width: 10%;">&nbsp;</td>
+                    <td style="width: 10%;">&nbsp;</td>
+                    </tr>
+                    @endfor
+            </tbody>
+        </table>
 
 
 
@@ -301,7 +304,16 @@
             </tr>
             @endif
             <tr>
-                <td colspan="4" class="right-align" style="text-transform:uppercase">Note :- PF, ESI & GST are applicable as per govt. norms.</td>
+                <td colspan="4" class="right-align" style="text-transform:uppercase">
+                    <strong>Note:</strong>
+                    @if(count($notes))
+                    @foreach($notes as $note)
+                    <span>{{ $note }}</span>@if(!$loop->last), @endif
+                    @endforeach
+                    @else
+                    <span>None</span>
+                    @endif
+                </td>
                 <td colspan="2" class="right-align"><strong>Grand Total:</strong></td>
                 <td colspan="2" class="right-align"><strong>{{ number_format($grandTotal, 2) }}</strong></td>
             </tr>
@@ -314,29 +326,29 @@
 
         <div class="footer">
             <table class="footer-table">
-    <tr>
-        <td class="footer-notes">
-            The payment should be made in favour of<br>
-            <strong> Aastha Foundation</strong><br>
-            <strong>A/c. No. : 50100803489211, IFSC: HDFC0007560</strong><br>
-            HDFC Bank Ltd., Rajeev Gandhi Nagar, Kota,<br>
-            If payment is delayed, Interest@2% P.M. shall be charged.
-            <br>
-            * Govt. taxes as applicable<br>
-            * All Subject to Kota Jurisdiction only.
-        </td>
+                <tr>
+                    <td class="footer-notes">
+                        The payment should be made in favour of<br>
+                        <strong> Aastha Foundation</strong><br>
+                        <strong>A/c. No. : 50100803489211, IFSC: HDFC0007560</strong><br>
+                        HDFC Bank Ltd., Rajeev Gandhi Nagar, Kota,<br>
+                        If payment is delayed, Interest@2% P.M. shall be charged.
+                        <br>
+                        * Govt. taxes as applicable<br>
+                        * All Subject to Kota Jurisdiction only.
+                    </td>
 
-        <td class="footer-qr" style="text-align: center;">
-            <img src="https://www.maplbharat.com/front-assets/img/astha-qr.jpg" alt="QR Code" style="width: 100px; height: 100px; object-fit: contain;">
-        </td>
+                    <td class="footer-qr" style="text-align: center;">
+                        <img src="https://www.maplbharat.com/front-assets/img/astha-qr.jpg" alt="QR Code" style="width: 100px; height: 100px; object-fit: contain;">
+                    </td>
 
-        <td class="footer-sign">
-            For Aastha Foundation<br>
-            <img class="sign" src="https://www.maplbharat.com/front-assets/img/astha-sign.png" alt=""><br>
-            <strong>Authorised Signature</strong>
-        </td>
-    </tr>
-</table>
+                    <td class="footer-sign">
+                        For Aastha Foundation<br>
+                        <img class="sign" src="https://www.maplbharat.com/front-assets/img/astha-sign.png" alt=""><br>
+                        <strong>Authorised Signature</strong>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </body>

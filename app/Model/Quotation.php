@@ -22,7 +22,8 @@ class Quotation extends Model
         'deduction',
         'total_amount',
         'address',
-        'quotation_no'
+        'quotation_no',
+        'note',
     ];
 
     protected $casts = [

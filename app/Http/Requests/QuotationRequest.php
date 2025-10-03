@@ -37,6 +37,8 @@ class QuotationRequest extends FormRequest
             'items.*.working_hour'  => 'required',
             'items.*.qty'           => 'required',
             'items.*.rate'          => 'required',
+            'note'                  => 'nullable|array',
+            'note.*'                => 'string',
         ];
     }
 }

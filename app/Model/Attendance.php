@@ -23,6 +23,9 @@ class Attendance extends Model
         'month',
         'year',
         'days_worked',
+        'advance',
+        'dress_deduction',
+        'other_deduction',
         'created_at',
         'updated_at',
         'status'

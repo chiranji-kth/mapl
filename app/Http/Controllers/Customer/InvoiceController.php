@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InvoiceRequest;
 use App\Model\Invoice;
+use App\Model\Branch;
+use App\Model\Job;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -29,7 +31,9 @@ class InvoiceController extends Controller
     {
 
         $companys = Company::orderBy('company_id', 'DESC')->get();
-        return view('admin.invoice.form', ['companys' => $companys]);
+        $branches = Branch::orderBy('branch_name')->get();
+        $jobs = Job::where('status', true)->get();
+        return view('admin.invoice.form', ['companys' => $companys, 'branches' => $branches, 'jobs' => $jobs]);
     }
 
     public function store(InvoiceRequest $request)
@@ -50,14 +54,14 @@ class InvoiceController extends Controller
                     $input['pincode'] = '';
                 }
             }
-            
+
             $invoiceno = Invoice::select('invoice_id')
-                            ->where('branch_id', $request->branch_id)
-                            ->orderBy('id', 'desc')
-                            ->first();
-            
-          $input['invoice_id'] = $invoiceno->invoice_id + 1;
-            
+                ->where('branch_id', $request->branch_id)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            $input['invoice_id'] = $invoiceno->invoice_id + 1;
+            $input['note'] = $request->has('note') ? implode(', ', $request->note) : null;
             // Create invoice
             $invoice = Invoice::create($input);
 
@@ -122,78 +126,78 @@ class InvoiceController extends Controller
 
     public function update(Request $request, $id)
     {
-        
-    DB::beginTransaction();
 
-    try {
-        $invoice = Invoice::findOrFail($id);
-        $input = $request->except('items');
-        $input['updated_by'] = Auth::user()->user_id;
+        DB::beginTransaction();
 
-        // Fill company details from DB
-        if ($request->company_id !== 'other' && !empty($request->company_id)) {
-            $company = Company::find($request->company_id);
-            if ($company) {
-                $input['gst_no'] = $company->gst;
-                $input['name'] = $company->company_name;
-                $input['email'] = $company->email;
-                $input['contact'] = $company->phone;
-                $input['address'] = $company->address;
-                $input['pincode'] = '';
-            }
-        }
+        try {
+            $invoice = Invoice::findOrFail($id);
+            $input = $request->except('items');
+            $input['updated_by'] = Auth::user()->user_id;
 
-        $invoice->update($input);
-
-        $existingDetailIds = $invoice->details()->pluck('id')->toArray();
-        $submittedDetailIds = [];
-        $totalAmount = 0;
-
-        foreach ($request->items as $item) {
-            $itemTotal = $item['payout'];
-            $detailData = [
-                'invoice_id'    => $invoice->id,
-                'particluar'    => $item['particluar'],
-                'gender'        => $item['gender'],
-                'working_hour'  => $item['working_hour'],
-                'days'          => $item['days'],
-                'month'         => $item['month'] ?? null,
-                'year'          => $item['year'] ?? null,
-                'qty'           => $item['qty'],
-                'rate'          => $item['rate'],
-                'payout'        => $item['payout'],
-                'total'         => $itemTotal,
-            ];
-
-            if (!empty($item['id'])) {
-                $detail = $invoice->details()->where('id', $item['id'])->first();
-                if ($detail) {
-                    $detail->update($detailData);
-                    $submittedDetailIds[] = $detail->id;
+            // Fill company details from DB
+            if ($request->company_id !== 'other' && !empty($request->company_id)) {
+                $company = Company::find($request->company_id);
+                if ($company) {
+                    $input['gst_no'] = $company->gst;
+                    $input['name'] = $company->company_name;
+                    $input['email'] = $company->email;
+                    $input['contact'] = $company->phone;
+                    $input['address'] = $company->address;
+                    $input['pincode'] = '';
                 }
-            } else {
-                $newDetail = $invoice->details()->create($detailData);
-                $submittedDetailIds[] = $newDetail->id;
             }
 
-            $totalAmount += $itemTotal;
+            $invoice->update($input);
+
+            $existingDetailIds = $invoice->details()->pluck('id')->toArray();
+            $submittedDetailIds = [];
+            $totalAmount = 0;
+
+            foreach ($request->items as $item) {
+                $itemTotal = $item['payout'];
+                $detailData = [
+                    'invoice_id'    => $invoice->id,
+                    'particluar'    => $item['particluar'],
+                    'gender'        => $item['gender'],
+                    'working_hour'  => $item['working_hour'],
+                    'days'          => $item['days'],
+                    'month'         => $item['month'] ?? null,
+                    'year'          => $item['year'] ?? null,
+                    'qty'           => $item['qty'],
+                    'rate'          => $item['rate'],
+                    'payout'        => $item['payout'],
+                    'total'         => $itemTotal,
+                ];
+
+                if (!empty($item['id'])) {
+                    $detail = $invoice->details()->where('id', $item['id'])->first();
+                    if ($detail) {
+                        $detail->update($detailData);
+                        $submittedDetailIds[] = $detail->id;
+                    }
+                } else {
+                    $newDetail = $invoice->details()->create($detailData);
+                    $submittedDetailIds[] = $newDetail->id;
+                }
+
+                $totalAmount += $itemTotal;
+            }
+
+
+            $idsToDelete = array_diff($existingDetailIds, $submittedDetailIds);
+            $invoice->details()->whereIn('id', $idsToDelete)->delete();
+
+            $invoice->update(['total_amount' => $totalAmount]);
+
+            DB::commit();
+            return ajaxResponse(200, 'Invoice successfully updated.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Invoice update error: ' . $e->getMessage());
+
+            return ajaxResponse(500, 'Internal server error');
         }
-
-        
-        $idsToDelete = array_diff($existingDetailIds, $submittedDetailIds);
-        $invoice->details()->whereIn('id', $idsToDelete)->delete();
-
-        $invoice->update(['total_amount' => $totalAmount]);
-
-        DB::commit();
-        return ajaxResponse(200, 'Invoice successfully updated.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Invoice update error: ' . $e->getMessage());
-
-        return ajaxResponse(500, 'Internal server error');
     }
-}
 
 
 
