@@ -14,7 +14,7 @@ Salary
         </div>
         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
 
-            <a href="{{ route('attendance.export', request()->all()) }}" class="btn btn-danger pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
+            <a href="{{ route('payroll.export', request()->all()) }}" class="btn btn-danger pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
                 <i class="fa fa-file-text-o"></i> Export Salary
             </a>
             <!--	<a href="{{route('generateSalarySheet.bulk')}}"-->

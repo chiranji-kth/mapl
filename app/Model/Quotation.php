@@ -24,6 +24,7 @@ class Quotation extends Model
         'address',
         'quotation_no',
         'note',
+        'status',
     ];
 
     protected $casts = [

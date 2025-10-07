@@ -91,8 +91,6 @@ class AssignJobController extends Controller
 
             'emp_id'         => $request->emp_id,
             'company_id'     => $request->company_id,
-            'gender'         => $request->gender,
-            'job_role'       => $request->job_role,
             'shift'          => $request->shift,
             'shift_timing'   => $request->shift_timing,
             'salary'         => $request->salary,
@@ -140,8 +138,6 @@ class AssignJobController extends Controller
 
             'emp_id'         => $request->emp_id,
             'company_id'     => $request->company_id,
-            'gender'         => $request->gender,
-            'job_role'       => $request->job_role,
             'shift'          => $request->shift,
             'shift_timing'   => $request->shift_timing,
             'salary'         => $request->salary,
@@ -214,5 +210,24 @@ class AssignJobController extends Controller
             Log::error($e->getMessage());
             return ajaxResponse(500, 'Internal Server Error');
         }
+    }
+
+    public function getEmployeeDetails($id)
+    {
+        $employee = \App\Model\Employees::with('job')
+            ->select('emp_id', 'gender', 'post_applied')
+            ->find($id);
+
+        if (!$employee) {
+            return response()->json(['success' => false, 'message' => 'Employee not found']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'gender' => $employee->gender,
+                'job_role' => $employee->post_applied ? $employee->job->post : null
+            ]
+        ]);
     }
 }

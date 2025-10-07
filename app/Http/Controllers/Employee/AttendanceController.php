@@ -74,6 +74,7 @@ class AttendanceController extends Controller
 
 
 
+
     public function create()
     {
         $companyList    = $this->commonRepository->companyList();
@@ -149,23 +150,24 @@ class AttendanceController extends Controller
         }
 
         try {
-            $jobs = AssignJob::with(['employee' => function ($q) {
-                $q->active();
-            }, 'job'])
+            $jobs = AssignJob::with(['employee'])
                 ->where('company_id', $request->company_id)
                 ->where('status', 1)
                 ->get();
 
+            // echo "<pre>";
+            // print_r($jobs->employee->toArray());
+            // exit;
+
             $employees = $jobs->map(function ($job) {
                 if (!$job->employee) return null;
-
                 return [
                     'emp_id'       => $job->employee->emp_id,
                     'employee_id'  => $job->employee->employee_id,
                     'name'         => $job->employee->name,
                     'gender'       => $job->employee->gender,
                     'shift_timing' => $job->shift_timing,
-                    'post'         => '',
+                    'post'         => $job->employee->job->post,
                     'job_id'      => $job->job_id,
                 ];
             })->filter()->values();

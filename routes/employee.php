@@ -110,6 +110,7 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::get('/{jobID}/edit', ['as' => 'assignJob.edit', 'uses' => 'Employee\AssignJobController@edit']);
         Route::put('/{jobID}', ['as' => 'assignJob.update', 'uses' => 'Employee\AssignJobController@update']);
         Route::delete('/{jobID}/delete', ['as' => 'assignJob.delete', 'uses' => 'Employee\AssignJobController@destroy']);
+        Route::get('/get-employee-details/{id}', ['as' => 'assignJob.getEmployeeDetails', 'uses' => 'Employee\AssignJobController@getEmployeeDetails']);
     });
     Route::group(['prefix' => 'attendance'], function () {
         Route::get('/', ['as' => 'attendance.index', 'uses' => 'Employee\AttendanceController@index']);
@@ -124,5 +125,6 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::get('/calculateEmployeeSalary', ['as' => 'payroll.calculateEmployeeSalary', 'uses' => 'Employee\PayrollController@calculateEmployeeSalary']);
         Route::get('/salarys', ['as' => 'payroll.salarys', 'uses' => 'Employee\PayrollController@salary']);
         Route::post('/salarys', ['as' => 'payroll.salarys', 'uses' => 'Employee\PayrollController@salary']);
+        Route::get('/export', ['as' => 'payroll.export', 'uses' => 'Employee\PayrollController@exportSalaryCsv']);
     });
 });

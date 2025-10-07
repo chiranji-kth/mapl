@@ -1,17 +1,8 @@
 <div class="table-responsive">
-	@forelse($grouped as $companyName => $months)
-
-	@foreach($months as $monthYear => $records)
-	@php
-	[$month, $year] = explode('-', $monthYear);
-	$dateObj = DateTime::createFromFormat('!m', $month);
-	@endphp
-
 	<table class="table table-hover manage-u-table" id="example">
 		<thead>
 			<tr class="tr_header">
 				<th>@lang('common.serial')</th>
-				<th>Company</th>
 				<th>Month</th>
 				<th>EMP ID</th>
 				<th>Name</th>
@@ -22,16 +13,13 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach($records as $index => $value)
+			@php $serial = 1; @endphp
+			@forelse($grouped as $companyName => $months)
+			@foreach($months as $monthYear => $records)
+			@foreach($records as $value)
 			<tr>
-				<td>{{ $index + 1 }}</td>
-				<td>{{ $value->company->company_name ?? '-' }}</td>
-				<td>
-					@php
-					$dateObj = DateTime::createFromFormat('!m', $value->month);
-					echo $dateObj->format('F') . ', ' . $value->year;
-					@endphp
-				</td>
+				<td>{{ $serial++ }}</td>
+				<td>{{ \Carbon\Carbon::createFromDate($value->year, $value->month)->format('F, Y') }}</td>
 				<td>{{ $value->employee->employee_id ?? '-' }}</td>
 				<td>{{ $value->employee->name ?? '-' }}</td>
 				<td>{{ $value->employee->gender ?? '-' }}</td>
@@ -40,12 +28,14 @@
 				<td>{{ $value->days_worked }}</td>
 			</tr>
 			@endforeach
+			@endforeach
+			@empty
+			<tr>
+				<td colspan="8" class="text-center">
+					@lang('common.no_data_available') !
+				</td>
+			</tr>
+			@endforelse
 		</tbody>
 	</table>
-	@endforeach
-	@empty
-	<div class="alert alert-warning text-center">
-		@lang('common.no_data_available') !
-	</div>
-	@endforelse
 </div>

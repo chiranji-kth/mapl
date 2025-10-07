@@ -37,6 +37,7 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::put('/{company}', ['as' => 'quotation.update', 'uses' => 'Customer\QuotationController@update']);
         Route::delete('/{company}/delete', ['as' => 'quotation.delete', 'uses' => 'Customer\QuotationController@destroy']);
         Route::get('quotation/export/{id}', ['as' => 'quotation.export', 'uses' => 'Customer\QuotationController@export']);
+        Route::post('/changestatus', ['as' => 'quotation.changestatus', 'uses' => 'Customer\QuotationController@changestatus']);
     });
 
     Route::group(['prefix' => 'invoice'], function () {
@@ -49,5 +50,7 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::put('/{company}', ['as' => 'invoice.update', 'uses' => 'Customer\InvoiceController@update']);
         Route::delete('/{company}/delete', ['as' => 'invoice.delete', 'uses' => 'Customer\InvoiceController@destroy']);
         Route::get('invoice/export/{id}', ['as' => 'invoice.export', 'uses' => 'Customer\InvoiceController@export']);
+        Route::get('/get-companies/{branch_id}', ['as' => 'invoice.getCompanies', 'uses' => 'Customer\InvoiceController@getCompanies']);
+        Route::get('/get-assign-jobs', ['as' => 'invoice.getAssignJobs', 'uses' => 'Customer\InvoiceController@getAssignJobs']);
     });
 });

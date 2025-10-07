@@ -92,7 +92,15 @@
             </tr>
         </thead>
         <tbody>
+            @php
+            $subtotal = 0;
+            @endphp
+
             @foreach($quotation->details as $index => $item)
+            @php
+            $lineTotal = $item->rate * $item->qty;
+            $subtotal += $lineTotal;
+            @endphp
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $item->particluar }}</td>
@@ -106,8 +114,6 @@
         </tbody>
         @php
         $deductions = is_array($quotation->deduction) ? $quotation->deduction : json_decode($quotation->deduction ?? '[]');
-
-        $subtotal = $quotation->total_amount;
 
         $pf = in_array('PF', $deductions) ? $subtotal * 0.13 : 0;
         $esi = in_array('ESI', $deductions) ? $subtotal * 0.0325 : 0;

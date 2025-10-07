@@ -43,7 +43,7 @@ Edit Assign Job
                                     <div class="form-group">
                                         <label for="exampleInput">Employee<span
                                                 class="validateRq">*</span></label>
-                                        <select name="emp_id" class="form-control required select2">
+                                        <select name="emp_id" class="form-control employeeId required select2">
                                             <option value="">--- select employee ---</option>
                                             @foreach ($employeeList as $value)
                                             <option value="{{ $value->emp_id }}"
@@ -69,29 +69,21 @@ Edit Assign Job
                                         </select>
                                     </div>
                                 </div>
+                                <!-- Gender (readonly) -->
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="exampleInput">@lang('employee.gender')<span
-                                                class="validateRq">*</span></label>
-                                        <select name="gender" class="form-control gender select2">
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            <option value="male" @if ('male'==$editModeData->gender) {{ 'selected' }} @endif>
-                                                MALE</option>
-                                            <option value="female" @if ('female'==$editModeData->gender) {{ 'selected' }} @endif>
-                                                FEMALE</option>
-                                        </select>
+                                        <label>@lang('employee.gender')<span class="validateRq">*</span></label>
+                                        <input type="text" name="gender" class="form-control gender" readonly
+                                            value="{{ $editModeData->gender }}">
                                     </div>
                                 </div>
+
+                                <!-- Job Role (readonly) -->
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="exampleInput">Job Role<span
-                                                class="validateRq">*</span></label>
-                                        <select name="job_role" class="form-control job_role select2">
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            @foreach ($jobs as $job)
-                                            <option value="{{ $job->job_id }}" @if ($job->job_id == $editModeData->job_role) {{ 'selected' }} @endif>{{ $job->post }}</option>
-                                            @endforeach
-                                        </select>
+                                        <label>Job Role<span class="validateRq">*</span></label>
+                                        <input type="text" name="job_role" class="form-control job_role" readonly
+                                            value="{{ $editModeData->job_post }}">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -213,4 +205,48 @@ Edit Assign Job
     </div>
 </div>
 </div>
+@endsection
+@section('page_scripts')
+<script>
+    $(document).ready(function() {
+
+        // Function to populate gender and job_role
+        function populateEmployeeDetails(empId) {
+            if (empId) {
+                $.ajax({
+                    url: "{{ route('assignJob.getEmployeeDetails', '') }}/" + empId,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.success) {
+                            $('input[name="gender"]').val(response.data.gender);
+                            $('input[name="job_role"]').val(response.data.job_role);
+                        } else {
+                            $('input[name="gender"]').val('');
+                            $('input[name="job_role"]').val('');
+                        }
+                    },
+                    error: function() {
+                        $('input[name="gender"]').val('');
+                        $('input[name="job_role"]').val('');
+                    }
+                });
+            } else {
+                $('input[name="gender"]').val('');
+                $('input[name="job_role"]').val('');
+            }
+        }
+
+        // On page load: populate fields if an employee is already selected
+        var initialEmpId = $('.employeeId').val();
+        populateEmployeeDetails(initialEmpId);
+
+        // On change: update fields dynamically
+        $('.employeeId').on('change', function() {
+            var empId = $(this).val();
+            populateEmployeeDetails(empId);
+        });
+
+    });
+</script>
 @endsection

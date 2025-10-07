@@ -1,12 +1,4 @@
 <div class="table-responsive">
-    @forelse($grouped as $companyName => $months)
-
-    @foreach($months as $monthYear => $records)
-    @php
-    [$month, $year] = explode('-', $monthYear);
-    $dateObj = DateTime::createFromFormat('!m', $month);
-    @endphp
-
     <table class="table table-hover manage-u-table" id="example">
         <thead>
             <tr class="tr_header">
@@ -20,7 +12,6 @@
                 <th>Gender</th>
                 <th>Post</th>
                 <th>Shift Timing</th>
-
                 <th>Total Salary</th>
                 <th>Basic Salary Per Day</th>
                 <th>Working Days For Basic</th>
@@ -43,7 +34,10 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($records as $index => $value)
+            @php $serial = 1; @endphp
+            @forelse($grouped as $companyName => $months)
+            @foreach($months as $monthYear => $records)
+            @foreach($records as $value)
             @php
             $basic_work_days = $value->days_worked >= 26 ? 26 : $value->days_worked;
             $monthdays = cal_days_in_month(CAL_GREGORIAN, $value->month, $value->year);
@@ -71,19 +65,13 @@
 
             $net_salary_calc = $gross - $pf_amount_employee - $esi_amount_employee - $advance - $dress_deduction - $other_deduction;
             $ctc = $gross + $pf_amount_employer + $esi_amount_employer;
-
             @endphp
             <tr>
-                <td>{{ $index + 1 }}</td>
+                <td>{{ $serial++ }}</td>
                 <td>{{ $value->company->districts->dist_name ?? '-' }}</td>
                 <td>{{ $value->company->branch->branch_name ?? '-' }}</td>
                 <td>{{ $value->company->company_name ?? '-' }}</td>
-                <td>
-                    @php
-                    $dateObj = DateTime::createFromFormat('!m', $value->month);
-                    echo $dateObj->format('F') . ', ' . $value->year;
-                    @endphp
-                </td>
+                <td>{{ \Carbon\Carbon::createFromDate($value->year, $value->month)->format('F, Y') }}</td>
                 <td>{{ $value->employee->employee_id ?? '-' }}</td>
                 <td>{{ $value->employee->name ?? '-' }}</td>
                 <td>{{ $value->employee->gender ?? '-' }}</td>
@@ -110,12 +98,14 @@
                 <td>{{ $ctc ?? '-' }}</td>
             </tr>
             @endforeach
+            @endforeach
+            @empty
+            <tr>
+                <td colspan="29" class="text-center">
+                    @lang('common.no_data_available') !
+                </td>
+            </tr>
+            @endforelse
         </tbody>
     </table>
-    @endforeach
-    @empty
-    <div class="alert alert-warning text-center">
-        @lang('common.no_data_available') !
-    </div>
-    @endforelse
 </div>

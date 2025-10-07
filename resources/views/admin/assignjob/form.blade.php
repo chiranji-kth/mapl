@@ -52,31 +52,22 @@
                                         {{ Form::select('emp_id', $employeeList, Input::old('emp_id'), ['class' => 'form-control employeeId required']) }}
                                     </div>
                                 </div>
+                                {{-- Gender (readonly) --}}
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="exampleInput">@lang('employee.gender')<span
-                                                class="validateRq">*</span></label>
-                                        <select name="gender" class="form-control">
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            <option value="male">
-                                                MALE</option>
-                                            <option value="female">
-                                                FEMALE</option>
-                                        </select>
+                                        <label>@lang('employee.gender')<span class="validateRq">*</span></label>
+                                        <input type="text" name="gender" class="form-control" readonly placeholder="Gender">
                                     </div>
                                 </div>
+
+                                {{-- Job Role (readonly) --}}
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="exampleInput">Job Role<span
-                                                class="validateRq">*</span></label>
-                                        <select name="job_role" class="form-control">
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            @foreach ($jobs as $job)
-                                            <option value="{{ $job->job_id }}">{{ $job->post }}</option>
-                                            @endforeach
-                                        </select>
+                                        <label>Job Role<span class="validateRq">*</span></label>
+                                        <input type="text" name="job_role" class="form-control" readonly placeholder="Job Role">
                                     </div>
                                 </div>
+
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">Shift<span
@@ -211,4 +202,39 @@
         </div>
     </div>
 </div>
+@endsection
+@section('page_scripts')
+<script>
+    $(document).ready(function() {
+        $('.employeeId').on('change', function() {
+            var empId = $(this).val();
+
+            if (empId) {
+                $.ajax({
+                    url: "{{ route('assignJob.getEmployeeDetails', '') }}/" + empId,
+
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.success) {
+                            // Set readonly input values
+                            $('input[name="gender"]').val(response.data.gender);
+                            $('input[name="job_role"]').val(response.data.job_role);
+                        } else {
+                            $('input[name="gender"]').val('');
+                            $('input[name="job_role"]').val('');
+                        }
+                    },
+                    error: function() {
+                        $('input[name="gender"]').val('');
+                        $('input[name="job_role"]').val('');
+                    }
+                });
+            } else {
+                $('input[name="gender"]').val('');
+                $('input[name="job_role"]').val('');
+            }
+        });
+    });
+</script>
 @endsection

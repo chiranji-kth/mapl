@@ -7,6 +7,7 @@ use App\Http\Requests\InvoiceRequest;
 use App\Model\Invoice;
 use App\Model\Branch;
 use App\Model\Job;
+use App\Model\AssignJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -234,5 +235,57 @@ class InvoiceController extends Controller
                 ->setPaper('A4', 'portrait');
         }
         return $pdf->download('invoice_' . $invoice->id . '.pdf');
+    }
+
+    public function getCompanies($branch_id)
+    {
+        $companies = Company::where('branch_id', $branch_id)
+            ->select('company_id', 'company_name')
+            ->orderBy('company_name')
+            ->get();
+
+        return response()->json($companies);
+    }
+
+    public function getAssignJobs(Request $request)
+    {
+        $companyId = $request->company_id;
+        $month = $request->month;
+        $year = $request->year;
+
+        if (!$companyId || !$month || !$year) {
+            return response()->json([]);
+        }
+
+        $assignJobs = AssignJob::join('employees', 'employees.emp_id', '=', 'assignjob.emp_id')
+            ->join('job', 'job.job_id', '=', 'employees.post_applied')
+            ->leftJoin('attendance', function ($join) use ($month, $year) {
+                $join->on('attendance.emp_id', '=', 'employees.emp_id')
+                    ->where('attendance.month', $month)
+                    ->where('attendance.year', $year);
+            })
+            ->leftJoin('quotation', function ($join) use ($companyId) {
+                $join->on('quotation.company_id', '=', 'assignjob.company_id');
+            })
+            ->leftJoin('quotation_detail', function ($join) {
+                $join->on('quotation_detail.quotation_id', '=', 'quotation.id')
+                    ->whereColumn('quotation_detail.particluar', 'employees.post_applied')
+                    ->whereColumn('quotation_detail.working_hour', 'assignjob.shift_timing');
+            })
+            ->where('assignjob.company_id', $companyId)
+            ->where('quotation.status', true)
+            ->select(
+                'job.post',
+                'employees.post_applied',
+                'employees.gender',
+                'assignjob.shift_timing',
+                DB::raw('COUNT(assignjob.job_id) as total_assign_jobs'),
+                DB::raw('SUM(COALESCE(attendance.days_worked, 0)) as total_attendance_days'),
+                'quotation_detail.rate'
+            )
+            ->groupBy('employees.post_applied', 'employees.gender', 'assignjob.shift_timing', 'job.post', 'quotation_detail.rate')
+            ->get();
+
+        return response()->json($assignJobs);
     }
 }

@@ -36,6 +36,8 @@ class InvoiceRequest extends FormRequest
             'gst_no'                => 'nullable|string',
             'pincode'               => 'nullable|numeric',
             'address'               => 'required_if:company_id,other',
+            'month'                => 'nullable|string',
+            'year'                => 'nullable|string',
 
             'items'                 => 'required|array|min:1',
             'items.*.particluar'    => 'required|string',

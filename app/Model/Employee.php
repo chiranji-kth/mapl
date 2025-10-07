@@ -11,9 +11,34 @@ class Employee extends Model
     protected $table      = 'employee';
     protected $primaryKey = 'employee_id';
     protected $fillable   = [
-        'employee_id', 'user_id', 'finger_id', 'department_id', 'designation_id', 'branch_id', 'supervisor_id', 'work_shift_id', 'email', 'first_name',
-        'last_name', 'date_of_birth', 'date_of_joining', 'date_of_leaving', 'gender', 'marital_status',
-        'photo', 'kyc_doc', 'kyc_file', 'address', 'emergency_contacts', 'phone', 'status', 'created_by', 'updated_by', 'religion', 'pay_grade_id', 'hourly_salaries_id',
+        'employee_id',
+        'user_id',
+        'finger_id',
+        'department_id',
+        'designation_id',
+        'branch_id',
+        'supervisor_id',
+        'work_shift_id',
+        'email',
+        'first_name',
+        'last_name',
+        'date_of_birth',
+        'date_of_joining',
+        'date_of_leaving',
+        'gender',
+        'marital_status',
+        'photo',
+        'kyc_doc',
+        'kyc_file',
+        'address',
+        'emergency_contacts',
+        'phone',
+        'status',
+        'created_by',
+        'updated_by',
+        'religion',
+        'pay_grade_id',
+        'hourly_salaries_id',
     ];
 
     public function userName()
@@ -55,6 +80,11 @@ class Employee extends Model
         return $this->belongsTo(Employee::class, 'supervisor_id');
     }
 
+    public function job()
+    {
+        return $this->belongsTo(Job::class, 'post_applied', 'job_id');
+    }
+
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id')->withDefault([
@@ -67,5 +97,4 @@ class Employee extends Model
     {
         return $this->belongsTo(HourlySalary::class, 'hourly_salaries_id');
     }
-
 }

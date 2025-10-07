@@ -27,8 +27,8 @@
                         {{ Form::open(['route' => 'invoice.store', 'enctype' => 'multipart/form-data', 'class' => 'ajaxFormSubmit', 'id' => 'customerForm', 'data-redirect' => route('invoice.index')]) }}
                         <div class="form-body">
                             <div class="row">
-                                <div class="col-md-4">
-                                    <label for="exampleInput">Select Branch<span class="validateRq">*</span></label>
+                                <div class="col-md-3">
+                                    <label for="exampleInput">Branch<span class="validateRq">*</span></label>
                                     <div class="input-group col-md-12">
                                         <select input class="form-control required branch" required name="branch_id" id="branch_id">
                                             <option value="">Select Branch</option>
@@ -37,23 +37,24 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="exampleInput">Party Name<span class="validateRq">*</span></label>
+                                <div class="col-md-3">
+                                    <label for="exampleInput">Company Name<span class="validateRq">*</span></label>
                                     <div class="input-group col-md-12">
                                         <select class="form-control required" name="company_id" id="company_id" required>
                                             <option value="">-- Select Company --</option>
-                                            @foreach($companys as $company)
-                                            <option value="{{ $company->company_id }}">
-                                                {{ $company->company_name }}
-                                            </option>
-                                            @endforeach
-                                            <option value="other">
-                                                Other
-                                            </option>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+                                    <label>Month <span class="validateRq">*</span></label>
+                                    <input type="text" name="month" id="month" class="form-control monthFieldOnly" placeholder="MM">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label>Year <span class="validateRq">*</span></label>
+                                    <input type="text" name="year" id="year" class="form-control yearField" placeholder="YYYY">
+                                </div>
+                                <div class="col-md-3">
                                     <label for="phone">Date<span class="validateRq">*</span></label>
                                     <div class="input-group col-md-12">
                                         <input class="form-control" id="date"
@@ -209,7 +210,7 @@
                                             <input type="number" name="items[0][working_hour]" class="form-control" placeholder="Working Hour" min="1" required />
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-2">
                                         <label class="text-muted">Days <span>*</span></label> <br>
                                         <div class="form-group">
@@ -264,6 +265,41 @@
 
     @section('page_scripts')
     <script>
+        $('#branch_id').on('change', function() {
+            const branchId = $(this).val();
+            const companySelect = $('#company_id');
+
+            // Clear existing options
+            companySelect.html('<option value="">-- Select Company --</option>');
+
+            if (branchId) {
+                $.ajax({
+                    url: "{{ url('invoice/get-companies') }}/" + branchId,
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.length > 0) {
+                            $.each(data, function(index, company) {
+                                companySelect.append('<option value="' + company.company_id + '">' + company.company_name + '</option>');
+                            });
+                        } else {
+                            companySelect.append('<option value="">No companies found</option>');
+                        }
+
+                        // Always add the "Other" option
+                        companySelect.append('<option value="other">Other</option>');
+                    },
+                    error: function() {
+                        alert('Error loading companies. Please try again.');
+                    }
+                });
+            } else {
+                // If no branch selected, reset company list
+                companySelect.html('<option value="">-- Select Company --</option><option value="other">Other</option>');
+            }
+        });
+
+
+
         $('#company_id').on('change', function() {
             if ($(this).val() === 'other') {
                 $('#otherCompanyFields').slideDown();
@@ -277,7 +313,7 @@
         function getDaysInMonth(month, year) {
             return new Date(year, month, 0).getDate();
         }
-        
+
         // Function to calculate payout
         function calculatePayout(row) {
             const days = parseFloat(row.find('input[name*="[days]"]').val()) || 0;
@@ -285,14 +321,14 @@
             const qty = parseFloat(row.find('input[name*="[qty]"]').val()) || 1;
             const month = parseInt(row.find('input[name*="[month]"]').val()) || 0;
             const year = parseInt(row.find('input[name*="[year]"]').val()) || new Date().getFullYear();
-            
+
             if (month > 0 && month <= 12) {
                 // Get actual days in the selected month
                 const daysInMonth = getDaysInMonth(month, year);
-                
+
                 // Calculate payout: (days * rate * qty) / actual_days_in_month
                 const payout = (days * rate * qty) / daysInMonth;
-                
+
                 // Update payout field
                 row.find('input[name*="[payout]"]').val(payout.toFixed(2));
             } else {
@@ -300,21 +336,21 @@
                 row.find('input[name*="[payout]"]').val('');
             }
         }
-        
+
         // Prevent negative values in number fields
         $(document).on('input', 'input[type="number"]', function() {
             if (this.value < 0) {
                 this.value = '';
             }
         });
-        
+
         // Add event listeners for payout calculation on existing row
         $(document).on('input', 'input[name*="[days]"], input[name*="[rate]"], input[name*="[qty]"], input[name*="[month]"], input[name*="[year]"]', function() {
             const row = $(this).closest('.dynamic-row');
             calculatePayout(row);
         });
 
-        
+
         let rowCount = 1;
 
         $('#add-row').click(function() {
@@ -403,10 +439,88 @@
             $('#dynamic-rows-wrapper').append(newRow);
             rowCount++;
         });
-        
+
         // Remove row
         $(document).on('click', '.remove-row', function() {
             $(this).closest('.dynamic-row').remove();
         });
+    </script>
+
+    <script>
+        function loadAssignJobs() {
+            const companyId = $('#company_id').val();
+            const month = $('#month').val();
+            const year = $('#year').val();
+
+            if (companyId && month && year && companyId !== 'other') {
+                $.ajax({
+                    url: "{{ url('invoice/get-assign-jobs') }}",
+                    data: {
+                        company_id: companyId,
+                        month: month,
+                        year: year
+                    },
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.length > 0) {
+                            // Clear existing dynamic rows
+                            $('#dynamic-rows-wrapper').html('');
+
+                            // Populate rows from assign jobs
+                            data.forEach(function(job, index) {
+                                let row = `
+                        <div class="row dynamic-row mt-2" style="margin-bottom: 20px;">
+                            <div class="col-md-3">
+                                <label>Particular</label>
+                                <input type="text" name="items[${index}][particluar]" class="form-control" value="${job.post}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Gender</label>
+                                <input type="text" name="items[${index}][gender]" class="form-control" value="${job.gender}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Month</label>
+                                <input type="number" name="items[${index}][month]" class="form-control" value="${month}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Year</label>
+                                <input type="number" name="items[${index}][year]" class="form-control" value="${year}" readonly>
+                            </div>
+                            <div class="col-md-2">
+                                <label>Working Hour</label>                                    
+                                <input type="number" name="items[${index}][working_hour]" class="form-control" value="${job.shift_timing}" min="1" readonly />
+                            </div>
+                            <div class="col-md-3">
+                                <label>Days</label>
+                                <input type="number" name="items[${index}][days]" class="form-control" value="${job.total_attendance_days}" readonly>
+                            </div>
+                            <div class="col-md-2">
+                                <label>QTY</label>
+                                <input type="number" name="items[${index}][qty]" class="form-control" value="${job.total_assign_jobs}" readonly>
+                            </div>
+                            <div class="col-md-2">
+                                <label>Rate</label>
+                                <input type="number" name="items[${index}][rate]" class="form-control" value="${job.rate}">
+                            </div>
+                            <div class="col-md-2">
+                                <label>Payout</label>
+                                <input type="text" name="items[${index}][payout]" class="form-control" readonly>
+                            </div>
+                        </div><hr>`;
+                                $('#dynamic-rows-wrapper').append(row);
+
+                                // Calculate initial payout
+                                calculatePayout($('.dynamic-row').last());
+                            });
+                        } else {
+                            $('#dynamic-rows-wrapper').html('<p>No assigned jobs found for selected company/month/year.</p>');
+                        }
+                    }
+                });
+            }
+        }
+
+        // Trigger AJAX when company, month, or year changes
+        $('#company_id, #month, #year').on('change', loadAssignJobs);
     </script>
     @endsection

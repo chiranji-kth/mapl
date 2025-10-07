@@ -684,4 +684,133 @@ class PayrollController extends Controller
         }])->where('status', 1)->where('employee_id', session('logged_session_data.employee_id'))->orderBy('salary_details_id', 'DESC')->get();
         return view('admin.payroll.report.myPayroll', ['results' => $results]);
     }
+
+    public function exportSalaryCsv(Request $request)
+    {
+        $results = Attendance::with(['employee', 'company', 'assignJob'])
+            ->orderBy('company_id')
+            ->orderBy('year')
+            ->orderBy('month');
+
+        // Apply filters
+        if ($request->company_id) $results->where('company_id', $request->company_id);
+        if ($request->monthField) $results->where('month', $request->monthField);
+        if ($request->yearField) $results->where('year', $request->yearField);
+
+        $results = $results->get();
+
+        $filename = 'salary_report.csv';
+
+        $callback = function () use ($results) {
+            $handle = fopen('php://output', 'w');
+
+            // CSV Header
+            fputcsv($handle, [
+                'Serial',
+                'District',
+                'Branch',
+                'Company',
+                'Month',
+                'EMP ID',
+                'Name',
+                'Gender',
+                'Post',
+                'Shift Timing',
+                'Total Salary',
+                'Basic Salary Per Day',
+                'Working Days For Basic',
+                'Basic Salary',
+                'Per Day Salary',
+                'Month Days',
+                'Total Duties',
+                'OT Days',
+                'OT Salary',
+                'Allowance',
+                'Gross',
+                'PF, ESI',
+                'Employee PF/ESI',
+                'Employer PF/ESI',
+                'Advance',
+                'Dress Deduction',
+                'Other Deduction',
+                'Net Payable',
+                'CTC'
+            ]);
+
+            $serial = 1;
+
+            foreach ($results as $value) {
+                $basic_work_days = $value->days_worked >= 26 ? 26 : $value->days_worked;
+                $monthdays = cal_days_in_month(CAL_GREGORIAN, $value->month, $value->year);
+                $perday_salary = round($value->assignJob->salary / $monthdays, 2);
+                $otdays = $value->days_worked > 26 ? $value->days_worked - 26 : 0;
+                $ot_salary = round($perday_salary * 2 * $otdays, 2);
+                $allowance = (($perday_salary - $value->assignJob->perday_wages) * $basic_work_days);
+                $gross = ($value->assignJob->perday_wages * $basic_work_days) + $allowance;
+
+                $deductions = $value->assignJob && $value->assignJob->deduction
+                    ? array_map('trim', explode(',', $value->assignJob->deduction))
+                    : [];
+
+                $pf_applicable = in_array('PF', $deductions) ? 'YES' : 'NO';
+                $esi_applicable = in_array('ESI', $deductions) ? 'YES' : 'NO';
+
+                $pf_amount_employee = $pf_applicable === 'YES' ? round(0.12 * $gross, 2) : 0;
+                $esi_amount_employee = $esi_applicable === 'YES' ? round(0.0175 * $gross, 2) : 0;
+                $pf_amount_employer = $pf_applicable === 'YES' ? round(0.12 * $gross, 2) : 0;
+                $esi_amount_employer = $esi_applicable === 'YES' ? round(0.0475 * $gross, 2) : 0;
+
+                $advance = is_numeric($value->advance) ? $value->advance : 0;
+                $dress_deduction = is_numeric($value->dress_deduction) ? $value->dress_deduction : 0;
+                $other_deduction = is_numeric($value->other_deduction) ? $value->other_deduction : 0;
+
+                $net_salary_calc = $gross - $pf_amount_employee - $esi_amount_employee - $advance - $dress_deduction - $other_deduction;
+                $ctc = $gross + $pf_amount_employer + $esi_amount_employer;
+
+                fputcsv($handle, [
+                    $serial++,
+                    $value->company->districts->dist_name ?? '-',
+                    $value->company->branch->branch_name ?? '-',
+                    $value->company->company_name ?? '-',
+                    \Carbon\Carbon::createFromDate($value->year, $value->month)->format('F, Y'),
+                    $value->employee->employee_id ?? '-',
+                    $value->employee->name ?? '-',
+                    $value->employee->gender ?? '-',
+                    $value->assignJob->job->post ?? '-',
+                    $value->assignJob->shift_timing ?? '-',
+                    $value->assignJob->salary,
+                    $value->assignJob->perday_wages,
+                    $value->assignJob->perday_wages * $basic_work_days,
+                    $basic_work_days,
+                    $perday_salary,
+                    $monthdays,
+                    $value->days_worked,
+                    $otdays,
+                    $ot_salary,
+                    $allowance,
+                    $gross,
+                    $pf_applicable . ', ' . $esi_applicable,
+                    $pf_amount_employee . '/' . $esi_amount_employee,
+                    $pf_amount_employer . '/' . $esi_amount_employer,
+                    $advance,
+                    $dress_deduction,
+                    $other_deduction,
+                    $net_salary_calc,
+                    $ctc
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        $headers = [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename={$filename}",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

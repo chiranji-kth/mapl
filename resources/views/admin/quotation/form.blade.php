@@ -39,7 +39,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="exampleInput">Party Name<span class="validateRq">*</span></label>
+                                    <label for="exampleInput">Company Name<span class="validateRq">*</span></label>
                                     <div class="input-group col-md-12">
                                         <input class="form-control required name" required id="name"
                                             placeholder="Name" name="name" type="text"
@@ -98,7 +98,7 @@
                                             value="{{ old('address') }}">
                                     </div>
                                 </div>
-                                <!-- <div class="col-md-4">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="exampleInput">Deduction</label><br />
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="PF"> PF
@@ -107,14 +107,14 @@
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="SGST"> SGST
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="IGST"> IGST
                                     </div>
-                                </div> -->
+                                </div>
                             </div>
 
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="exampleInput">NOTE:</label><br />
                                     <input type="checkbox" name="note[]" class="form-controle" value="PF & ESI IS INCLUDED & GST IS EXTRA"> PF & ESI IS INCLUDED & GST IS EXTRA<br />
-                                    <input type="checkbox" name="note[]" class="form-controle" value="PF, ESI & GST ARE APPLICABLE AS PER GOVT. NORMS"> PF, ESI & GST ARE APPLICABLE AS PER GOVT. NORMS
+                                    <input type="checkbox" name="note[]" class="form-controle" value="PF ESI & GST ARE APPLICABLE AS PER GOVT. NORMS"> PF ESI & GST ARE APPLICABLE AS PER GOVT. NORMS
                                 </div>
                             </div>
                             <br /><br />
@@ -148,13 +148,13 @@
                                             <span class="text-danger" id="gender_err"></span>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <label class="text-muted">Working Hour <span class="validateRq">*</span></label> <br>
                                         <div class="form-group">
                                             <input type="number" name="items[0][working_hour]" class="form-control" placeholder="Working Hour" required />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <label class="text-muted">QTY <span class="validateRq">*</span></label> <br>
                                         <div class="form-group">
                                             <input type="number" name="items[0][qty]" class="form-control qty" placeholder="QTY" required />
@@ -166,21 +166,17 @@
                                             <input type="number" name="items[0][rate]" class="form-control rate" placeholder="rate" required />
                                         </div>
                                     </div>
-                                    <div class="col-md-5">
+                                    <!-- <div class="col-md-5">
                                         <label>Deductions / Taxes</label><br>
                                         <input type="checkbox" name="items[0][pf]" class="pf"> PF
                                         <input type="checkbox" name="items[0][esi]" class="esi"> ESI
                                         <input type="checkbox" name="items[0][cgst]" class="cgst"> CGST
                                         <input type="checkbox" name="items[0][sgst]" class="sgst"> SGST
                                         <input type="checkbox" name="items[0][igst]" class="igst"> IGST
-                                    </div>
-                                    <div class="col-md-2">
+                                    </div> -->
+                                    <div class="col-md-3">
                                         <label>Total</label>
                                         <input type="text" name="items[0][total]" class="form-control line-total" value="0.00" readonly>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="text-muted"></label> <br>
-                                        <button type="button" class="btn btn-danger remove-row"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -213,68 +209,45 @@
         // Add new row
         $('#add-row').click(function() {
             let newRow = `
-                                    <div class="row dynamic-row" style="margin-bottom: 20px;">
-                                        <div class="col-md-4">
-                                            <label class="text-muted">Particluar  <span class="validateRq">*</span></label> <br>
-                                            <div class="form-group">
-                                                <select name="items[${rowCount}][particluar]" class="form-control" required>
-                                                    <option value="">--Select--</option>
-                                                    @foreach ($jobs as $job)
-                                                        <option value="{{ $job->job_id }}">{{ $job->post }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                        <label class="text-muted">Gender <span class="validateRq">*</span></label> <br>
-                                        <div class="form-group">
-                                            <select class="form-control" id="gender" name="items[${rowCount}][gender]" required>
-                                                <option value="">-- Select Gender --</option>
-                                                <option value="Male" {{ (Input::old("gender") == 'Male' ? "selected":"") }}>Male</option>
-                                                <option value="Female" {{ (Input::old("gender") == 'Female' ? "selected":"") }}>Female</option>
-                                            </select>
-                                            <span class="text-danger" id="gender_err"></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="text-muted">Working Hour <span class="validateRq">*</span></label> <br>
-                                        <div class="form-group">
-                                            <input type="number" name="items[${rowCount}][working_hour]" class="form-control" placeholder="Working Hour" required />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="text-muted">QTY <span class="validateRq">*</span></label> <br>
-                                        <div class="form-group">
-                                            <input type="number" name="items[${rowCount}][qty]" class="form-control qty" placeholder="QTY" required />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="text-muted">Rate <span class="validateRq">*</span></label> <br>
-                                        <div class="form-group">
-                                            <input type="number" name="items[${rowCount}][rate]" class="form-control rate" placeholder="rate" required />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <label class="text-muted">Deductions / Taxes</label> <br>
-                                        <div class="form-group">
-                                            <input type="checkbox" name="items[${rowCount}][pf]" class="pf"> PF
-                                            <input type="checkbox" name="items[${rowCount}][esi]" class="esi"> ESI
-                                            <input type="checkbox" name="items[${rowCount}][cgst]" class="cgst"> CGST
-                                            <input type="checkbox" name="items[${rowCount}][sgst]" class="sgst"> SGST
-                                            <input type="checkbox" name="items[${rowCount}][igst]" class="igst"> IGST
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="text-muted">Total <span class="validateRq">*</span></label> <br>
-                                        <div class="form-group">
-                                        <input type="text" name="items[${rowCount}][total]" class="form-control line-total" value="0.00" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="text-muted"></label> <br>
-                                        <button type="button" class="btn btn-danger remove-row"><i class="fa fa-trash"></i></button>
-                                    </div>
-    </div>`;
+        <div class="row dynamic-row" style="margin-bottom: 20px;">
+            <div class="col-md-4">
+                <label class="text-muted">Particular <span class="validateRq">*</span></label>
+                <select name="items[${rowCount}][particluar]" class="form-control" required>
+                    <option value="">--Select--</option>
+                    @foreach ($jobs as $job)
+                        <option value="{{ $job->job_id }}">{{ $job->post }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="text-muted">Gender <span class="validateRq">*</span></label>
+                <select class="form-control" name="items[${rowCount}][gender]" required>
+                    <option value="">-- Select Gender --</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="text-muted">Working Hour <span class="validateRq">*</span></label>
+                <input type="number" name="items[${rowCount}][working_hour]" class="form-control" placeholder="Working Hour" required />
+            </div>
+            <div class="col-md-3">
+                <label class="text-muted">QTY <span class="validateRq">*</span></label>
+                <input type="number" name="items[${rowCount}][qty]" class="form-control qty" placeholder="QTY" required />
+            </div>
+            <div class="col-md-3">
+                <label class="text-muted">Rate <span class="validateRq">*</span></label>
+                <input type="number" name="items[${rowCount}][rate]" class="form-control rate" placeholder="Rate" required />
+            </div>
+            <div class="col-md-3">
+                <label class="text-muted">Total</label>
+                <input type="text" name="items[${rowCount}][total]" class="form-control line-total" value="0.00" readonly />
+            </div>
+            <div class="col-md-3">
+                <label class="text-muted">&nbsp;</label><br>
+                <button type="button" class="btn btn-danger remove-row"><i class="fa fa-trash"></i></button>
+            </div>
+        </div>`;
             $('#dynamic-rows-wrapper').append(newRow);
             rowCount++;
         });
@@ -285,23 +258,30 @@
             calculateGrandTotal();
         });
 
-        // Calculate row total
+        // Calculate per-row total
         function calculateRowTotal(row) {
             let qty = parseFloat(row.find('.qty').val()) || 0;
             let rate = parseFloat(row.find('.rate').val()) || 0;
+            let baseTotal = qty * rate;
 
-            let total = qty * rate;
+            // Global deductions from top checkboxes
+            // let pfChecked = $('input[value="PF"]').is(':checked');
+            // let esiChecked = $('input[value="ESI"]').is(':checked');
+            // let cgstChecked = $('input[value="CGST"]').is(':checked');
+            // let sgstChecked = $('input[value="SGST"]').is(':checked');
+            // let igstChecked = $('input[value="IGST"]').is(':checked');
 
-            // Check deductions / taxes
-            let pf = row.find('.pf').is(':checked') ? total * 0.13 : 0;
-            let esi = row.find('.esi').is(':checked') ? total * 0.0325 : 0;
-            let cgst = row.find('.cgst').is(':checked') ? total * 0.09 : 0;
-            let sgst = row.find('.sgst').is(':checked') ? total * 0.09 : 0;
-            let igst = row.find('.igst').is(':checked') ? total * 0.18 : 0;
+            // let pf = pfChecked ? baseTotal * 0.13 : 0;
+            // let esi = esiChecked ? baseTotal * 0.0325 : 0;
+            // let cgst = cgstChecked ? baseTotal * 0.09 : 0;
+            // let sgst = sgstChecked ? baseTotal * 0.09 : 0;
+            // let igst = igstChecked ? baseTotal * 0.18 : 0;
 
-            let rowTotal = total + pf + esi + cgst + sgst + igst;
-
+            // Apply deductions per row
+            // let rowTotal = baseTotal + pf + esi + cgst + sgst + igst;
+            let rowTotal = baseTotal;
             row.find('.line-total').val(rowTotal.toFixed(2));
+
             calculateGrandTotal();
         }
 
@@ -314,18 +294,20 @@
             $('#grand-total').text(grandTotal.toFixed(2));
         }
 
-        // Bind events
+        // Event bindings
         $(document).on('input', '.qty, .rate', function() {
             let row = $(this).closest('.dynamic-row');
             calculateRowTotal(row);
         });
 
-        $(document).on('change', '.pf, .esi, .cgst, .sgst, .igst', function() {
-            let row = $(this).closest('.dynamic-row');
-            calculateRowTotal(row);
+        // When global deduction checkboxes change
+        $(document).on('change', 'input[name="deduction[]"]', function() {
+            $('.dynamic-row').each(function() {
+                calculateRowTotal($(this));
+            });
         });
 
-        // Initial calculation
+        // Initial calc
         $('.dynamic-row').each(function() {
             calculateRowTotal($(this));
         });

@@ -18,11 +18,7 @@ class QuotationDetail extends Model
         'working_hour',
         'qty',
         'rate',
-        'pf',
-        'esi',
-        'cgst',
-        'sgst',
-        'igst',
+        'total',
     ];
 
 

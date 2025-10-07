@@ -30,7 +30,7 @@ class QuotationRequest extends FormRequest
             'branch_id'          => 'required|integer',
             'qdate'              => 'required',
             'state_code'         => 'required',
-
+            // 'total'             => 'required',
             'items'                 => 'required',
             'items.*.particluar'    => 'required',
             'items.*.gender'        => 'required',

@@ -255,10 +255,13 @@
                 </tr>
             </thead>
             <tbody>
-                @php $subtotal = 0; @endphp
+                @php
+                $subtotal = 0;
+                @endphp
+
                 @foreach($quotation->details as $i => $item)
                 @php
-                $lineTotal = $item->qty * $item->rate;
+                $lineTotal = $item->rate * $item->qty;
                 $subtotal += $lineTotal;
                 @endphp
                 <tr>
@@ -290,8 +293,6 @@
         @php
 
         $deductions = is_array($quotation->deduction) ? $quotation->deduction : json_decode($quotation->deduction ?? '[]');
-
-        $subtotal = $quotation->total_amount;
 
         $pf = in_array('PF', $deductions) ? $subtotal * 0.13 : 0;
         $esi = in_array('ESI', $deductions) ? $subtotal * 0.0325 : 0;
@@ -329,7 +330,7 @@
             <tr>
                 <td colspan="4" style="border: none;"></td>
                 <td colspan="2" class="right-align"><strong>Total:</strong></td>
-                <td colspan="2" class="right-align"><strong>{{ number_format($total, 2) }}</strong></td>
+                <td colspan="2" class="right-align"><strong>{{ number_format($subtotal, 2) }}</strong></td>
             </tr>
             @if($cgst > 0)
             <tr>
@@ -353,6 +354,9 @@
             <tr>
                 <td colspan="4" class="right-align" style="text-transform:uppercase">
                     <strong>Note:</strong>
+                    @php
+                    $notes = $quotation->note ? explode(', ', $quotation->note) : [];
+                    @endphp
                     @if(count($notes))
                     @foreach($notes as $note)
                     <span>{{ $note }}</span>@if(!$loop->last), @endif

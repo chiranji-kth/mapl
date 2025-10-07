@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Carbon\Carbon;
+use App\Model\Company;
 use App\Exports\QuotationExport;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -22,8 +23,9 @@ class QuotationController extends Controller
 
     public function index()
     {
+        $companys = Company::orderBy('company_id', 'DESC')->get();
         $results = Quotation::orderBy('id', 'DESC')->get();
-        return view('admin.quotation.index', ['results' => $results]);
+        return view('admin.quotation.index', ['results' => $results, 'companys' => $companys]);
     }
 
     public function create()
@@ -54,26 +56,15 @@ class QuotationController extends Controller
 
             $grandTotal = 0;
 
+
             // Create quotation first
             $quotation = Quotation::create($input);
 
             foreach ($request->items as $item) {
                 $qty = $item['qty'];
                 $rate = $item['rate'];
-
-                $rowTotal = $qty * $rate;
-                $pf = 0;
-                $esi = 0;
-                $cgst = 0;
-                $sgst = 0;
-                $igst = 0;
-                // Apply deductions / taxes if passed from frontend
-                if (isset($item['pf']) && $item['pf']) $pf += $qty * $rate * 0.13;       // PF 13%
-                if (isset($item['esi']) && $item['esi']) $esi += $qty * $rate * 0.0325;    // ESI 3.25%
-                if (isset($item['cgst']) && $item['cgst']) $cgst += $qty * $rate * 0.09;    // CGST 9%
-                if (isset($item['sgst']) && $item['sgst']) $sgst += $qty * $rate * 0.09;    // SGST 9%
-                if (isset($item['igst']) && $item['igst']) $igst += $qty * $rate * 0.18;    // IGST 18%
-
+                $rowTotal = $item['total'];
+                // $rowTotal = $qty * $rate;
                 $quotation->details()->create([
                     'quotation_id'  => $quotation->id,
                     'particluar'    => $item['particluar'],
@@ -81,11 +72,6 @@ class QuotationController extends Controller
                     'working_hour'  => $item['working_hour'],
                     'qty'           => $qty,
                     'rate'          => $rate,
-                    'pf'            => $pf,
-                    'esi'           => $esi,
-                    'cgst'          => $cgst,
-                    'sgst'          => $sgst,
-                    'igst'          => $igst,
                     'total'         => $rowTotal,
                 ]);
 
@@ -107,10 +93,6 @@ class QuotationController extends Controller
             ], 500);
         }
     }
-
-
-
-
 
     public function show($id)
     {
@@ -144,7 +126,11 @@ class QuotationController extends Controller
             $totalAmount = 0;
 
             foreach ($request->items as $item) {
-                $itemTotal = $item['qty'] * $item['rate'];
+
+                $qty = $item['qty'];
+                $rate = $item['rate'];
+
+                $itemTotal = $item['total'];
 
                 $quotation->details()->create([
                     'particluar'    => $item['particluar'],
@@ -168,7 +154,6 @@ class QuotationController extends Controller
             return ajaxResponse(500, 'Internal server error');
         }
     }
-
 
     public function destroy($id)
     {
@@ -205,5 +190,37 @@ class QuotationController extends Controller
                 ->setPaper('A4', 'portrait');
         }
         return $pdf->download('quotation_' . $quotation->id . '.pdf');
+    }
+
+    public function changestatus(Request $req)
+    {
+        try {
+            if (Auth::guard('web')->check()) {
+
+                if ($req->status == 'Proceed') {
+                    $data = array(
+                        'status' => 0,
+                        'company_id' => $req->company_id,
+                        'updated_at' => Carbon::now(),
+                    );
+                    DB::table('quotation')->where('id', '=', $req->id)->update($data);
+                } else if ($req->status == 'Final') {
+
+                    $data = array(
+                        'status' => 1,
+                        'company_id' => $req->company_id,
+                        'updated_at' => Carbon::now(),
+                    );
+                    DB::table('quotation')->where('id', '=', $req->id)->update($data);
+                }
+
+                return redirect('quotation');
+            } else {
+                return redirect(LOGINPATH);
+            }
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return ajaxResponse(500, 'Internal Server Error');
+        }
     }
 }

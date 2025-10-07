@@ -24,7 +24,9 @@ class Invoice extends Model
         'service_charge',   // add if storing
         'deduction',        // usually stored as JSON
         'total_amount',
-        'invoice_id'
+        'invoice_id',
+        'month',
+        'year'
     ];
 
     protected $casts = [
