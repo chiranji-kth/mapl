@@ -50,7 +50,7 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::put('/{company}', ['as' => 'invoice.update', 'uses' => 'Customer\InvoiceController@update']);
         Route::delete('/{company}/delete', ['as' => 'invoice.delete', 'uses' => 'Customer\InvoiceController@destroy']);
         Route::get('invoice/export/{id}', ['as' => 'invoice.export', 'uses' => 'Customer\InvoiceController@export']);
-        Route::get('/get-companies/{branch_id}', ['as' => 'invoice.getCompanies', 'uses' => 'Customer\InvoiceController@getCompanies']);
+        Route::get('/get-branch/{company_id}', ['as' => 'invoice.getBranch', 'uses' => 'Customer\InvoiceController@getBranch']);
         Route::get('/get-assign-jobs', ['as' => 'invoice.getAssignJobs', 'uses' => 'Customer\InvoiceController@getAssignJobs']);
     });
 });

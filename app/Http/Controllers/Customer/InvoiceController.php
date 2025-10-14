@@ -32,9 +32,8 @@ class InvoiceController extends Controller
     {
 
         $companys = Company::orderBy('company_id', 'DESC')->get();
-        $branches = Branch::orderBy('branch_name')->get();
         $jobs = Job::where('status', true)->get();
-        return view('admin.invoice.form', ['companys' => $companys, 'branches' => $branches, 'jobs' => $jobs]);
+        return view('admin.invoice.form', ['companys' => $companys, 'jobs' => $jobs]);
     }
 
     public function store(InvoiceRequest $request)
@@ -237,14 +236,19 @@ class InvoiceController extends Controller
         return $pdf->download('invoice_' . $invoice->id . '.pdf');
     }
 
-    public function getCompanies($branch_id)
+    public function getBranch($company_id)
     {
-        $companies = Company::where('branch_id', $branch_id)
-            ->select('company_id', 'company_name')
-            ->orderBy('company_name')
-            ->get();
 
-        return response()->json($companies);
+        $company = Company::with('branch:branch_id,branch_name')->where('company_id', $company_id)->first();
+
+        if ($company && $company->branch) {
+            return response()->json([
+                'id' => $company->branch->branch_id,
+                'name' => $company->branch->branch_name,
+            ]);
+        }
+
+        return response()->json(['id' => null, 'name' => 'No branch found']);
     }
 
     public function getAssignJobs(Request $request)
