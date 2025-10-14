@@ -96,7 +96,7 @@ class QuotationController extends Controller
 
     public function show($id)
     {
-        $quotation = Quotation::with('details')->findOrFail($id);
+        $quotation = Quotation::with(['details.job'])->findOrFail($id);
         return view('admin.quotation.view', compact('quotation'));
     }
 

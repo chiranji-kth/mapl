@@ -26,6 +26,12 @@ class QuotationDetail extends Model
     {
         return $this->belongsTo(Quotation::class);
     }
+    public function job()
+    {
+        return $this->belongsTo(Job::class, 'particluar', 'job_id')->withDefault([
+            'post' => 'N/A',
+        ]);
+    }
 
     // public function createdBy()
     // {

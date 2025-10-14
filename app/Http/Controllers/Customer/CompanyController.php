@@ -69,6 +69,8 @@ class CompanyController extends Controller
                 $query->whereDate('updated_at', '<=', $request->updated_to);
             }
 
+            $query->orderBy('company_id', 'desc');
+
             $results = $query->get();
 
             $data = $results->map(function ($company) {
@@ -111,9 +113,6 @@ class CompanyController extends Controller
 
         return response()->json($districts);
     }
-
-
-
 
     public function create()
     {
@@ -164,8 +163,15 @@ class CompanyController extends Controller
 
     public function show($id)
     {
-        $companyInfo = Company::select('company.*', 'branch.branch_name as branch')
+        $companyInfo = Company::select(
+            'company.*',
+            'branch.branch_name as branch',
+            'master_states.state_name as state',
+            'master_districts.dist_name as district'
+        )
             ->leftJoin('branch', 'branch.branch_id', '=', 'company.branch_id')
+            ->leftJoin('master_states', 'master_states.state_id', '=', 'company.state')
+            ->leftJoin('master_districts', 'master_districts.dist_id', '=', 'company.district')
             ->where('company.company_id', $id)
             ->first();
 

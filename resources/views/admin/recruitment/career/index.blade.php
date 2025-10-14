@@ -1,7 +1,7 @@
 @extends('admin.master')
 @section('content')
 @section('title')
-    Career
+Career
 @endsection
 <div class="container-fluid">
     <div class="row bg-title">
@@ -26,49 +26,47 @@
                 <div class="panel-wrapper collapse in" aria-expanded="true">
                     <div class="panel-body">
                         @if (session()->has('success'))
-                            <div class="alert alert-success alert-dismissable">
-                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                <i
-                                    class="cr-icon glyphicon glyphicon-ok"></i>&nbsp;<strong>{{ session()->get('success') }}</strong>
-                            </div>
+                        <div class="alert alert-success alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <i
+                                class="cr-icon glyphicon glyphicon-ok"></i>&nbsp;<strong>{{ session()->get('success') }}</strong>
+                        </div>
                         @endif
                         @if (session()->has('error'))
-                            <div class="alert alert-danger alert-dismissable">
-                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                <i
-                                    class="glyphicon glyphicon-remove"></i>&nbsp;<strong>{{ session()->get('error') }}</strong>
-                            </div>
+                        <div class="alert alert-danger alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <i
+                                class="glyphicon glyphicon-remove"></i>&nbsp;<strong>{{ session()->get('error') }}</strong>
+                        </div>
                         @endif
-                        
+
                         <div class="data">
-							@include('admin.recruitment.career.pagination')
-						</div>
-						
-						
+                            @include('admin.recruitment.career.pagination')
+                        </div>
+
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
-@endsection
+    @endsection
 
-@section('page_scripts')
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap.js"></script>
-<script>
-$(document).ready(function () {
- 
-      $('#example').DataTable(
-            { 
+    @section('page_scripts')
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            $('#example').DataTable({
                 language: {
-        searchPlaceholder: "Search records",
-        search: "",
-      },
-      pageLength: 25
-    });
-    
-});
-</script>
-@endsection
-       
+                    searchPlaceholder: "Search records",
+                    search: "",
+                },
+                pageLength: 25
+            });
+
+        });
+    </script>
+    @endsection

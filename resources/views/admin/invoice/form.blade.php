@@ -40,7 +40,7 @@
                                 <div class="col-md-3">
                                     <label for="exampleInput">Company Name<span class="validateRq">*</span></label>
                                     <div class="input-group col-md-12">
-                                        <select class="form-control required" name="company_id" id="company_id" required>
+                                        <select class="form-control select2 required" name="company_id" id="company_id" required>
                                             <option value="">-- Select Company --</option>
                                         </select>
                                     </div>
@@ -163,19 +163,11 @@
                                         <div class="form-group app-label">
                                             <label class="text-muted">Particluar <span class="validateRq">*</span></label> <br>
                                             <div class="form-group">
-                                                <select class="form-control" id="particluar" name="items[0][particluar]" required>
+                                                <select class="form-control select2" id="particluar" name="items[0][particluar]" required>
                                                     <option value="">-- Select Post --</option>
-                                                    <option value="WEEKLY OFF" {{ (Input::old("particluar") == 'WEEKLY OFF' ? "selected":"") }}>WEEKLY OFF</option>
-                                                    <option value="SUPERVISOR" {{ (Input::old("particluar") == 'SUPERVISOR' ? "selected":"") }}>SUPERVISOR</option>
-                                                    <option value="GUARD" {{ (Input::old("particluar") == 'GUARD' ? "selected":"") }}>GUARD</option>
-                                                    <option value="BOUNCER" {{ (Input::old("particluar") == 'BOUNCER' ? "selected":"") }}>BOUNCER</option>
-                                                    <option value="GUNMAN" {{ (Input::old("particluar") == 'GUNMAN' ? "selected":"") }}>GUNMAN</option>
-                                                    <option value="OFFICE BOY" {{ (Input::old("particluar") == 'OFFICE BOY' ? "selected":"") }}>OFFICE BOY</option>
-                                                    <option value="DATA ENTRY OPERATOR" {{ (Input::old("particluar") == 'DATA ENTRY OPERATOR' ? "selected":"") }}>DATA ENTRY OPERATOR</option>
-                                                    <option value="DRIVER" {{ (Input::old("particluar") == 'DRIVER' ? "selected":"") }}>DRIVER</option>
-                                                    <option value="HOUSEKEEPING" {{ (Input::old("particluar") == 'HOUSEKEEPING' ? "selected":"") }}>HOUSEKEEPING</option>
-                                                    <option value="MAN POWER SUPPLY FOR WORKSHOP" {{ (Input::old("particluar") == 'MAN POWER SUPPLY FOR WORKSHOP' ? "selected":"") }}>MAN POWER SUPPLY FOR WORKSHOP</option>
-                                                    <option value="OTHER" {{ (Input::old("particluar") == 'OTHER' ? "selected":"") }}>OTHER</option>
+                                                    @foreach ($jobs as $job)
+                                                    <option value="{{ $job->job_id }}">{{ $job->post }}</option>
+                                                    @endforeach
                                                 </select>
                                                 <span class="text-danger" id="particluar_err"></span>
                                             </div>
@@ -184,7 +176,7 @@
                                     <div class="col-md-3">
                                         <label class="text-muted">Gender <span class="validateRq">*</span></label> <br>
                                         <div class="form-group">
-                                            <select class="form-control" id="gender" name="items[0][gender]" required>
+                                            <select class="form-control select2" id="gender" name="items[0][gender]" required>
                                                 <option value="">-- Select Gender --</option>
                                                 <option value="Male" {{ (Input::old("gender") == 'Male' ? "selected":"") }}>Male</option>
                                                 <option value="Female" {{ (Input::old("gender") == 'Female' ? "selected":"") }}>Female</option>
@@ -360,17 +352,11 @@
                 <div class="form-group app-label">
                     <label class="text-muted">Particluar <span class="validateRq">*</span></label> <br>
                     <div class="form-group">
-                        <select class="form-control" id="particluar" name="items[${rowCount}][particluar]" required>
+                        <select class="form-control select2" id="particluar" name="items[${rowCount}][particluar]" required>
                             <option value="">-- Select Post --</option>
-                            <option value="WEEKLY OFF">WEEKLY OFF</option>
-                            <option value="SUPERVISOR">SUPERVISOR</option>
-                            <option value="GUARD">GUARD</option>
-                            <option value="BOUNCER">BOUNCER</option>
-                            <option value="GUNMAN">GUNMAN</option>
-                            <option value="OFFICE BOY">OFFICE BOY</option>
-                            <option value="DATA ENTRY OPERATOR">DATA ENTRY OPERATOR</option>
-                            <option value="DRIVER">DRIVER</option>
-                            <option value="OTHER">OTHER</option>
+                            @foreach ($jobs as $job)
+                                <option value="{{ $job->job_id }}">{{ $job->post }}</option>
+                            @endforeach
                         </select>
                         <span class="text-danger" id="particluar_err"></span>
                     </div>

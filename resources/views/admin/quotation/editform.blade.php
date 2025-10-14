@@ -142,7 +142,7 @@
                                             <div class="form-group app-label">
                                                 <label class="text-muted">Particluar <span>*</span></label> <br>
                                                 <div class="form-group">
-                                                    <select class="form-control" id="particluar" name="items[{{ $index }}][particluar]" required>
+                                                    <select class="form-control select2" id="particluar" name="items[{{ $index }}][particluar]" required>
                                                         <option value="">-- Select Post --</option>
                                                         @foreach ($jobs as $job)
                                                         <option value="{{ $job->job_id }}" @if ($job->job_id == $item->particluar) selected @endif>{{ $job->post }}</option>
@@ -232,7 +232,7 @@
         <div class="row dynamic-row" style="margin-bottom: 20px;">
             <div class="col-md-4">
                 <label class="text-muted">Particular <span class="validateRq">*</span></label>
-                <select name="items[${rowCount}][particluar]" class="form-control" required>
+                <select name="items[${rowCount}][particluar]" class="form-control select2" required>
                     <option value="">--Select--</option>
                     @foreach ($jobs as $job)
                         <option value="{{ $job->job_id }}">{{ $job->post }}</option>

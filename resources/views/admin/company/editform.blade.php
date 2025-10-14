@@ -179,23 +179,26 @@ Edit Company
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="exampleInput">State</label>
-                                        <select name="state" id="state" class="form-control" required>
+                                        <label for="exampleInput">State<span
+                                                class="validateRq">*</span></label>
+                                        <select name="state" id="state" class="form-control select2" required>
                                             <option value="">-- Select State --</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="exampleInput">District</label>
-                                        <select name="district" id="district" class="form-control" required>
+                                        <label for="exampleInput">District<span
+                                                class="validateRq">*</span></label>
+                                        <select name="district" id="district" class="form-control select2" required>
                                             <option value="">-- Select District --</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="exampleInput">City </label>
+                                        <label for="exampleInput">City<span
+                                                class="validateRq">*</span> </label>
                                         <input class="form-control city validText" id="city" style="text-transform:uppercase"
                                             placeholder="City" name="city" type="text"
                                             value="{{ $editModeData->city }}">

@@ -42,14 +42,14 @@
                                     <div class="form-group">
                                         <label for="exampleInput">Company<span
                                                 class="validateRq">*</span></label>
-                                        {{ Form::select('company_id', $companyList, Input::old('company_id'), ['class' => 'form-control companyId required']) }}
+                                        {{ Form::select('company_id', $companyList, Input::old('company_id'), ['class' => 'form-control select2 companyId required']) }}
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">Employee<span
                                                 class="validateRq">*</span></label>
-                                        {{ Form::select('emp_id', $employeeList, Input::old('emp_id'), ['class' => 'form-control employeeId required']) }}
+                                        {{ Form::select('emp_id', $employeeList, Input::old('emp_id'), ['class' => 'form-control select2 employeeId required']) }}
                                     </div>
                                 </div>
                                 {{-- Gender (readonly) --}}

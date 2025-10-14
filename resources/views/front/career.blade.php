@@ -105,7 +105,7 @@ $front_setting = getFrontData();
                                         <div class="form-group app-label">
                                             <label class="">Post Applied For <span>*</span></label> <br>
                                             <div class="form-group">
-                                                <select class="form-control" id="post_applied" name="post_applied" required>
+                                                <select class="form-control select2" id="post_applied" name="post_applied" required>
                                                     <option value="">-- Select Post --</option>
                                                     @foreach ($jobs as $job)
                                                     <option value="{{ $job->job_id }}">{{ $job->post }}</option>
@@ -180,8 +180,8 @@ $front_setting = getFrontData();
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group app-label">
-                                            <label class="">Date Of Birth </label>
-                                            <input name="dob" value="{{ old('dob') }}" id="dob" type="date" class="form-control dateField" placeholder="DD/MM/YYYY" style="text-transform:uppercase">
+                                            <label class="">Date Of Birth <span>*</span></label>
+                                            <input name="dob" value="{{ old('dob') }}" id="dob" type="text" class="form-control dateField" placeholder="DD/MM/YY">
 
                                             <!--<input type="date" id="dob" class="cdate form-control" name="dob" placeholder="Select From Date"> -->
                                             <span class="text-danger" id="dob_err"></span>
@@ -192,7 +192,7 @@ $front_setting = getFrontData();
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group app-label">
-                                            <label class="">Aadhar No.</label>
+                                            <label class="">Aadhar No. <span>*</span></label>
                                             <input name="aadhar" value="{{ old('aadhar') }}" id="aadhar" type="number" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="12" class="form-control" placeholder="Aadhar No.">
                                             <span class="text-danger" id="aadhar_err"></span>
                                         </div>
@@ -278,13 +278,13 @@ $front_setting = getFrontData();
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group app-label">
-                                                <label class="">Address </label>
+                                                <label class="">Address <span>*</span></label>
                                                 <input type="text" name="p_address" value="{{ old('p_address') }}" id="p_address" class="form-control" placeholder="Address" style="text-transform:uppercase" />
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group app-label">
-                                                <label class="">State</label>
+                                                <label class="">State <span>*</span></label>
                                                 <select name="p_state" id="p_state" class="form-control" required>
                                                     <option value="">-- Select State --</option>
                                                 </select>
@@ -293,7 +293,7 @@ $front_setting = getFrontData();
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group app-label">
-                                                <label class="">District</label>
+                                                <label class="">District <span>*</span></label>
                                                 <select name="p_district" id="p_district" class="form-control" required>
                                                     <option value="">-- Select District --</option>
                                                 </select>
@@ -303,7 +303,7 @@ $front_setting = getFrontData();
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group app-label">
-                                                <label class="">City </label>
+                                                <label class="">City <span>*</span></label>
                                                 <input name="p_city" value="{{ old('p_city') }}" type="text" id="p_city" class="form-control validText" placeholder="city" required style="text-transform:uppercase">
                                                 <span class="text-danger" id="p_city_err"></span>
                                             </div>
@@ -329,13 +329,13 @@ $front_setting = getFrontData();
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group app-label">
-                                                    <label class="">Address </label>
+                                                    <label class="">Address <span>*</span></label>
                                                     <input type="text" name="c_address" value="{{ old('c_address') }}" id="c_address" class="form-control" placeholder="Address" style="text-transform:uppercase" />
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group app-label">
-                                                    <label>State <span class="required-asterisk">*</span></label>
+                                                    <label>State <span>*</span></label>
                                                     <select name="c_state" id="c_state" class="form-control" required>
                                                         <option value="">-- Select State --</option>
                                                     </select>
@@ -344,7 +344,7 @@ $front_setting = getFrontData();
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group app-label">
-                                                    <label class="">District</label>
+                                                    <label class="">District <span>*</span></label>
                                                     <select name="c_district" id="c_district" class="form-control" required>
                                                         <option value="">-- Select District --</option>
                                                     </select>
@@ -353,7 +353,7 @@ $front_setting = getFrontData();
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group app-label">
-                                                    <label class="">City </label>
+                                                    <label class="">City <span>*</span></label>
                                                     <input name="c_city" value="{{ old('c_city') }}" type="text" id="c_city" class="form-control validText" placeholder="city" required style="text-transform:uppercase">
                                                     <span class="text-danger" id="c_city_err"></span>
                                                 </div>
@@ -425,6 +425,20 @@ $front_setting = getFrontData();
 
 @section('custom-section')
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<script>
+    $(function() {
+        $("#dob").datepicker({
+            dateFormat: "dd/mm/y",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "1980:2025"
+        });
+    });
+</script>
+
 <script type="text/javascript" language="javascript">
     $(document).ready(function() {
         $('#post_applied').on('input', function() {
@@ -443,12 +457,12 @@ $front_setting = getFrontData();
             checkphone();
         });
 
-        // $('#dob').on('input', function() {
-        //     checkdob();
-        // });
-        // $('#aadhar').on('input', function() {
-        //     checkaadhar();
-        // });
+        $('#dob').on('input', function() {
+            checkdob();
+        });
+        $('#aadhar').on('input', function() {
+            checkaadhar();
+        });
         $('#highest_qualification').on('input', function() {
             checkhighest_qualification();
         });
@@ -471,12 +485,24 @@ $front_setting = getFrontData();
             checkmarital_status();
         });
 
+        $('#p_address').on('input', checkPermanentAddress);
+        $('#p_state').on('change', checkPermanentState);
+        $('#p_district').on('change', checkPermanentDistrict);
+        $('#p_city').on('input', checkPermanentCity);
+
+        $('#c_address').on('input', checkCurrentAddress);
+        $('#c_state').on('change', checkCurrentState);
+        $('#c_district').on('change', checkCurrentDistrict);
+        $('#c_city').on('input', checkCurrentCity);
+
 
         $('#submitcareer').click(function() {
 
-            if (!checkpost_applied() && !checkname() && !checkfathername() && !checkphone() && !checkhighest_qualification() && !checkfilled_by() && !checktime_preference() && !checkemployment_status() && !checkgender() && !checkmarital_status()) {
+            if (!checkpost_applied() && !checkname() && !checkfathername() && !checkphone() && !checkdob() && !checkaadhar() && !checkhighest_qualification() && !checkfilled_by() && !checktime_preference() && !checkemployment_status() && !checkgender() && !checkmarital_status() && !checkPermanentAddress() &&
+                !checkPermanentState() && !checkPermanentDistrict() && !checkPermanentCity() && !checkCurrentAddress() && !checkCurrentState() && !checkCurrentDistrict() && !checkCurrentCity()) {
                 $("#signup_message").html(`<div class="alert alert-danger alert-dismissable  mb-20"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><strong>Please fill all required field</strong></div>`);
-            } else if (!checkpost_applied() || !checkname() || !checkfathername() || !checkphone() || !checkhighest_qualification() || !checkfilled_by() || !checktime_preference() || !checkemployment_status() || !checkgender() || !checkmarital_status()) {
+            } else if (!checkpost_applied() || !checkname() || !checkfathername() || !checkphone() || !checkdob() || !checkaadhar() || !checkhighest_qualification() || !checkfilled_by() || !checktime_preference() || !checkemployment_status() || !checkgender() || !checkmarital_status() || !checkPermanentAddress() ||
+                !checkPermanentState() || !checkPermanentDistrict() || !checkPermanentCity() || !checkCurrentAddress() || !checkCurrentState() || !checkCurrentDistrict() || !checkCurrentCity()) {
                 $("#signup_message").html(`<div class="alert alert-danger alert-dismissable  mb-20"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><strong>Please fill all required field</strong></div>`);
             } else {
                 $("#signup_message").html("");
@@ -599,16 +625,16 @@ $front_setting = getFrontData();
     }
 
 
-    // function checkdob() {
-    //     var dob = $('#dob').val();
-    //     if (dob == "") {
-    //         $('#dob_err').html('DOB is Required');
-    //         return false;
-    //     }  else {
-    //         $('#dob_err').html("");
-    //         return true;
-    //     }
-    // }
+    function checkdob() {
+        var dob = $('#dob').val();
+        if (dob == "") {
+            $('#dob_err').html('DOB is Required');
+            return false;
+        } else {
+            $('#dob_err').html("");
+            return true;
+        }
+    }
 
     function checktime_preference() {
         if (!$(".time_preference").is(':checked')) {
@@ -649,18 +675,20 @@ $front_setting = getFrontData();
             return true;
         }
     }
-    // function checkaadhar() {
-    //     if (!$.isNumeric($("#aadhar").val())) {
-    //         $("#aadhar_err").html("only number is allowed");
-    //         return false;
-    //     } else if ($("#aadhar").val().length != 12) {
-    //         $("#aadhar_err").html("12 digit required");
-    //         return false;
-    //     } else {
-    //         $("#aadhar_err").html("");
-    //         return true;
-    //     }
-    // }
+
+    function checkaadhar() {
+        if (!$.isNumeric($("#aadhar").val())) {
+            $("#aadhar_err").html("only number is allowed");
+            return false;
+        } else if ($("#aadhar").val().length != 12) {
+            $("#aadhar_err").html("12 digit required");
+            return false;
+        } else {
+            $("#aadhar_err").html("");
+            return true;
+        }
+    }
+
     function checkhighest_qualification() {
         var highest_qualification = $('#highest_qualification').val();
         if (highest_qualification == "") {
@@ -688,6 +716,96 @@ $front_setting = getFrontData();
             return false;
         } else {
             $('#filled_by_err').html("");
+            return true;
+        }
+    }
+
+    function checkPermanentAddress() {
+        var address = $('#p_address').val();
+        if (address == "") {
+            $('#p_address').next('.text-danger').remove();
+            $('#p_address').after('<span class="text-danger">Address is required</span>');
+            return false;
+        } else {
+            $('#p_address').next('.text-danger').remove();
+            return true;
+        }
+    }
+
+    function checkPermanentState() {
+        var state = $('#p_state').val();
+        if (state == "") {
+            $('#p_state_err').html('State is required');
+            return false;
+        } else {
+            $('#p_state_err').html('');
+            return true;
+        }
+    }
+
+    function checkPermanentDistrict() {
+        var district = $('#p_district').val();
+        if (district == "") {
+            $('#p_district_err').html('District is required');
+            return false;
+        } else {
+            $('#p_district_err').html('');
+            return true;
+        }
+    }
+
+    function checkPermanentCity() {
+        var city = $('#p_city').val();
+        if (city == "") {
+            $('#p_city_err').html('City is required');
+            return false;
+        } else {
+            $('#p_city_err').html('');
+            return true;
+        }
+    }
+
+    function checkCurrentAddress() {
+        var address = $('#c_address').val();
+        if (address == "") {
+            $('#c_address').next('.text-danger').remove();
+            $('#c_address').after('<span class="text-danger">Address is required</span>');
+            return false;
+        } else {
+            $('#c_address').next('.text-danger').remove();
+            return true;
+        }
+    }
+
+    function checkCurrentState() {
+        var state = $('#c_state').val();
+        if (state == "") {
+            $('#c_state_err').html('State is required');
+            return false;
+        } else {
+            $('#c_state_err').html('');
+            return true;
+        }
+    }
+
+    function checkCurrentDistrict() {
+        var district = $('#c_district').val();
+        if (district == "") {
+            $('#c_district_err').html('District is required');
+            return false;
+        } else {
+            $('#c_district_err').html('');
+            return true;
+        }
+    }
+
+    function checkCurrentCity() {
+        var city = $('#c_city').val();
+        if (city == "") {
+            $('#c_city_err').html('City is required');
+            return false;
+        } else {
+            $('#c_city_err').html('');
             return true;
         }
     }

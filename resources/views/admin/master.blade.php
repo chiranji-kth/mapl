@@ -617,6 +617,7 @@ $front_setting = getFrontData();
                                                 $('.' + id).fadeOut();
                                             }
                                         });
+                                    $('#example').DataTable().ajax.reload(null, false);
                                 } else {
                                     swal({
                                         title: "Error!",

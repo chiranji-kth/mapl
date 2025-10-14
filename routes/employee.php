@@ -83,6 +83,7 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
 
     Route::group(['prefix' => 'careerJob'], function () {
         Route::get('/', ['as' => 'careerJob.index', 'uses' => 'Employee\CareerController@index']);
+        Route::delete('careerJob/{id}', ['as' => 'careerJob.destroy', 'uses' => 'Employee\CareerController@destroy'])->name('careerJob.destroy');
         Route::get('/{careerJobID}', ['as' => 'careerJob.show', 'uses' => 'Employee\CareerController@show']);
         Route::get('/{careerJobID}/edit', ['as' => 'careerJob.edit', 'uses' => 'Employee\CareerController@edit']);
         Route::put('/{careerJobID}', ['as' => 'careerJob.update', 'uses' => 'Employee\CareerController@update']);
@@ -118,6 +119,7 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::post('/store', ['as' => 'attendance.store', 'uses' => 'Employee\AttendanceController@store']);
         Route::post('/employees', ['as' => 'attendance.getEmployees', 'uses' => 'Employee\AttendanceController@getCompanyEmployees']);
         Route::get('/export', ['as' => 'attendance.export', 'uses' => 'Employee\AttendanceController@exportCsv']);
+        Route::post('/update-amounts', ['as' => 'attendance.updateAmounts', 'uses' => 'Employee\AttendanceController@updateAmounts']);
     });
 
     Route::group(['prefix' => 'payroll'], function () {

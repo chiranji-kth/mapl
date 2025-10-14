@@ -67,7 +67,7 @@ Attendance
 								<div class="row">
 									<div class="col-md-3">
 										<label>Company</label>
-										<select name="company_id" class="form-control">
+										<select name="company_id" class="form-control select2">
 											@foreach($companyList as $id => $name)
 											<option value="{{ $id }}" {{ request('company_id') == $id ? 'selected' : '' }}>
 												{{ $name }}
@@ -77,17 +77,18 @@ Attendance
 									</div>
 
 									<div class="col-md-3">
-										<label for="exampleInput">@lang('common.month')<span class="validateRq">*</span></label>
+										<label>Start Date</label>
 										<div class="input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input class="form-control monthFieldOnly required" id="month" placeholder="Month" name="month" type="text" value="">
+											<input type="date" class="form-control" name="start_date" value="{{ request('start_date') }}">
 										</div>
 									</div>
+
 									<div class="col-md-3">
-										<label for="exampleInput">Year<span class="validateRq">*</span></label>
+										<label>End Date</label>
 										<div class="input-group">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-											<input class="form-control yearField required" id="year" placeholder="Year" name="year" type="text">
+											<input type="date" class="form-control" name="end_date" value="{{ request('end_date') }}">
 										</div>
 									</div>
 
@@ -96,6 +97,7 @@ Attendance
 									</div>
 								</div>
 							</form>
+
 
 							<br /><br />
 							@include('admin.attendance.pagination')

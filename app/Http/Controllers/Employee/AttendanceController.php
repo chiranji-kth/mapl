@@ -36,20 +36,12 @@ class AttendanceController extends Controller
             $query->where('company_id', $request->company_id);
         }
 
-        // Filter by month/year
-        if ($request->has('monthField')) {
-            $query->where('month', $request->monthField);
-        }
-        if ($request->has('yearField')) {
-            $query->where('year', $request->yearField);
-        }
-
         // Filter by date range
         if ($request->has('start_date') && $request->has('end_date')) {
-            $query->whereBetween(DB::raw("STR_TO_DATE(CONCAT(year,'-',month,'-01'), '%Y-%m-%d')"), [
-                Carbon::parse($request->start_date)->startOfMonth(),
-                Carbon::parse($request->end_date)->endOfMonth(),
-            ]);
+            $start = Carbon::parse($request->start_date)->startOfDay();
+            $end   = Carbon::parse($request->end_date)->endOfDay();
+
+            $query->whereBetween(DB::raw("STR_TO_DATE(CONCAT(year,'-',month,'-01'), '%Y-%m-%d')"), [$start, $end]);
         }
 
         $results = $query->get();
@@ -71,9 +63,6 @@ class AttendanceController extends Controller
 
         return view('admin.attendance.index', compact('grouped', 'companyList'));
     }
-
-
-
 
     public function create()
     {
@@ -127,10 +116,6 @@ class AttendanceController extends Controller
             return back()->with('error', 'Something went wrong while saving attendance!');
         }
     }
-
-
-
-
 
     public function getCompanyEmployees(Request $request)
     {
@@ -202,7 +187,7 @@ class AttendanceController extends Controller
             $handle = fopen('php://output', 'w');
 
             // CSV header
-            fputcsv($handle, ['Company', 'Month', 'EMP ID', 'Name', 'Gender', 'Post', 'Shift Timing', 'Working Days']);
+            fputcsv($handle, ['Company', 'Month', 'EMP ID', 'Name', 'Gender', 'Post', 'shift', 'Shift Timing', 'Working Days', 'Advance', 'Dress Deduction', 'other Deduction']);
 
             foreach ($results as $value) {
                 fputcsv($handle, [
@@ -212,8 +197,12 @@ class AttendanceController extends Controller
                     $value->employee->name ?? '-',
                     $value->employee->gender ?? '-',
                     $value->assignJob->job->post ?? '-',
+                    $value->assignJob->shift ?? '-',
                     $value->assignJob->shift_timing ?? '-',
                     $value->days_worked,
+                    $value->advance ?? '0',
+                    $value->dress_deduction ?? '0',
+                    $value->other_deduction ?? '0',
                 ]);
             }
 
@@ -231,5 +220,37 @@ class AttendanceController extends Controller
 
         // Use stream() with headers as the 3rd parameter
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function updateAmounts(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:attendance,id',
+            'advance' => 'nullable|numeric',
+            'dress' => 'nullable|numeric',
+            'other' => 'nullable|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        $record = Attendance::find($request->id);
+        if (!$record) {
+            return response()->json(['success' => false, 'message' => 'Record not found']);
+        }
+
+        $record->advance = $request->advance ?? 0;
+        $record->dress_deduction = $request->dress ?? 0;
+        $record->other_deduction = $request->other ?? 0;
+        $record->save();
+
+        return response()->json([
+            'success' => true,
+            'updated_at' => $record->updated_at->format('Y-m-d H:i:s')
+        ]);
     }
 }

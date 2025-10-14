@@ -103,7 +103,7 @@
             @endphp
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $item->particluar }}</td>
+                <td>{{ $item->job->post ?? 'N/A' }}</td>
                 <td>{{ $item->gender }}</td>
                 <td>{{ $item->working_hour }}</td>
                 <td>{{ $item->qty }}</td>

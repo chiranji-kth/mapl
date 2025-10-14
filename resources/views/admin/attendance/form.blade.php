@@ -76,7 +76,7 @@ Attendance
 							<div class="row">
 								<div class="col-md-4">
 									<label>Company <span class="validateRq">*</span></label>
-									{{ Form::select('company_id', $companyList, null, ['class' => 'form-control', 'id' => 'company_id']) }}
+									{{ Form::select('company_id', $companyList, null, ['class' => 'form-control select2', 'id' => 'company_id']) }}
 								</div>
 
 								<div class="col-md-3">

@@ -9,6 +9,7 @@
                 <th>Month</th>
                 <th>EMP ID</th>
                 <th>Name</th>
+                <th>Father Name</th>
                 <th>Gender</th>
                 <th>Post</th>
                 <th>Shift Timing</th>
@@ -74,6 +75,7 @@
                 <td>{{ \Carbon\Carbon::createFromDate($value->year, $value->month)->format('F, Y') }}</td>
                 <td>{{ $value->employee->employee_id ?? '-' }}</td>
                 <td>{{ $value->employee->name ?? '-' }}</td>
+                <td>{{ $value->employee->father_name ?? '-' }}</td>
                 <td>{{ $value->employee->gender ?? '-' }}</td>
                 <td>{{ $value->assignJob->job->post ?? '-' }}</td>
                 <td>{{ $value->assignJob->shift_timing ?? '-' }} (hrs.)</td>

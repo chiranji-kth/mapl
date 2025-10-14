@@ -8,8 +8,8 @@ use App\Rules\UniquePhoneNumber;
 
 class EmployeesRequest extends FormRequest
 {
-     use CustomValidationMessageTrait;
-     
+    use CustomValidationMessageTrait;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -44,6 +44,12 @@ class EmployeesRequest extends FormRequest
                 'highest_qualification' => 'required',
                 'employment_status' => 'required',
                 'post_applied' => 'required',
+
+                'p_state' => 'required',
+                'p_district' => 'required',
+                'c_state' => 'required',
+                'c_district' => 'required',
+
                 'salary_expectations' => 'required',
                 'time_preference' => 'required',
                 'filled_by' => 'required',
@@ -52,29 +58,35 @@ class EmployeesRequest extends FormRequest
                 'photo'  => 'mimes:jpeg,jpg,png|max:1024',
             ];
         }
-        
+
         return [
-                'name' => 'required',
-                // 'email' => 'nullable|unique:employees,email',
-                'phone' => 'required|integer|unique:employees,phone,' . $this->employee . ',emp_id',
-                'father_name' => 'required',
-                'dob' => 'required',
-                'aadhar' => 'required',
-                'gender' => 'required',
-                'bank' => 'required',
-                'acc_no' => 'required',
-                'ifc_code' => 'required',
-                'branch' => 'required',
-                'marital_status' => 'required',
-                'highest_qualification' => 'required',
-                'employment_status' => 'required',
-                'post_applied' => 'required',
-                'salary_expectations' => 'required',
-                'time_preference' => 'required',
-                'filled_by' => 'required',
-                'date_of_joining' => 'required',
-                'kyc_doc' => 'required',
-                'photo'  => 'mimes:jpeg,jpg,png|max:1024',
-            ];
+            'name' => 'required',
+            // 'email' => 'nullable|unique:employees,email',
+            'phone' => 'required|integer|unique:employees,phone,' . $this->employee . ',emp_id',
+            'father_name' => 'required',
+            'dob' => 'required',
+            'aadhar' => 'required',
+            'gender' => 'required',
+            'bank' => 'required',
+            'acc_no' => 'required',
+            'ifc_code' => 'required',
+            'branch' => 'required',
+            'marital_status' => 'required',
+            'highest_qualification' => 'required',
+            'employment_status' => 'required',
+            'post_applied' => 'required',
+
+            'p_state' => 'required',
+            'p_district' => 'required',
+            'c_state' => 'required',
+            'c_district' => 'required',
+
+            'salary_expectations' => 'required',
+            'time_preference' => 'required',
+            'filled_by' => 'required',
+            'date_of_joining' => 'required',
+            'kyc_doc' => 'required',
+            'photo'  => 'mimes:jpeg,jpg,png|max:1024',
+        ];
     }
 }

@@ -1,7 +1,7 @@
 @extends('admin.master')
 @section('content')
 @section('title')
-@lang('employee.employee_list')
+@lang('Company List')
 @endsection
 <div class="container-fluid">
 	<div class="row bg-title">

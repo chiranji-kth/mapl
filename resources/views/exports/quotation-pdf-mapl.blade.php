@@ -266,7 +266,7 @@
                 @endphp
                 <tr>
                     <td style="width: 6%;" class="center-align">{{ $i + 1 }}</td>
-                    <td style="width: 30%;">{{ $item->particluar }}</td>
+                    <td style="width: 30%;">{{ $item->job->post ?? 'N/A' }}</td>
                     <td style="width: 10%;" class="center-align">{{ $item->gender }}</td>
                     <td style="width: 16%;" class="center-align">{{ $item->working_hour }}</td>
                     <td style="width: 10%;" class="center-align">{{ $item->qty }}</td>
@@ -330,7 +330,7 @@
             <tr>
                 <td colspan="4" style="border: none;"></td>
                 <td colspan="2" class="right-align"><strong>Total:</strong></td>
-                <td colspan="2" class="right-align"><strong>{{ number_format($subtotal, 2) }}</strong></td>
+                <td colspan="2" class="right-align"><strong>{{ number_format($total, 2) }}</strong></td>
             </tr>
             @if($cgst > 0)
             <tr>

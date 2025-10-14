@@ -188,7 +188,7 @@ Edit Career
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="exampleInput">State</label>
-                                        <select name="p_state" id="p_state" class="form-control" required>
+                                        <select name="p_state" id="p_state" class="form-control select2" required>
                                             <option value="">-- Select State --</option>
                                         </select>
                                     </div>
@@ -196,7 +196,7 @@ Edit Career
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="exampleInput">District</label>
-                                        <select name="p_district" id="p_district" class="form-control" required>
+                                        <select name="p_district" id="p_district" class="form-control select2" required>
                                             <option value="">-- Select District --</option>
                                         </select>
                                     </div>
@@ -231,7 +231,7 @@ Edit Career
                                 <div class="col-md-4">
                                     <div class="form-group app-label">
                                         <label>State <span class="required-asterisk">*</span></label>
-                                        <select name="c_state" id="c_state" class="form-control" required>
+                                        <select name="c_state" id="c_state" class="form-control select2" required>
                                             <option value="">-- Select State --</option>
                                         </select>
                                         <span class="text-danger" id="c_state_err"></span>
@@ -240,7 +240,7 @@ Edit Career
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="exampleInput">District</label>
-                                        <select name="c_district" id="c_district" class="form-control" required>
+                                        <select name="c_district" id="c_district" class="form-control select2" required>
                                             <option value="">-- Select District --</option>
                                         </select>
                                     </div>

@@ -64,7 +64,7 @@ Salary
                                 <div class="row">
                                     <div class="col-md-3">
                                         <label>Company</label>
-                                        <select name="company_id" class="form-control">
+                                        <select name="company_id" class="form-control select2">
                                             @foreach($companyList as $id => $name)
                                             <option value="{{ $id }}" {{ request('company_id') == $id ? 'selected' : '' }}>
                                                 {{ $name }}

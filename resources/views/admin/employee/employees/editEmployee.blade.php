@@ -190,81 +190,64 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="exampleInput">State</label>
-                                        <select name="p_state" id="p_state" class="form-control" required>
+                                        <label for="p_state">State<span class="validateRq">*</span></label>
+                                        <select name="p_state" id="p_state" class="form-control select2" required>
                                             <option value="">-- Select State --</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="exampleInput">District</label>
-                                        <select name="p_district" id="p_district" class="form-control" required>
+                                        <label for="p_district">District<span class="validateRq">*</span></label>
+                                        <select name="p_district" id="p_district" class="form-control select2" required>
                                             <option value="">-- Select District --</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="exampleInput">City</label>
-                                        <input class="form-control p_city validText" id="p_city" style="text-transform:uppercase"
-                                            placeholder="City" name="p_city" type="text"
-                                            value="{{ $empModeData->p_city }}">
-                                    </div>
+                                    <label>City</label>
+                                    <input type="text" id="p_city" name="p_city" class="form-control" value="{{ $empModeData->p_city }}">
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="exampleInput">Address</label>
-                                        <input class="form-control p_address" id="p_address" style="text-transform:uppercase"
-                                            placeholder="address" name="p_address" type="text"
-                                            value="{{ $empModeData->p_address }}">
-                                    </div>
+                                <div class="col-md-12">
+                                    <label>Address</label>
+                                    <input type="text" id="p_address" name="p_address" class="form-control" value="{{ $empModeData->p_address }}">
                                 </div>
-
                             </div>
+
                             <div class="row">
                                 <div class="col-md-3">
                                     <h5 class="text-danger">Current Address</h5>
                                 </div>
-                                <div class="col-md-9 text-success"><input type="checkbox" name="same" value="Y" /> Current Address Same as Parmanent </div>
+                                <div class="col-md-9 text-success">
+                                    <label>
+                                        <input type="checkbox" id="sameAddress" name="same" value="Y">
+                                        Current Address Same as Permanent
+                                    </label>
+                                </div>
                             </div>
 
                             <hr />
                             <div class="row">
                                 <div class="col-md-4">
-                                    <div class="form-group app-label">
-                                        <label>State <span class="required-asterisk">*</span></label>
-                                        <select name="c_state" id="c_state" class="form-control" required>
-                                            <option value="">-- Select State --</option>
-                                        </select>
-                                        <span class="text-danger" id="c_state_err"></span>
-                                    </div>
+                                    <label>State<span class="validateRq">*</span></label>
+                                    <select name="c_state" id="c_state" class="form-control select2" required>
+                                        <option value="">-- Select State --</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="exampleInput">District</label>
-                                        <select name="c_district" id="c_district" class="form-control" required>
-                                            <option value="">-- Select District --</option>
-                                        </select>
-                                    </div>
+                                    <label>District<span class="validateRq">*</span></label>
+                                    <select name="c_district" id="c_district" class="form-control select2" required>
+                                        <option value="">-- Select District --</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="exampleInput">City</label>
-                                        <input class="form-control c_city validText" id="c_city" style="text-transform:uppercase"
-                                            placeholder="City" name="c_city" type="text"
-                                            value="{{ $empModeData->c_city }}">
-                                    </div>
+                                    <label>City</label>
+                                    <input type="text" id="c_city" name="c_city" class="form-control" value="{{ $empModeData->c_city }}">
                                 </div>
                                 <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="exampleInput">Address</label>
-                                        <input class="form-control c_address" id="c_address" style="text-transform:uppercase"
-                                            placeholder="address" name="c_address" type="text"
-                                            value="{{ $empModeData->c_address }}">
-                                    </div>
+                                    <label>Address</label>
+                                    <input type="text" id="c_address" name="c_address" class="form-control" value="{{ $empModeData->c_address }}">
                                 </div>
-
                             </div>
                             <h5 class="text-danger">Bank Details</h5>
                             <hr />
@@ -488,34 +471,6 @@
 @endsection
 @section('page_scripts')
 <script>
-    $('input').attr('autocomplete', 'off');
-
-    function alphaOnly(event) {
-        var value = String.fromCharCode(event.which);
-        var pattern = new RegExp(/[a-zA-Z ]/i);
-        return pattern.test(value);
-    }
-
-    $('.validText').bind('keypress', alphaOnly);
-
-    $('input[name=same]').click(function() {
-        // alert('Using the same address');  
-        if ($("input[name=same]:checked").is(':checked')) {
-            $('#c_state').val($('#p_state').val());
-            $('#c_district').val($('#p_district').val());
-            $('#c_city').val($('#p_city').val());
-            $('#c_address').val($('#p_address').val());
-        } else {
-            $('#c_state').val('');
-            $('#c_district').val('');
-            $('#c_city').val('');
-            $('#c_address').val('');
-        }
-    });
-</script>
-
-
-<script>
     $('.dob').datepicker({
         dateFormat: 'dd/mm/yy'
     })
@@ -523,82 +478,118 @@
 
 <script>
     $(document).ready(function() {
-        let stateDropdown = $("#p_state");
-        let districtDropdown = $("#p_district");
-        let oldState = "{{ $empModeData->p_state }}"; // ID of old state
-        let oldDistrict = "{{ $empModeData->p_district }}"; // ID of old district
+        // ================== PERMANENT ADDRESS ===================
+        let p_state = $("#p_state");
+        let p_district = $("#p_district");
+        let oldPState = "{{ $empModeData->p_state }}";
+        let oldPDistrict = "{{ $empModeData->p_district }}";
 
-        // Load all states
+        // Load all states for permanent
         $.get("{{ route('get-states') }}", function(states) {
-            stateDropdown.empty().append('<option value="">-- Select State --</option>');
+            p_state.empty().append('<option value="">-- Select State --</option>');
             states.forEach(state => {
-                stateDropdown.append(`<option value="${state.state_id}">${state.name}</option>`);
+                p_state.append(`<option value="${state.state_id}">${state.name}</option>`);
             });
 
-            // Preselect old state
-            stateDropdown.val(oldState);
-
-            // Load districts for old state
-            if (oldState) {
-                $.get("{{ url('/get-districts') }}/" + oldState, function(districts) {
-                    districtDropdown.empty().append('<option value="">-- Select District --</option>');
+            if (oldPState) {
+                p_state.val(oldPState);
+                p_state.val(oldPState).trigger('change');
+                // Now load districts after state is set
+                $.get("{{ url('/get-districts') }}/" + oldPState, function(districts) {
+                    p_district.empty().append('<option value="">-- Select District --</option>');
                     districts.forEach(d => {
-                        districtDropdown.append(`<option value="${d.dist_id}">${d.name}</option>`);
+                        p_district.append(`<option value="${d.dist_id}">${d.name}</option>`);
                     });
-
-                    // Preselect old district
-                    if (oldDistrict) districtDropdown.val(oldDistrict);
-                });
-            }
-        });
-
-        // When state changes, load districts dynamically
-        stateDropdown.on('change', function() {
-            let stateId = $(this).val();
-            districtDropdown.empty().append('<option value="">-- Select District --</option>');
-            if (stateId) {
-                $.get("{{ url('/get-districts') }}/" + stateId, function(districts) {
-                    districts.forEach(d => {
-                        districtDropdown.append(`<option value="${d.dist_id}">${d.name}</option>`);
-                    });
-                });
-            }
-        });
-    });
-</script>
-
-<script>
-    $(document).ready(function() {
-        let stateDropdown = $("#c_state");
-        let districtDropdown = $("#c_district");
-        let oldState = "{{ $empModeData->c_state }}";
-        let oldDistrict = "{{ $empModeData->c_district }}";
-
-        // Load all states
-        $.get("{{ route('get-states') }}", function(states) {
-            states.forEach(state => {
-                stateDropdown.append(`<option value="${state.state_id}">${state.name}</option>`);
-            });
-
-            // Preselect state
-            stateDropdown.val(oldState).trigger('change');
-        });
-
-        // Load districts when state changes
-        stateDropdown.on("change", function() {
-            let stateId = $(this).val();
-            districtDropdown.empty().append('<option value="">-- Select District --</option>');
-            if (stateId) {
-                $.get("{{ url('/get-districts') }}/" + stateId, function(districts) {
-                    districts.forEach(district => {
-                        districtDropdown.append(`<option value="${district.id}">${district.name}</option>`);
-                    });
-
-                    // Only after districts are loaded, select old district
-                    if (oldDistrict) {
-                        districtDropdown.val(oldDistrict);
+                    if (oldPDistrict) {
+                        p_district.val(oldPDistrict);
+                        p_district.val(oldPDistrict).trigger('change');
                     }
                 });
+            }
+        });
+
+        // When permanent state changes, load districts
+        p_state.on('change', function() {
+            let stateId = $(this).val();
+            p_district.empty().append('<option value="">-- Select District --</option>');
+            if (stateId) {
+                $.get("{{ url('/get-districts') }}/" + stateId, function(districts) {
+                    districts.forEach(d => {
+                        p_district.append(`<option value="${d.dist_id}">${d.name}</option>`);
+                    });
+                    if (oldPDistrict && stateId == oldPState) {
+                        p_district.val(oldPDistrict);
+                    }
+                });
+            }
+        });
+
+        // ================== CURRENT ADDRESS ===================
+        let c_state = $("#c_state");
+        let c_district = $("#c_district");
+        let oldCState = "{{ $empModeData->c_state }}";
+        let oldCDistrict = "{{ $empModeData->c_district }}";
+
+        $.get("{{ route('get-states') }}", function(states) {
+            c_state.empty().append('<option value="">-- Select State --</option>');
+            states.forEach(state => {
+                c_state.append(`<option value="${state.state_id}">${state.name}</option>`);
+            });
+
+            if (oldCState) {
+                c_state.val(oldCState);
+                c_state.val(oldCState).trigger('change');
+
+                $.get("{{ url('/get-districts') }}/" + oldCState, function(districts) {
+                    c_district.empty().append('<option value="">-- Select District --</option>');
+                    districts.forEach(d => {
+                        c_district.append(`<option value="${d.dist_id}">${d.name}</option>`);
+                    });
+                    if (oldCDistrict) {
+                        c_district.val(oldCDistrict);
+                        c_district.val(c_district).trigger('change');
+                    }
+                });
+            }
+        });
+
+        c_state.on('change', function() {
+            let stateId = $(this).val();
+            c_district.empty().append('<option value="">-- Select District --</option>');
+            if (stateId) {
+                $.get("{{ url('/get-districts') }}/" + stateId, function(districts) {
+                    districts.forEach(d => {
+                        c_district.append(`<option value="${d.dist_id}">${d.name}</option>`);
+                    });
+                    if (oldCDistrict && stateId == oldCState) {
+                        c_district.val(oldCDistrict);
+                    }
+                });
+            }
+        });
+
+        // ================== SAME ADDRESS CHECK ===================
+        $('#sameAddress').on('change', function() {
+            if ($(this).is(':checked')) {
+                // Copy values
+                $('#c_city').val($('#p_city').val());
+                $('#c_address').val($('#p_address').val());
+
+                let pStateVal = $('#p_state').val();
+                let pDistrictVal = $('#p_district').val();
+
+                $('#c_state').val(pStateVal).trigger('change');
+
+                // Wait till districts load before selecting
+                setTimeout(() => {
+                    $('#c_district').val(pDistrictVal);
+                }, 500);
+            } else {
+                // Reset current address fields
+                $('#c_state').val('').trigger('change');
+                $('#c_district').val('');
+                $('#c_city').val('');
+                $('#c_address').val('');
             }
         });
     });

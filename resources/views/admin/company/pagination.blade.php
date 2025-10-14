@@ -20,7 +20,7 @@
 
     <div class="col-md-3">
         <label for="state_filter">Filter by State</label>
-        <select id="state_filter" class="form-control">
+        <select id="state_filter" class="form-control select2">
             <option value="">-- All States --</option>
             @foreach($states as $state)
             <option value="{{ $state->state_id }}">{{ $state->state_name }}</option>
@@ -30,7 +30,7 @@
 
     <div class="col-md-3">
         <label for="district_filter">Filter by District</label>
-        <select id="district_filter" class="form-control">
+        <select id="district_filter" class="form-control select2">
             <option value="">-- All Districts --</option>
             <!-- districts will load dynamically -->
         </select>

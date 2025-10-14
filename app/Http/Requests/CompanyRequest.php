@@ -42,6 +42,10 @@ class CompanyRequest extends FormRequest
                 'contact_person_name' => 'required',
                 'contact_person_phone' => 'required|integer',
                 'date_of_service' => 'required',
+
+                'state' => 'required',
+                'district' => 'required',
+                'city' => 'required',
                 'site_address' => 'required',
                 // 'site_photo_1' => 'required|mimes:jpeg,jpg,png',
             ];
@@ -61,6 +65,9 @@ class CompanyRequest extends FormRequest
             'contact_person_name' => 'required',
             'contact_person_phone' => 'required|integer',
             'date_of_service' => 'required',
+            'state' => 'required',
+            'district' => 'required',
+            'city' => 'required',
             'site_address' => 'required',
             // 'site_photo_1' => 'required|mimes:jpeg,jpg,png',
         ];
