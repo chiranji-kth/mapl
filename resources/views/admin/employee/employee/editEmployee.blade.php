@@ -66,6 +66,14 @@
                                             value="{{ $employeeAccountEditModeData->user_name }}">
                                     </div>
                                 </div>
+                                <div class="col-md-3">
+                                    <label for="password">@lang('employee.password')</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="ti-lock"></i></div>
+                                        <input class="form-control password" id="password"
+                                            placeholder="@lang('employee.password')" name="password" type="password">
+                                    </div>
+                                </div>
                             </div>
                             <h3 class="box-title">@lang('employee.personal_information')</h3>
                             <hr>

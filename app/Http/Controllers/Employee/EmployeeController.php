@@ -228,7 +228,6 @@ class EmployeeController extends Controller
         ];
 
         return view('admin.employee.employee.editEmployee', $data);
-
     }
 
     public function update(EmployeeRequest $request, $id)
@@ -247,11 +246,12 @@ class EmployeeController extends Controller
         if ($kyc_file) {
             $kycName = md5(str_random(30) . time() . '_' . $request->file('kyc_file')) . '.' . $request->file('kyc_file')->getClientOriginalExtension();
             $request->file('kyc_file')->move('uploads/employeeKycDoc/', $kycName);
-             if (file_exists('uploads/employeeKycDoc/' . $employee->kyc_file) and !empty($employee->kyc_file)) {
+            if (file_exists('uploads/employeeKycDoc/' . $employee->kyc_file) and !empty($employee->kyc_file)) {
                 unlink('uploads/employeeKycDoc/' . $employee->kyc_file);
             }
             $employeeKycDoc['kyc_file'] = $kycName;
         }
+
         $employeeDataFormat = $this->employeeRepositories->makeEmployeePersonalInformationDataFormat($request->all());
         if (isset($employeePhoto)) {
             $employeeData = $employeeDataFormat + $employeePhoto;
@@ -360,7 +360,6 @@ class EmployeeController extends Controller
                 DB::table('termination')->where('terminate_to', $data->employee_id)->delete();
 
                 DB::table('notice')->where('created_by', $data->employee_id)->delete();
-
             }
             DB::commit();
             $bug = 0;
@@ -425,8 +424,7 @@ class EmployeeController extends Controller
         }
 
         // return $final_data;
-        try
-        {
+        try {
 
             $allRoles           = Role::all();
             $allDepartment      = Department::get();
@@ -456,13 +454,11 @@ class EmployeeController extends Controller
                 if (!$designation) {
                     Log::error("Designation not found");
                     continue;
-
                 }
                 $branch = $allbranch->where('branch_name', trim($value['branch']))->first();
                 if (!$branch) {
                     Log::error("Branch not found");
                     continue;
-
                 }
 
                 $workShift = $allWorkShift->where('shift_name', $value['work_shift'])->first();
@@ -517,16 +513,12 @@ class EmployeeController extends Controller
                 //     SendWelcomeEmailJob::dispatch($name, $email, $user_name, $password);
                 // }
                 $totalSuccess++;
-
             }
 
             return redirect()->route('employee.index')->with('success', "Total {$totalSuccess} Employee Uploaded");
-
         } catch (\Exception $e) {
 
             return $e;
         }
-
     }
-
 }

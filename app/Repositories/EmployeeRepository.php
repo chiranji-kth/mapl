@@ -13,7 +13,7 @@ class EmployeeRepository
     public function makeEmployeeAccountDataFormat($data, $action = false)
     {
         $employeeAccountData['role_id']     = $data['role_id'];
-        if ($action != 'update') {
+        if ($data['password'] != '') {
             $employeeAccountData['password']    = Hash::make($data['password']);
         }
         $employeeAccountData['user_name']   = $data['user_name'];
@@ -48,7 +48,7 @@ class EmployeeRepository
         // $employeeData['religion']       = $data['religion'];
         $employeeData['phone']          = $data['phone'];
         $employeeData['status']         = $data['status'];
-        $employeeData['kyc_doc']        = $data['kyc_doc'];
+        // $employeeData['kyc_doc']        = $data['kyc_doc'];
         $employeeData['created_by']     = Auth::user()->user_id;
         $employeeData['updated_by']     = Auth::user()->user_id;
 
