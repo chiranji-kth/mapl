@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use Illuminate\Support\Facades\Hash;
@@ -9,9 +10,10 @@ use Illuminate\Support\Facades\Auth;
 class EmployeeRepository
 {
 
-    public function makeEmployeeAccountDataFormat($data,$action = false){
+    public function makeEmployeeAccountDataFormat($data, $action = false)
+    {
         $employeeAccountData['role_id']     = $data['role_id'];
-        if($action != 'update'){
+        if ($action != 'update') {
             $employeeAccountData['password']    = Hash::make($data['password']);
         }
         $employeeAccountData['user_name']   = $data['user_name'];
@@ -23,26 +25,27 @@ class EmployeeRepository
     }
 
 
-    public function makeEmployeePersonalInformationDataFormat($data){
+    public function makeEmployeePersonalInformationDataFormat($data)
+    {
         $employeeData['first_name']     = $data['first_name'];
         $employeeData['last_name']      = $data['last_name'];
         $employeeData['finger_id']      = $data['finger_id'];
         $employeeData['department_id']  = $data['department_id'];
         $employeeData['designation_id'] = $data['designation_id'];
         $employeeData['branch_id']      = $data['branch_id'];
-        $employeeData['supervisor_id']  = $data['supervisor_id'];
-        $employeeData['work_shift_id']  = $data['work_shift_id'];
-        $employeeData['pay_grade_id']   = $data['pay_grade_id'];
-        $employeeData['hourly_salaries_id']   = $data['hourly_salaries_id'];
+        // $employeeData['supervisor_id']  = $data['supervisor_id'];
+        // $employeeData['work_shift_id']  = $data['work_shift_id'];
+        // $employeeData['pay_grade_id']   = $data['pay_grade_id'];
+        // $employeeData['hourly_salaries_id']   = $data['hourly_salaries_id'];
         $employeeData['email']          = $data['email'];
         $employeeData['date_of_birth']  = dateConvertFormtoDB($data['date_of_birth']);
-        $employeeData['date_of_joining']= dateConvertFormtoDB($data['date_of_joining']);
-        $employeeData['date_of_leaving']= dateConvertFormtoDB($data['date_of_leaving']);
+        $employeeData['date_of_joining'] = dateConvertFormtoDB($data['date_of_joining']);
+        $employeeData['date_of_leaving'] = dateConvertFormtoDB($data['date_of_leaving']);
         $employeeData['marital_status'] = $data['marital_status'];
         $employeeData['address']        = $data['address'];
         $employeeData['emergency_contacts'] = $data['emergency_contacts'];
         $employeeData['gender']         = $data['gender'];
-        $employeeData['religion']       = $data['religion'];
+        // $employeeData['religion']       = $data['religion'];
         $employeeData['phone']          = $data['phone'];
         $employeeData['status']         = $data['status'];
         $employeeData['kyc_doc']        = $data['kyc_doc'];
@@ -53,11 +56,12 @@ class EmployeeRepository
     }
 
 
-    public function makeEmployeeEducationDataFormat($data,$employee_id,$action = false){
+    public function makeEmployeeEducationDataFormat($data, $employee_id, $action = false)
+    {
         $educationData = [];
-        if(isset($data['institute'])) {
-            for ($i=0; $i < count($data['institute']); $i++) {
-                $educationData[$i] =[
+        if (isset($data['institute'])) {
+            for ($i = 0; $i < count($data['institute']); $i++) {
+                $educationData[$i] = [
                     'employee_id'       => $employee_id,
                     'institute'         => $data['institute'][$i],
                     'board_university'  => $data['board_university'][$i],
@@ -66,7 +70,7 @@ class EmployeeRepository
                     'result'            => $data['result'][$i],
                     'cgpa'              => $data['cgpa'][$i],
                 ];
-                if($action == 'update'){
+                if ($action == 'update') {
                     $educationData[$i]['educationQualification_cid'] = $data['educationQualification_cid'][$i];
                 }
             }
@@ -75,9 +79,10 @@ class EmployeeRepository
     }
 
 
-    public function makeEmployeeExperienceDataFormat($data,$employee_id,$action = false){
+    public function makeEmployeeExperienceDataFormat($data, $employee_id, $action = false)
+    {
         $experienceData = [];
-        if(isset($data['organization_name'])) {
+        if (isset($data['organization_name'])) {
             for ($i = 0; $i < count($data['organization_name']); $i++) {
                 $experienceData[$i] = [
                     'employee_id'           => $employee_id,
@@ -88,12 +93,11 @@ class EmployeeRepository
                     'responsibility'        => $data['responsibility'][$i],
                     'skill'                 => $data['skill'][$i],
                 ];
-                if($action == 'update'){
+                if ($action == 'update') {
                     $experienceData[$i]['employeeExperience_cid'] = $data['employeeExperience_cid'][$i];
                 }
             }
         }
         return $experienceData;
     }
-
 }

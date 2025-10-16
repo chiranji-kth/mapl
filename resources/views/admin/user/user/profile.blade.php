@@ -11,26 +11,27 @@
 		box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 		padding: 10px 15px;
 	}
-	.item{
+
+	.item {
 		padding: 13px 21px;
 	}
-
 </style>
 <div class="container-fluid">
 	<div class="row bg-title">
 		<div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-		   <ol class="breadcrumb">
+			<ol class="breadcrumb">
 				<li class="active breadcrumbColor"><a href="{{ url('dashboard') }}"><i class="fa fa-home"></i> @lang('dashboard.dashboard')</a></li>
 				<li>@yield('title')</li>
 			</ol>
-		</div>	
+		</div>
 
 	</div>
-                
+
 	<div class="row">
 		<div class="col-sm-12">
-			<div class="panel panel-info"><div class="panel-heading"><i class="mdi mdi-table fa-fw"></i> 
-@lang('employee.profile')</div>
+			<div class="panel panel-info">
+				<div class="panel-heading"><i class="mdi mdi-table fa-fw"></i>
+					@lang('employee.profile')</div>
 				<div class="panel-wrapper collapse in" aria-expanded="true">
 					<div class="panel-body">
 						<div class="panel-body">
@@ -38,22 +39,25 @@
 								<div class="col-xs-6 col-sm-6 col-md-4">
 									<div id="resume">
 										<p><strong>{{$employeeInfo->first_name}} {{$employeeInfo->last_name}}</strong></p>
-										<p><b>@lang('employee.email') :</b> {{$employeeInfo->email}}</p><p>
-										</p><p class="applicant_address"> <b>@lang('employee.address') : </b> {{$employeeInfo->address}}</p>
-										<p> <b>@lang('employee.phone') :</b>   {{$employeeInfo->phone}}</p><p>
+										<p><b>@lang('employee.email') :</b> {{$employeeInfo->email}}</p>
+										<p>
+										</p>
+										<p class="applicant_address"> <b>@lang('employee.address') : </b> {{$employeeInfo->address}}</p>
+										<p> <b>@lang('employee.phone') :</b> {{$employeeInfo->phone}}</p>
+										<p>
 
 										</p>
 									</div>
 								</div>
 								<div class="col-md-offset-2 col-xs-6 col-sm-6 col-md-6">
 									<div class="applicant_pic text-right">
-                                        <?php
-                                        	if($employeeInfo->photo !=''){
-                                        ?>
+										<?php
+										if ($employeeInfo->photo != '') {
+										?>
 											<img style="width: 124px;height:135px" src="{!! asset('uploads/employeePhoto/'.$employeeInfo->photo) !!}">
-                                        <?php  }else{ ?>
+										<?php  } else { ?>
 											<img style="width: 124px;height:135px" src="{!! asset('admin_assets/img/default.png') !!}">
-                                        <?php } ?>
+										<?php } ?>
 									</div>
 									<br>
 								</div>
@@ -63,7 +67,7 @@
 								<!----------------------
                                 'ACADEMIC QUALIFICATION:
                                 ------------------------>
-								<div class="education_qualification">
+								<!-- <div class="education_qualification">
 									<section class="content">
 										<div class="row">
 											<div class="col-xs-12">
@@ -113,9 +117,9 @@
 										</div>
 									</section>
 									<br>
-								</div>
+								</div> -->
 
-								<div class="education_qualification">
+								<!-- <div class="education_qualification">
 									<section class="content">
 										<div class="row">
 											<div class="col-xs-12">
@@ -126,33 +130,33 @@
 													<div class="box-body">
 														<table id="example1" class="table table-bordered table-hover">
 															<thead class="education_lable">
-															<tr>
-																<th>@lang('employee.organization_name')</th>
-																<th>@lang('employee.designation')</th>
-																<th>@lang('employee.duration')</th>
-																<th>@lang('employee.skill')</th>
-																<th>@lang('employee.responsibility')</th>
-															</tr>
+																<tr>
+																	<th>@lang('employee.organization_name')</th>
+																	<th>@lang('employee.designation')</th>
+																	<th>@lang('employee.duration')</th>
+																	<th>@lang('employee.skill')</th>
+																	<th>@lang('employee.responsibility')</th>
+																</tr>
 															</thead>
 															<tbody class="education_lable">
 																@if(count($employeeExperience) > 0)
-																	@foreach($employeeExperience as $experience)
-																		<tr>
-																			<td>{{$experience->organization_name}}</td>
-																			<td>{{$experience->designation}}</td>
-																			<td>{{$experience->from_date}} To {{$experience->to_date}}</td>
-																			<td>{{$experience->skill}}</td>
-																			<td>{{$experience->responsibility}}</td>
-																		</tr>
-																	@endforeach
+																@foreach($employeeExperience as $experience)
+																<tr>
+																	<td>{{$experience->organization_name}}</td>
+																	<td>{{$experience->designation}}</td>
+																	<td>{{$experience->from_date}} To {{$experience->to_date}}</td>
+																	<td>{{$experience->skill}}</td>
+																	<td>{{$experience->responsibility}}</td>
+																</tr>
+																@endforeach
 																@else
-																	<tr>
-																		<td>--</td>
-																		<td>--</td>
-																		<td>--</td>
-																		<td>--</td>
-																		<td>--</td>
-																	</tr>
+																<tr>
+																	<td>--</td>
+																	<td>--</td>
+																	<td>--</td>
+																	<td>--</td>
+																	<td>--</td>
+																</tr>
 																@endif
 															</tbody>
 														</table>
@@ -162,7 +166,7 @@
 										</div>
 									</section>
 									<br>
-								</div>
+								</div> -->
 								<!-------------personal info --------->
 
 								<div class="personal_info">
@@ -218,7 +222,7 @@
 											</div>
 											<div class="item">
 												<div class="col-xs-2 col-sm-2 col-md-3">@lang('employee.kyc_doc')</div>
-												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;<?php if($employeeInfo->kyc_file != ''){?>  <a href="{!! asset('uploads/employeeKycDoc/'.$employeeInfo->kyc_file) !!}" traget="_blank">View Doc</a><?php } ?></div>
+												<div class="col-xs-10 col-sm-10 col-md-9">:&nbsp;&nbsp;&nbsp;&nbsp;<?php if ($employeeInfo->kyc_file != '') { ?> <a href="{!! asset('uploads/employeeKycDoc/'.$employeeInfo->kyc_file) !!}" traget="_blank">View Doc</a><?php } ?></div>
 											</div>
 										</div>
 									</div>
@@ -234,9 +238,9 @@
 
 							</div>
 						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
-@endsection
+	@endsection

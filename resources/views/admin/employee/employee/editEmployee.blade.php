@@ -1,7 +1,7 @@
 @extends('admin.master')
 @section('content')
 @section('title')
-    @lang('employee.edit_employee')
+@lang('employee.edit_employee')
 @endsection
 <style>
     .appendBtnColor {
@@ -49,9 +49,10 @@
                                         <select name="role_id" class="form-control user_id required select2" required>
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             @foreach ($roleList as $value)
-                                                <option value="{{ $value->role_id }}"
-                                                    @if ($value->role_id == $employeeAccountEditModeData->role_id) {{ 'selected' }} @endif>
-                                                    {{ $value->role_name }}</option>
+                                            <option value="{{ $value->role_id }}"
+                                                @if ($value->role_id == $employeeAccountEditModeData->role_id) {{ 'selected' }} @endif>
+                                                {{ $value->role_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -97,6 +98,21 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
+                                        <label for="exampleInput">@lang('designation.designation_name')<span
+                                                class="validateRq">*</span></label>
+                                        <select name="designation_id" class="form-control department_id select2">
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            @foreach ($designationList as $value)
+                                            <option value="{{ $value->designation_id }}"
+                                                @if ($value->designation_id == $editModeData->designation_id) {{ 'selected' }} @endif>
+                                                {{ $value->designation_name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-md-3">
+                                    <div class="form-group">
                                         <label for="exampleInput">@lang('employee.supervisor')</label>
                                         <select name="supervisor_id"
                                             class="form-control supervisor_id required select2">
@@ -108,93 +124,41 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                             <div class="row">
-                                <div class="col-md-3">
+                                <!-- <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('department.department_name')<span
                                                 class="validateRq">*</span></label>
                                         <select name="department_id" class="form-control department_id  select2">
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             @foreach ($departmentList as $value)
-                                                <option value="{{ $value->department_id }}"
-                                                    @if ($value->department_id == $editModeData->department_id) {{ 'selected' }} @endif>
-                                                    {{ $value->department_name }}</option>
+                                            <option value="{{ $value->department_id }}"
+                                                @if ($value->department_id == $editModeData->department_id) {{ 'selected' }} @endif>
+                                                {{ $value->department_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="exampleInput">@lang('designation.designation_name')<span
-                                                class="validateRq">*</span></label>
-                                        <select name="designation_id" class="form-control department_id select2">
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            @foreach ($designationList as $value)
-                                                <option value="{{ $value->designation_id }}"
-                                                    @if ($value->designation_id == $editModeData->designation_id) {{ 'selected' }} @endif>
-                                                    {{ $value->designation_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
+                                </div> -->
+                                <select name="department_id" class="form-control department_id " style="display:none">
+                                    <option value="18" selected>Operator</option>
+                                    </option>
+                                </select>
+
+
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('branch.branch_name')</label>
                                         <select name="branch_id" class="form-control branch_id select2">
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             @foreach ($branchList as $value)
-                                                <option value="{{ $value->branch_id }}"
-                                                    @if ($value->branch_id == $editModeData->branch_id) {{ 'selected' }} @endif>
-                                                    {{ $value->branch_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="exampleInput">@lang('work_shift.work_shift_name')<span
-                                                class="validateRq">*</span></label>
-                                        <select name="work_shift_id" class="form-control work_shift_id select2">
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            @foreach ($workShiftList as $value)
-                                                <option value="{{ $value->work_shift_id }}"
-                                                    @if ($value->work_shift_id == $editModeData->work_shift_id) {{ 'selected' }} @endif>
-                                                    {{ $value->shift_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="exampleInput">@lang('employee.montly_paygrade')<span
-                                                class="validateRq">*</span></label>
-                                        <select name="pay_grade_id" class="form-control pay_grade_id required">
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            @foreach ($payGradeList as $value)
-                                                <option value="{{ $value->pay_grade_id }}"
-                                                    @if ($value->pay_grade_id == $editModeData->pay_grade_id) {{ 'selected' }} @endif>
-                                                    {{ $value->pay_grade_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="exampleInput">@lang('employee.hourly_paygrade')<span
-                                                class="validateRq">*</span></label>
-                                        <select name="hourly_salaries_id"
-                                            class="form-control hourly_pay_grade_id required">
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            @foreach ($hourlyPayGradeList as $value)
-                                                <option value="{{ $value->hourly_salaries_id }}"
-                                                    @if ($value->hourly_salaries_id == $editModeData->hourly_salaries_id) {{ 'selected' }} @endif>
-                                                    {{ $value->hourly_grade }}</option>
+                                            <option value="{{ $value->branch_id }}"
+                                                @if ($value->branch_id == $editModeData->branch_id) {{ 'selected' }} @endif>
+                                                {{ $value->branch_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -218,9 +182,6 @@
                                             value="{{ $editModeData->phone }}">
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.gender')<span
@@ -228,22 +189,77 @@
                                         <select name="gender" class="form-control gender select2">
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             <option value="Male"
-                                                @if ('Male' == $editModeData->gender) {{ 'selected' }} @endif>
+                                                @if ('Male'==$editModeData->gender) {{ 'selected' }} @endif>
                                                 @lang('employee.male')</option>
                                             <option value="Female"
-                                                @if ('Female' == $editModeData->gender) {{ 'selected' }} @endif>
+                                                @if ('Female'==$editModeData->gender) {{ 'selected' }} @endif>
                                                 @lang('employee.female')</option>
                                         </select>
                                     </div>
                                 </div>
+
+                                <!-- <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="exampleInput">@lang('work_shift.work_shift_name')<span
+                                                class="validateRq">*</span></label>
+                                        <select name="work_shift_id" class="form-control work_shift_id select2">
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            @foreach ($workShiftList as $value)
+                                            <option value="{{ $value->work_shift_id }}"
+                                                @if ($value->work_shift_id == $editModeData->work_shift_id) {{ 'selected' }} @endif>
+                                                {{ $value->shift_name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div> -->
+                            </div>
+
+                            <div class="row">
+                                <!-- <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="exampleInput">@lang('employee.montly_paygrade')<span
+                                                class="validateRq">*</span></label>
+                                        <select name="pay_grade_id" class="form-control pay_grade_id required">
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            @foreach ($payGradeList as $value)
+                                            <option value="{{ $value->pay_grade_id }}"
+                                                @if ($value->pay_grade_id == $editModeData->pay_grade_id) {{ 'selected' }} @endif>
+                                                {{ $value->pay_grade_name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="exampleInput">@lang('employee.hourly_paygrade')<span
+                                                class="validateRq">*</span></label>
+                                        <select name="hourly_salaries_id"
+                                            class="form-control hourly_pay_grade_id required">
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            @foreach ($hourlyPayGradeList as $value)
+                                            <option value="{{ $value->hourly_salaries_id }}"
+                                                @if ($value->hourly_salaries_id == $editModeData->hourly_salaries_id) {{ 'selected' }} @endif>
+                                                {{ $value->hourly_grade }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div> -->
+
+
+                            </div>
+
+                            <div class="row">
+                                <!-- <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.religion')</label>
                                         <input class="form-control religion" id="religion"
                                             placeholder="@lang('employee.religion')" name="religion" type="text"
                                             value="{{ $editModeData->religion }}">
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="col-md-3">
                                     <label for="exampleInput">@lang('employee.date_of_birth')<span
                                             class="validateRq">*</span></label>
@@ -266,10 +282,7 @@
                                             value="{{ dateConvertDBtoForm($editModeData->date_of_joining) }}">
                                     </div>
                                 </div>
-                            </div>
 
-
-                            <div class="row">
                                 <div class="col-md-3">
                                     <label for="exampleInput">@lang('employee.date_of_leaving')</label>
                                     <div class="input-group">
@@ -286,26 +299,30 @@
                                         <select name="marital_status" class="form-control status required select2">
                                             <option value="">--- Please select ---</option>
                                             <option value="Unmarried"
-                                                @if ('Unmarried' == $editModeData->marital_status) {{ 'selected' }} @endif>
+                                                @if ('Unmarried'==$editModeData->marital_status) {{ 'selected' }} @endif>
                                                 @lang('employee.unmarried')</option>
                                             <option value="Married"
-                                                @if ('Married' == $editModeData->marital_status) {{ 'selected' }} @endif>
+                                                @if ('Married'==$editModeData->marital_status) {{ 'selected' }} @endif>
                                                 @lang('employee.married')</option>
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+
+
+                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">Status<span class="validateRq">*</span></label>
                                         <select name="status" class="form-control status select2">
                                             <option value="1"
-                                                @if ('1' == $editModeData->status) {{ 'selected' }} @endif>
+                                                @if ('1'==$editModeData->status) {{ 'selected' }} @endif>
                                                 @lang('common.active')</option>
                                             <option value="2"
-                                                @if ('2' == $editModeData->status) {{ 'selected' }} @endif>
+                                                @if ('2'==$editModeData->status) {{ 'selected' }} @endif>
                                                 @lang('common.inactive')</option>
                                             <option value="3"
-                                                @if ('3' == $editModeData->status) {{ 'selected' }} @endif>
+                                                @if ('3'==$editModeData->status) {{ 'selected' }} @endif>
                                                 @lang('common.terminated')</option>
                                         </select>
                                     </div>
@@ -319,8 +336,6 @@
                                             type="file">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.kyc')</label>
@@ -344,6 +359,9 @@
                                             type="file">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
+
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.address')</label>
@@ -360,105 +378,105 @@
                                 </div>
                             </div>
                             <br>
-                            <h3 class="box-title">@lang('employee.educational_qualification')</h3>
+                            <!-- <h3 class="box-title">@lang('employee.educational_qualification')</h3>
                             <hr>
                             <div class="education_qualification_append_div">
                                 @if (isset($editModeData) && count($educationQualificationEditModeData) > 0)
-                                    @foreach ($educationQualificationEditModeData as $educationQualificationValue)
-                                        <div class="education_qualification_row_element">
-                                            <input class="educationQualification_cid" id="educationQualification_cid"
-                                                name="educationQualification_cid[]" type="hidden"
-                                                value="{{ $educationQualificationValue->employee_education_qualification_id }}">
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="exampleInput">@lang('employee.institute')<span
-                                                                class="validateRq">*</span></label>
-                                                        <select name="institute[]" class="form-control institute">
-                                                            <option value="">--- @lang('common.please_select') ---</option>
-                                                            <option value="Board"
-                                                                @if ($educationQualificationValue->institute == 'Board') {{ 'selected' }} @endif>
-                                                                @lang('employee.board')</option>
-                                                            <option value="University"
-                                                                @if ($educationQualificationValue->institute == 'University') {{ 'selected' }} @endif>
-                                                                @lang('employee.university')</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="exampleInput">@lang('employee.board') /
-                                                            @lang('employee.university')<span class="validateRq">*</span></label>
-                                                        <input type="text" name="board_university[]"
-                                                            class="form-control board_university"
-                                                            id="board_university"
-                                                            placeholder="@lang('employee.board') / @lang('employee.university')"
-                                                            value="{{ $educationQualificationValue->board_university }}">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="exampleInput">@lang('employee.degree')<span
-                                                                class="validateRq">*</span></label>
-                                                        <input type="text" name="degree[]"
-                                                            class="form-control degree required" id="degree"
-                                                            placeholder="Example: B.Sc. Engr.(Bachelor of Science in Engineering)"
-                                                            value="{{ $educationQualificationValue->degree }}">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label for="exampleInput">@lang('employee.passing_year')<span
-                                                            class="validateRq">*</span></label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon"><i
-                                                                class="fa fa-calendar-o"></i></span>
-                                                        <input type="text" name="passing_year[]"
-                                                            class="form-control yearPicker required" id="passing_year"
-                                                            placeholder="@lang('employee.passing_year')"
-                                                            value="{{ $educationQualificationValue->passing_year }}">
-                                                    </div>
-                                                </div>
+                                @foreach ($educationQualificationEditModeData as $educationQualificationValue)
+                                <div class="education_qualification_row_element">
+                                    <input class="educationQualification_cid" id="educationQualification_cid"
+                                        name="educationQualification_cid[]" type="hidden"
+                                        value="{{ $educationQualificationValue->employee_education_qualification_id }}">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="exampleInput">@lang('employee.institute')<span
+                                                        class="validateRq">*</span></label>
+                                                <select name="institute[]" class="form-control institute">
+                                                    <option value="">--- @lang('common.please_select') ---</option>
+                                                    <option value="Board"
+                                                        @if ($educationQualificationValue->institute == 'Board') {{ 'selected' }} @endif>
+                                                        @lang('employee.board')</option>
+                                                    <option value="University"
+                                                        @if ($educationQualificationValue->institute == 'University') {{ 'selected' }} @endif>
+                                                        @lang('employee.university')</option>
+                                                </select>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="exampleInput">@lang('employee.result')</label>
-                                                        <select name="result[]" class="form-control result">
-                                                            <option value="">--- @lang('common.please_select') ---</option>
-                                                            <option value="First class"
-                                                                @if ($educationQualificationValue->result == 'First class') {{ 'selected' }} @endif>
-                                                                First class</option>
-                                                            <option value="Second class"
-                                                                @if ($educationQualificationValue->result == 'Second class') {{ 'selected' }} @endif>
-                                                                Second class</option>
-                                                            <option value="Third class"
-                                                                @if ($educationQualificationValue->result == 'Third class') {{ 'selected' }} @endif>
-                                                                Third class</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="exampleInput">@lang('employee.gpa') /
-                                                            @lang('employee.cgpa')</label>
-                                                        <input type="text" name="cgpa[]"
-                                                            class="form-control cgpa" id="cgpa"
-                                                            placeholder="Example: 5.00,4.63"
-                                                            value="{{ $educationQualificationValue->cgpa }}">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3"></div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <input type="button"
-                                                            class="form-control btn btn-danger deleteEducationQualification appendBtnColor"
-                                                            style="margin-top: 17px" value="@lang('common.delete')">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <hr>
                                         </div>
-                                    @endforeach
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="exampleInput">@lang('employee.board') /
+                                                    @lang('employee.university')<span class="validateRq">*</span></label>
+                                                <input type="text" name="board_university[]"
+                                                    class="form-control board_university"
+                                                    id="board_university"
+                                                    placeholder="@lang('employee.board') / @lang('employee.university')"
+                                                    value="{{ $educationQualificationValue->board_university }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="exampleInput">@lang('employee.degree')<span
+                                                        class="validateRq">*</span></label>
+                                                <input type="text" name="degree[]"
+                                                    class="form-control degree required" id="degree"
+                                                    placeholder="Example: B.Sc. Engr.(Bachelor of Science in Engineering)"
+                                                    value="{{ $educationQualificationValue->degree }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="exampleInput">@lang('employee.passing_year')<span
+                                                    class="validateRq">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i
+                                                        class="fa fa-calendar-o"></i></span>
+                                                <input type="text" name="passing_year[]"
+                                                    class="form-control yearPicker required" id="passing_year"
+                                                    placeholder="@lang('employee.passing_year')"
+                                                    value="{{ $educationQualificationValue->passing_year }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="exampleInput">@lang('employee.result')</label>
+                                                <select name="result[]" class="form-control result">
+                                                    <option value="">--- @lang('common.please_select') ---</option>
+                                                    <option value="First class"
+                                                        @if ($educationQualificationValue->result == 'First class') {{ 'selected' }} @endif>
+                                                        First class</option>
+                                                    <option value="Second class"
+                                                        @if ($educationQualificationValue->result == 'Second class') {{ 'selected' }} @endif>
+                                                        Second class</option>
+                                                    <option value="Third class"
+                                                        @if ($educationQualificationValue->result == 'Third class') {{ 'selected' }} @endif>
+                                                        Third class</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="exampleInput">@lang('employee.gpa') /
+                                                    @lang('employee.cgpa')</label>
+                                                <input type="text" name="cgpa[]"
+                                                    class="form-control cgpa" id="cgpa"
+                                                    placeholder="Example: 5.00,4.63"
+                                                    value="{{ $educationQualificationValue->cgpa }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3"></div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <input type="button"
+                                                    class="form-control btn btn-danger deleteEducationQualification appendBtnColor"
+                                                    style="margin-top: 17px" value="@lang('common.delete')">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                @endforeach
                                 @endif
                             </div>
                             <div class="row">
@@ -468,93 +486,93 @@
                                             class="form-control btn btn-success appendBtnColor"
                                             value="@lang('employee.add_educational_qualification')"></div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
 
-                        <h3 class="box-title">@lang('employee.professional_experience')</h3>
+                        <!-- <h3 class="box-title">@lang('employee.professional_experience')</h3>
                         <hr>
                         <div class="experience_append_div">
                             @if (isset($editModeData) && count($experienceEditModeData) > 0)
-                                @foreach ($experienceEditModeData as $experienceValue)
-                                    <div class="experience_row_element">
-                                        <input class="employee_experience_id" id="employee_experience_id"
-                                            name="employeeExperience_cid[]" type="hidden"
-                                            value="{{ $experienceValue->employee_experience_id }}">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="exampleInput">@lang('employee.organization_name')<span
-                                                            class="validateRq">*</span></label>
-                                                    <input type="text" name="organization_name[]"
-                                                        class="form-control organization_name" id="organization_name"
-                                                        placeholder="@lang('employee.organization_name')"
-                                                        value="{{ $experienceValue->organization_name }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="exampleInput">@lang('employee.designation')<span
-                                                            class="validateRq">*</span></label>
-                                                    <input type="text" name="designation[]"
-                                                        class="form-control designation" id="designation"
-                                                        placeholder="@lang('employee.designation')"
-                                                        value="{{ dateConvertDBtoForm($experienceValue->designation) }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="exampleInput">@lang('common.from_date')<span
-                                                        class="validateRq">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon"><i
-                                                            class="fa fa-calendar"></i></span>
-                                                    <input type="text" name="from_date[]"
-                                                        class="form-control dateField" id="from_date"
-                                                        placeholder="@lang('common.from_date')"
-                                                        value="{{ dateConvertDBtoForm($experienceValue->from_date) }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="exampleInput">@lang('common.to_date')<span
-                                                        class="validateRq">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon"><i
-                                                            class="fa fa-calendar"></i></span>
-                                                    <input type="text" name="to_date[]"
-                                                        class="form-control dateField" id="to_date"
-                                                        placeholder="@lang('common.to_date')"
-                                                        value="{{ dateConvertDBtoForm($experienceValue->to_date) }}">
-                                                </div>
-                                            </div>
+                            @foreach ($experienceEditModeData as $experienceValue)
+                            <div class="experience_row_element">
+                                <input class="employee_experience_id" id="employee_experience_id"
+                                    name="employeeExperience_cid[]" type="hidden"
+                                    value="{{ $experienceValue->employee_experience_id }}">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="exampleInput">@lang('employee.organization_name')<span
+                                                    class="validateRq">*</span></label>
+                                            <input type="text" name="organization_name[]"
+                                                class="form-control organization_name" id="organization_name"
+                                                placeholder="@lang('employee.organization_name')"
+                                                value="{{ $experienceValue->organization_name }}">
                                         </div>
-
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="exampleInput">@lang('employee.responsibility')<span
-                                                            class="validateRq">*</span></label>
-                                                    <textarea name="responsibility[]" class="form-control responsibility" placeholder="@lang('employee.responsibility')"
-                                                        cols="30" rows="2" required>{{ $experienceValue->responsibility }}</textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="exampleInput">@lang('employee.skill')<span
-                                                            class="validateRq">*</span></label>
-                                                    <textarea name="skill[]" class="form-control skill" placeholder="@lang('employee.skill')" cols="30" rows="2">{{ $experienceValue->skill }}</textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3"></div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <input type="button"
-                                                        class="form-control btn btn-danger deleteExperience appendBtnColor"
-                                                        style="margin-top: 17px" value="@lang('common.delete')">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <hr>
                                     </div>
-                                @endforeach
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="exampleInput">@lang('employee.designation')<span
+                                                    class="validateRq">*</span></label>
+                                            <input type="text" name="designation[]"
+                                                class="form-control designation" id="designation"
+                                                placeholder="@lang('employee.designation')"
+                                                value="{{ dateConvertDBtoForm($experienceValue->designation) }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="exampleInput">@lang('common.from_date')<span
+                                                class="validateRq">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i
+                                                    class="fa fa-calendar"></i></span>
+                                            <input type="text" name="from_date[]"
+                                                class="form-control dateField" id="from_date"
+                                                placeholder="@lang('common.from_date')"
+                                                value="{{ dateConvertDBtoForm($experienceValue->from_date) }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="exampleInput">@lang('common.to_date')<span
+                                                class="validateRq">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i
+                                                    class="fa fa-calendar"></i></span>
+                                            <input type="text" name="to_date[]"
+                                                class="form-control dateField" id="to_date"
+                                                placeholder="@lang('common.to_date')"
+                                                value="{{ dateConvertDBtoForm($experienceValue->to_date) }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="exampleInput">@lang('employee.responsibility')<span
+                                                    class="validateRq">*</span></label>
+                                            <textarea name="responsibility[]" class="form-control responsibility" placeholder="@lang('employee.responsibility')"
+                                                cols="30" rows="2" required>{{ $experienceValue->responsibility }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="exampleInput">@lang('employee.skill')<span
+                                                    class="validateRq">*</span></label>
+                                            <textarea name="skill[]" class="form-control skill" placeholder="@lang('employee.skill')" cols="30" rows="2">{{ $experienceValue->skill }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="button"
+                                                class="form-control btn btn-danger deleteExperience appendBtnColor"
+                                                style="margin-top: 17px" value="@lang('common.delete')">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+                            @endforeach
                             @endif
                         </div>
                         <div class="row">
@@ -564,7 +582,7 @@
                                         class="form-control btn btn-success appendBtnColor"
                                         value="@lang('employee.add_professional_experience')"></div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form-actions">
                             <div class="row">
                                 <div class="col-md-12 ">
@@ -779,7 +797,5 @@
         });
 
     });
-    
-    
 </script>
 @endsection

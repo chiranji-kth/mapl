@@ -1,7 +1,7 @@
 @extends('admin.master')
 @section('content')
 @section('title')
-    @lang('employee.add_employee')
+@lang('employee.add_employee')
 @endsection
 <style>
     .appendBtnColor {
@@ -45,9 +45,10 @@
                                         <select name="role_id" class="form-control user_id required select2" required>
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             @foreach ($roleList as $value)
-                                                <option value="{{ $value->role_id }}"
-                                                    @if ($value->role_id == old('role_id')) {{ 'selected' }} @endif>
-                                                    {{ $value->role_name }}</option>
+                                            <option value="{{ $value->role_id }}"
+                                                @if ($value->role_id == old('role_id')) {{ 'selected' }} @endif>
+                                                {{ $value->role_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -111,6 +112,23 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
+                                        <label for="exampleInput">@lang('designation.designation_name')<span
+                                                class="validateRq">*</span></label>
+                                        <select name="designation_id" class="form-control department_id select2"
+                                            required>
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            @foreach ($designationList as $value)
+                                            <option value="{{ $value->designation_id }}"
+                                                @if ($value->designation_id == old('designation_id')) {{ 'selected' }} @endif>
+                                                {{ $value->designation_name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- <div class="col-md-3">
+                                    <div class="form-group">
                                         <label for="exampleInput">@lang('employee.supervisor')</label>
                                         <select name="supervisor_id"
                                             class="form-control supervisor_id required select2">
@@ -122,11 +140,11 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                             <div class="row">
-                                <div class="col-md-3">
+                                <!-- <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('department.department_name')<span
                                                 class="validateRq">*</span></label>
@@ -134,42 +152,22 @@
                                             required>
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             @foreach ($departmentList as $value)
-                                                <option value="{{ $value->department_id }}"
-                                                    @if ($value->department_id == old('department_id')) {{ 'selected' }} @endif>
-                                                    {{ $value->department_name }}</option>
+                                            <option value="{{ $value->department_id }}"
+                                                @if ($value->department_id == old('department_id')) {{ 'selected' }} @endif>
+                                                {{ $value->department_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="exampleInput">@lang('designation.designation_name')<span
-                                                class="validateRq">*</span></label>
-                                        <select name="designation_id" class="form-control department_id select2"
-                                            required>
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            @foreach ($designationList as $value)
-                                                <option value="{{ $value->designation_id }}"
-                                                    @if ($value->designation_id == old('designation_id')) {{ 'selected' }} @endif>
-                                                    {{ $value->designation_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="exampleInput">@lang('branch.branch_name')</label>
-                                        <select name="branch_id" class="form-control branch_id select2">
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            @foreach ($branchList as $value)
-                                                <option value="{{ $value->branch_id }}"
-                                                    @if ($value->branch_id == old('branch_id')) {{ 'selected' }} @endif>
-                                                    {{ $value->branch_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
+                                </div> -->
+
+                                <select name="department_id" class="form-control department_id " style="display:none">
+                                    <option value="18" selected>Operator</option>
+                                    </option>
+                                </select>
+
+
+                                <!-- <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('work_shift.work_shift_name')<span
                                                 class="validateRq">*</span></label>
@@ -177,17 +175,18 @@
                                             required>
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             @foreach ($workShiftList as $value)
-                                                <option value="{{ $value->work_shift_id }}"
-                                                    @if ($value->work_shift_id == old('work_shift_id')) {{ 'selected' }} @endif>
-                                                    {{ $value->shift_name }}</option>
+                                            <option value="{{ $value->work_shift_id }}"
+                                                @if ($value->work_shift_id == old('work_shift_id')) {{ 'selected' }} @endif>
+                                                {{ $value->shift_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                             <div class="row">
-                                <div class="col-md-3">
+                                <!-- <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.montly_paygrade')<span
                                                 class="validateRq">*</span></label>
@@ -195,9 +194,10 @@
                                             required>
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             @foreach ($payGradeList as $value)
-                                                <option value="{{ $value->pay_grade_id }}"
-                                                    @if ($value->pay_grade_id == old('pay_grade_id')) {{ 'selected' }} @endif>
-                                                    {{ $value->pay_grade_name }}</option>
+                                            <option value="{{ $value->pay_grade_id }}"
+                                                @if ($value->pay_grade_id == old('pay_grade_id')) {{ 'selected' }} @endif>
+                                                {{ $value->pay_grade_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -210,9 +210,24 @@
                                             class="form-control hourly_pay_grade_id required" required>
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             @foreach ($hourlyPayGradeList as $value)
-                                                <option value="{{ $value->hourly_salaries_id }}"
-                                                    @if ($value->hourly_salaries_id == old('hourly_salaries_id')) {{ 'selected' }} @endif>
-                                                    {{ $value->hourly_grade }}</option>
+                                            <option value="{{ $value->hourly_salaries_id }}"
+                                                @if ($value->hourly_salaries_id == old('hourly_salaries_id')) {{ 'selected' }} @endif>
+                                                {{ $value->hourly_grade }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div> -->
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="exampleInput">@lang('branch.branch_name')</label>
+                                        <select name="branch_id" class="form-control branch_id select2">
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            @foreach ($branchList as $value)
+                                            <option value="{{ $value->branch_id }}"
+                                                @if ($value->branch_id == old('branch_id')) {{ 'selected' }} @endif>
+                                                {{ $value->branch_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -236,9 +251,6 @@
                                             value="{{ old('phone') }}">
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.gender')<span
@@ -246,22 +258,25 @@
                                         <select name="gender" class="form-control gender select2" required>
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             <option value="Male"
-                                                @if ('Male' == old('gender')) {{ 'selected' }} @endif>
+                                                @if ('Male'==old('gender')) {{ 'selected' }} @endif>
                                                 @lang('employee.male')</option>
                                             <option value="Female"
-                                                @if ('Female' == old('gender')) {{ 'selected' }} @endif>
+                                                @if ('Female'==old('gender')) {{ 'selected' }} @endif>
                                                 @lang('employee.female')</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                            </div>
+
+                            <div class="row">
+                                <!-- <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.religion')</label>
                                         <input class="form-control religion" id="religion"
                                             placeholder="@lang('employee.religion')" name="religion" type="text"
                                             value="{{ old('religion') }}">
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="col-md-3">
                                     <label for="exampleInput">@lang('employee.date_of_birth')<span
                                             class="validateRq">*</span></label>
@@ -283,9 +298,6 @@
                                             value="{{ old('date_of_joining') }}">
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
                                 <div class="col-md-3">
                                     <label for="exampleInput">@lang('employee.date_of_leaving')</label>
                                     <div class="input-group">
@@ -302,24 +314,27 @@
                                         <select name="marital_status" class="form-control status required select2">
                                             <option value="">--- @lang('common.please_select') ---</option>
                                             <option value="Unmarried"
-                                                @if ('Unmarried' == old('marital_status')) {{ 'selected' }} @endif>
+                                                @if ('Unmarried'==old('marital_status')) {{ 'selected' }} @endif>
                                                 @lang('employee.unmarried')</option>
                                             <option value="Married"
-                                                @if ('Married' == old('marital_status')) {{ 'selected' }} @endif>
+                                                @if ('Married'==old('marital_status')) {{ 'selected' }} @endif>
                                                 @lang('employee.married')</option>
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('common.status')<span
                                                 class="validateRq">*</span></label>
                                         <select name="status" class="form-control status select2" required>
                                             <option value="1"
-                                                @if ('1' == old('status')) {{ 'selected' }} @endif>
+                                                @if ('1'==old('status')) {{ 'selected' }} @endif>
                                                 @lang('common.active')</option>
                                             <option value="2"
-                                                @if ('2' == old('status')) {{ 'selected' }} @endif>
+                                                @if ('2'==old('status')) {{ 'selected' }} @endif>
                                                 @lang('common.inactive')</option>
                                         </select>
                                     </div>
@@ -333,8 +348,6 @@
                                             type="file">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.kyc')</label>
@@ -358,6 +371,8 @@
                                             type="file">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.address')</label>
@@ -374,12 +389,12 @@
                                 </div>
                             </div>
                             <br>
-                            <h3 class="box-title">@lang('employee.educational_qualification')</h3>
+                            <!-- <h3 class="box-title">@lang('employee.educational_qualification')</h3>
                             <hr>
                             <div class="education_qualification_append_div">
 
-                            </div>
-                            <div class="row">
+                            </div> -->
+                            <!-- <div class="row">
                                 <div class="col-md-9"></div>
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -388,10 +403,10 @@
                                             value="@lang('employee.add_educational_qualification')">
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
 
-                        <h3 class="box-title">@lang('employee.professional_experience')</h3>
+                        <!-- <h3 class="box-title">@lang('employee.professional_experience')</h3>
                         <hr>
                         <div class="experience_append_div">
 
@@ -403,7 +418,7 @@
                                         class="form-control btn btn-success appendBtnColor"
                                         value="@lang('employee.add_professional_experience')"></div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form-actions">
                             <div class="row">
                                 <div class="col-md-12 ">

@@ -64,7 +64,7 @@ Create Employee
                                         <input class="form-control dob dateField" readonly
                                             id="dob" placeholder="Date of Bitrh"
                                             name="date_of_joining" type="text"
-                                            value="{{ old('dob') }}">
+                                            value="{{ $empModeData->dob }}">
                                     </div>
                                 </div>
                                 <div class="col-md-3">

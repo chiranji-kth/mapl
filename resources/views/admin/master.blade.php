@@ -391,6 +391,35 @@ $front_setting = getFrontData();
                         </ul>
                     </li>
 
+                    <li class="treeview waves-effect">
+                        <a href="javascript:void(0)" class="module">
+                            <i class="iconFontSize mdi mdi-home hideMenu"></i>
+                            <span class="hide-menu hideMenu">&nbsp;Role/Permission
+                                <span class="fa arrow"></span>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu nav nav-second-level">
+
+                            <li><a href="<?= route('userRole.index'); ?>"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hideMenu">Role</span></a></li>
+                            <li><a href="<?= route('rolePermission.index'); ?>"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hideMenu">Permission</span></a></li>
+
+                        </ul>
+                    </li>
+
+                    <li class="treeview waves-effect">
+                        <a href="javascript:void(0)" class="module">
+                            <i class="iconFontSize mdi mdi-home hideMenu"></i>
+                            <span class="hide-menu hideMenu">&nbsp;Staff
+                                <span class="fa arrow"></span>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu nav nav-second-level">
+
+                            <li><a href="<?= route('employee.index'); ?>"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hideMenu">Staff</span></a></li>
+
+                        </ul>
+                    </li>
+
                     <?php
                     // $sideMenu = showMenu();
                     // $menuItem = '';
