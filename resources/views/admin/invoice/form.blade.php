@@ -13,7 +13,7 @@
             </ol>
         </div>
         <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
-            <a href="{{ route('customer.index') }}"
+            <a href="{{ route('invoice.index') }}"
                 class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light"><i
                     class="fa fa-list-ul" aria-hidden="true"></i> View Invoice </a>
         </div>
@@ -35,14 +35,16 @@
                                             @foreach($companys as $company)
                                             <option value="<?= $company->company_id ?>"><?= $company->company_name ?></option>
                                             @endforeach
+                                            <option value="other">
+                                                Other
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <label for="exampleInput">Branch<span class="validateRq">*</span></label>
-                                    <div class="input-group col-md-12">
-                                        <input type="hidden" name="branch_id" id="branch_hidden">
-                                        <input type="text" name="branchid" id="branchid" class="form-control" readonly>
+                                    <div class="input-group col-md-12" id="branch">
+
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -163,7 +165,7 @@
                                 </div>
                             </div>
                             <br>
-                            <!-- <button type="button" id="add-row" class="btn btn-primary pb-5" style="margin-bottom: 50px;"><i class="fa fa-plus"></i> Add Row</button> -->
+                            <button type="button" id="add-row" class="btn btn-primary pb-5" style="margin-bottom: 50px; display: none"><i class="fa fa-plus"></i> Add Row</button>
                             <br><br>
 
 
@@ -243,39 +245,58 @@
 
         $('#company_id').on('change', function() {
             const companyId = $(this).val();
-            const branchInput = $('#branchid');
-            const hiddenBranchId = $('#branch_hidden');
 
-            branchInput.val('');
-            hiddenBranchId.val('');
+            // Reset sections
+            $('#branch').html('');
+            $('#otherCompanyFields').slideUp();
+            $('#otherCompanyFields input').val('');
+            $('#add-row').hide(); // Hide Add Row button by default
 
             if (companyId && companyId !== 'other') {
+                // Fetch branch for selected company
                 $.ajax({
                     url: "{{ url('invoice/get-branch') }}/" + companyId,
                     type: 'GET',
                     success: function(data) {
                         if (data && data.name) {
-                            branchInput.val(data.name);
-                            hiddenBranchId.val(data.id);
+                            $('#branch').html(`
+                                <input type="hidden" name="branch_id" id="branch_hidden" value="${data.id}">
+                                <input type="text" name="branch_name" id="branchid" class="form-control" value="${data.name}" readonly>
+                            `);
                         } else {
-                            branchInput.val('No branch found');
+                            $('#branch').html('<input type="text" class="form-control" value="No branch found" readonly>');
                         }
                     },
                     error: function() {
                         alert('Error fetching branch. Please try again.');
                     }
                 });
+
                 loadAssignJobs();
 
             } else if (companyId === 'other') {
+                // Show fields for Other company
                 $('#otherCompanyFields').slideDown();
-                branchInput.val('').attr('placeholder', 'Enter Branch');
+
+                // Show branch dropdown
+                $('#branch').html(`
+                    <select class="form-control required" name="branch_id" id="branch_id" required>
+                        <option value="">Select Branch</option>
+                        <option value="1">MAPL</option>
+                        <option value="2">AASTHA</option>
+                    </select>
+                `);
+
+                // ✅ Show Add Row button
+                $('#add-row').show();
             } else {
-                $('#otherCompanyFields').slideUp();
-                $('#otherCompanyFields input').val('');
-                branchInput.val('');
+                // Reset if no company selected
+                $('#branch').html('');
+                $('#add-row').hide();
             }
         });
+
+
 
 
         $('#add-row').click(function() {
@@ -376,7 +397,8 @@
 
             if (month >= 1 && month <= 12) {
                 const daysInMonth = new Date(year, month, 0).getDate();
-                const payout = (days * rate * qty) / daysInMonth;
+                // const payout = (days * rate * qty) / daysInMonth;
+                const payout = days * rate * qty;
                 row.find('.payout').val(payout.toFixed(2));
             } else {
                 row.find('.payout').val('');

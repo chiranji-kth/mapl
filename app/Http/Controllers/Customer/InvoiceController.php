@@ -117,11 +117,13 @@ class InvoiceController extends Controller
 
     public function edit($id)
     {
-        $invoice = Invoice::findOrFail($id);
+        $invoice = Invoice::with('details')->findOrFail($id);
+
         $companys = Company::orderBy('company_id', 'DESC')->get();
+        $jobs = Job::where('status', true)->get();
         $details = $invoice->details;
 
-        return view('admin.invoice.editform', compact('invoice', 'details', 'companys'));
+        return view('admin.invoice.editform', compact('invoice', 'details', 'companys', 'jobs'));
     }
 
     public function update(Request $request, $id)
@@ -199,29 +201,16 @@ class InvoiceController extends Controller
         }
     }
 
-
-
-
-
-
-    // public function destroy($id)
-    // {
-    //     try {
-    //         $data = Customer::FindOrFail($id);
-    //         $data->delete();
-    //         $bug = 0;
-    //     } catch (\Exception $e) {
-    //         $bug = $e->errorInfo[1];
-    //     }
-
-    //     if ($bug == 0) {
-    //         echo "success";
-    //     } elseif ($bug == 1451) {
-    //         echo 'hasForeignKey';
-    //     } else {
-    //         echo 'error';
-    //     }
-    // }
+    public function destroy($id)
+    {
+        try {
+            $data = Invoice::FindOrFail($id);
+            $data->delete();
+            $bug = 0;
+        } catch (\Exception $e) {
+            $bug = $e->errorInfo[1];
+        }
+    }
     public function export($id)
     {
         $invoice = Invoice::with('details')->findOrFail($id);

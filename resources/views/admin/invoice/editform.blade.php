@@ -28,31 +28,24 @@
                         {{ Form::model($invoice, ['route' => ['invoice.update', $invoice->id], 'method' => 'PUT', 'files' => true, 'class' => 'ajaxFormSubmit', 'id' => 'customerForm', 'data-redirect' => route('invoice.index')]) }}
                         <div class="form-body">
                             <div class="row">
-                                <!-- Branch -->
-                                <div class="col-md-4">
-                                    <label>Select Branch <span class="validateRq">*</span></label>
+                                <div class="col-md-3">
+                                    <label for="exampleInput">Company<span class="validateRq">*</span></label>
                                     <div class="input-group col-md-12">
-                                        <select class="form-control required branch" name="branch_id" required>
-                                            <option value="">Select Branch</option>
-                                            <option value="1" {{ old('branch_id', $invoice->branch_id) == 1 ? 'selected' : '' }}>MAPL</option>
-                                            <option value="2" {{ old('branch_id', $invoice->branch_id) == 2 ? 'selected' : '' }}>AASTHA</option>
+                                        <select input class="form-control required company select2" required name="company_id" id="company_id">
+                                            <option value="">Select Company</option>
+                                            @foreach($companys as $company)
+                                            <option value="<?= $company->company_id ?>" {{ (string) old('company_id', $invoice->company_id) === (string) $company->company_id ? 'selected' : '' }}><?= $company->company_name ?></option>
+                                            @endforeach
+                                            <option value="other" {{ old('company_id', $invoice->company_id) == 0 ? 'selected' : '' }}>
+                                                Other
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-md-2">
+                                    <label for="exampleInput">Branch<span class="validateRq">*</span></label>
+                                    <div class="input-group col-md-12" id="branch">
 
-                                <!-- Company -->
-                                <div class="col-md-4">
-                                    <label>Company Name <span class="validateRq">*</span></label>
-                                    <div class="input-group col-md-12">
-                                        <select class="form-control required" name="company_id" id="company_id" required>
-                                            <option value="">-- Select Company --</option>
-                                            @foreach($companys as $company)
-                                            <option value="{{ $company->company_id }}" {{ (string) old('company_id', $invoice->company_id) === (string) $company->company_id ? 'selected' : '' }}>
-                                                {{ $company->company_name }}
-                                            </option>
-                                            @endforeach
-                                            <option value="other" {{ old('company_id', $invoice->company_id) === 'other' ? 'selected' : '' }}>Other</option>
-                                        </select>
                                     </div>
                                 </div>
 
@@ -67,7 +60,7 @@
                                 </div>
 
                                 <!-- Date -->
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label>Date <span class="validateRq">*</span></label>
                                     <div class="input-group col-md-12">
                                         <input class="form-control" id="date" name="qdate" type="date"
@@ -162,62 +155,55 @@
                             <br>
                             <hr>
                             <h4>Add Invoice Items</h4>
-                            <div id="dynamic-rows-wrapper">
-                                @if(isset($details) && count($details))
-                                @foreach($details as $index => $item)
+
+                            <!-- <div id="dynamic-rows-wrapper">
                                 <div class="row dynamic-row" style="margin-bottom: 20px;">
-                                    <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}">
+
+                                </div>
+                            </div> -->
+
+                            <div id="dynamic-rows-wrapper">
+                                @if($details && $details->count() > 0)
+                                @foreach($details as $index => $item)
+                                <div class="row dynamic-row mt-2" style="margin-bottom: 20px;">
                                     <div class="col-md-3">
-                                        <div class="form-group app-label">
-                                            <label class="text-muted">Particular <span class="validateRq">*</span></label> <br>
-                                            <div class="form-group">
-                                                <select class="form-control" name="items[{{ $index }}][particluar]" required>
-                                                    <option value="">-- Select Post --</option>
-                                                    @foreach(['SUPERVISOR', 'WEEKLY OFF', 'GUARD', 'BOUNCER', 'GUNMAN', 'OFFICE BOY', 'DATA ENTRY OPERATOR', 'DRIVER', 'HOUSEKEEPING', 'MAN POWER SUPPLY FOR WORKSHOP', 'OTHER'] as $role)
-                                                    <option value="{{ $role }}" {{ $item->particluar == $role ? 'selected' : '' }}>{{ $role }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
+                                        <label>Particular</label>
+                                        <input type="text" name="items[{{ $index }}][particluar]" class="form-control" value="{{ $item->particluar }}" readonly>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-muted">Gender <span class="validateRq">*</span></label> <br>
-                                        <select class="form-control" name="items[{{ $index }}][gender]" required>
-                                            <option value="">-- Select Gender --</option>
-                                            <option value="Male" {{ $item->gender == 'MALE' ? 'selected' : '' }}>Male</option>
-                                            <option value="Female" {{ $item->gender == 'FEMALE' ? 'selected' : '' }}>Female</option>
-                                        </select>
+                                        <label>Gender</label>
+                                        <input type="text" name="items[{{ $index }}][gender]" class="form-control" value="{{ $item->gender }}" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Month</label>
+                                        <input type="number" name="items[{{ $index }}][month]" class="form-control" value="{{ $item->month }}" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Year</label>
+                                        <input type="number" name="items[{{ $index }}][year]" class="form-control" value="{{ $item->year }}" readonly>
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="text-muted">Month <span>*</span></label>
-                                        <input type="number" name="items[{{ $index }}][month]" class="form-control" placeholder="Month" min="1" max="12" required value="{{ $item->month }}">
+                                        <label>Working Hour</label>
+                                        <input type="number" name="items[{{ $index }}][working_hour]" class="form-control" value="{{ $item->working_hour }}" readonly>
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="text-muted">Year <span>*</span></label>
-                                        <input type="number" name="items[{{ $index }}][year]" class="form-control" placeholder="Year" min="2020" required value="{{ $item->year }}">
+                                        <label>Days</label>
+                                        <input type="number" name="items[{{ $index }}][days]" class="form-control" value="{{ $item->days }}">
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="text-muted">Working Hour <span class="validateRq">*</span></label>
-                                        <input type="number" name="items[{{ $index }}][working_hour]" class="form-control" placeholder="Working Hour" min="1" value="{{ $item->working_hour }}" required />
+                                        <label>QTY</label>
+                                        <input type="number" name="items[{{ $index }}][qty]" class="form-control" value="{{ $item->qty }}">
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="text-muted">Days <span>*</span></label>
-                                        <input type="number" name="items[{{ $index }}][days]" class="form-control" placeholder="No Of Days" min="1" value="{{ $item->days }}" required />
+                                        <label>Rate</label>
+                                        <input type="number" name="items[{{ $index }}][rate]" class="form-control" value="{{ $item->rate }}">
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="text-muted">QTY <span>*</span></label>
-                                        <input type="number" name="items[{{ $index }}][qty]" class="form-control" placeholder="QTY" min="1" required value="{{ $item->qty }}">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="text-muted">Rate <span>*</span></label>
-                                        <input type="number" name="items[{{ $index }}][rate]" class="form-control" placeholder="Rate" min="0" required value="{{ $item->rate }}">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="text-muted">Payout <span>*</span></label>
-                                        <input type="text" name="items[{{ $index }}][payout]" class="form-control" placeholder="Payout" value="{{ $item->payout }}" readonly required />
+                                        <label>Payout</label>
+                                        <input type="text" name="items[{{ $index }}][payout]" class="form-control payout" value="{{ number_format($item->payout,2) }}" readonly>
                                     </div>
                                     <div class="col-md-1">
-                                        <br />
+                                        <label></label><br>
                                         <button type="button" class="btn btn-danger remove-row"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </div>
@@ -225,9 +211,56 @@
                                 @endif
                             </div>
 
+
+
                             <br>
-                            <button type="button" id="add-row" class="btn btn-primary pb-5" style="margin-bottom: 50px;"><i class="fa fa-plus"></i> Add Row</button>
-                            <br>
+                            <button type="button" id="add-row" class="btn btn-primary pb-5" style="margin-bottom: 50px; display: none"><i class="fa fa-plus"></i> Add Row</button>
+                            <br><br>
+
+
+                            <!-- Totals Section -->
+                            <!-- Totals Section -->
+                            <div class="row">
+                                <div class="col-md-8">&nbsp;</div>
+                                <div class="col-md-4">
+                                    <div class="panel panel-default" style="padding: 15px;">
+                                        <h4><strong>Totals</strong></h4>
+                                        <div class="row">
+                                            <div class="col-md-6"><strong>Sub Total:</strong></div>
+                                            <div class="col-md-6 text-right"><span id="sub-total">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">PF (13%):</div>
+                                            <div class="col-md-6 text-right"><span id="pf-total">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">ESI (3.25%):</div>
+                                            <div class="col-md-6 text-right"><span id="esi-total">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6"><strong>Total:</strong></div>
+                                            <div class="col-md-6 text-right"><span id="total">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">CGST (9%):</div>
+                                            <div class="col-md-6 text-right"><span id="cgst-total">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">SGST (9%):</div>
+                                            <div class="col-md-6 text-right"><span id="sgst-total">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">IGST (18%):</div>
+                                            <div class="col-md-6 text-right"><span id="igst-total">0.00</span></div>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-6"><strong>Grand Total:</strong></div>
+                                            <div class="col-md-6 text-right"><strong><span id="grand-total">0.00</span></strong></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="form-actions">
                                 <div class="row">
@@ -247,100 +280,197 @@
     @endsection
 
     @section('page_scripts')
+
+
     <script>
-        // Toggle "Other Company Fields"
+        const PF_RATE = 0.13;
+        const ESI_RATE = 0.0325;
+        const CGST_RATE = 0.09;
+        const SGST_RATE = 0.09;
+        const IGST_RATE = 0.18;
+        let rowCount = 0;
+
+        $(document).ready(function() {
+            // Set rowCount to existing rows
+            rowCount = $('.dynamic-row').length;
+
+            // Calculate payouts for existing rows
+            $('.dynamic-row').each(function() {
+                calculatePayout($(this));
+            });
+            calculateGrandTotal();
+        });
+
+
+        $(document).ready(function() {
+            const companyId = $('#company_id').val();
+            if (companyId !== 'other' && companyId != 0) {
+                // Pre-fill branch for existing invoice
+                $.ajax({
+                    url: "{{ url('invoice/get-branch') }}/" + companyId,
+                    type: 'GET',
+                    success: function(data) {
+                        if (data && data.name) {
+                            $('#branch').html(`
+                        <input type="hidden" name="branch_id" id="branch_hidden" value="${data.id}">
+                        <input type="text" name="branch_name" id="branchid" class="form-control" value="${data.name}" readonly>
+                    `);
+                        } else {
+                            $('#branch').html('<input type="text" class="form-control" value="No branch found" readonly>');
+                        }
+                    }
+                });
+            } else if (companyId === 'other' || companyId == 0) {
+                $('#branch').html(`
+                    <select class="form-control required" name="branch_id" id="branch_id" required>
+                        <option value="">Select Branch</option>
+                        <option value="1" {{ old('branch_id', $invoice->branch_id) == 1 ? 'selected' : '' }}>MAPL</option>
+                        <option value="2" {{ old('branch_id', $invoice->branch_id) == 2 ? 'selected' : '' }}>AASTHA</option>
+                    </select>
+                `);
+
+                $('#add-row').show();
+            } else {
+
+                $('#branch').html('');
+                $('#add-row').hide();
+            }
+        });
+
+
         $('#company_id').on('change', function() {
-            if ($(this).val() === 'other') {
+            const companyId = $(this).val();
+
+            // Reset sections
+            $('#branch').html('');
+            $('#otherCompanyFields').slideUp();
+            $('#otherCompanyFields input').val('');
+            $('#add-row').hide(); // Hide Ad    d Row button by default
+
+            if (companyId && companyId !== 'other') {
+                // Fetch branch for selected company
+                $.ajax({
+                    url: "{{ url('invoice/get-branch') }}/" + companyId,
+                    type: 'GET',
+                    success: function(data) {
+                        if (data && data.name) {
+                            $('#branch').html(`
+                                <input type="hidden" name="branch_id" id="branch_hidden" value="${data.id}">
+                                <input type="text" name="branch_name" id="branchid" class="form-control" value="${data.name}" readonly>
+                            `);
+                        } else {
+                            $('#branch').html('<input type="text" class="form-control" value="No branch found" readonly>');
+                        }
+                    },
+                    error: function() {
+                        alert('Error fetching branch. Please try again.');
+                    }
+                });
+
+                loadAssignJobs();
+
+            } else if (companyId === 'other') {
+                // Show fields for Other company
                 $('#otherCompanyFields').slideDown();
+
+                // Show branch dropdown
+                $('#branch').html(`
+                    <select class="form-control required" name="branch_id" id="branch_id" required>
+                        <option value="">Select Branch</option>
+                         <option value="1" {{ old('branch_id', $invoice->branch_id) == 1 ? 'selected' : '' }}>MAPL</option>
+                         <option value="2" {{ old('branch_id', $invoice->branch_id) == 2 ? 'selected' : '' }}>AASTHA</option>
+                    </select>
+                `);
+
+                // ✅ Show Add Row button
+                $('#add-row').show();
             } else {
-                $('#otherCompanyFields').slideUp();
-                $('#otherCompanyFields input').val(''); // clear all inputs
+                // Reset if no company selected
+                $('#branch').html('');
+                $('#add-row').hide();
             }
         });
 
-        // Days in month
-        function getDaysInMonth(month, year) {
-            return new Date(year, month, 0).getDate();
-        }
 
-        // Calculate payout
-        function calculatePayout(row) {
-            const days = parseFloat(row.find('input[name*="[days]"]').val()) || 0;
-            const rate = parseFloat(row.find('input[name*="[rate]"]').val()) || 0;
-            const qty = parseFloat(row.find('input[name*="[qty]"]').val()) || 1;
-            const month = parseInt(row.find('input[name*="[month]"]').val()) || 0;
-            const year = parseInt(row.find('input[name*="[year]"]').val()) || new Date().getFullYear();
 
-            if (month > 0 && month <= 12) {
-                const daysInMonth = getDaysInMonth(month, year);
-                const payout = (days * rate * qty) / daysInMonth;
-                row.find('input[name*="[payout]"]').val(payout.toFixed(2));
-            } else {
-                row.find('input[name*="[payout]"]').val('');
-            }
-        }
 
-        // Prevent negative values
-        $(document).on('input', 'input[type="number"]', function() {
-            if (this.value < 0) {
-                this.value = '';
-            }
-        });
-
-        // Update payout on input change
-        $(document).on('input', 'input[name*="[days]"], input[name*="[rate]"], input[name*="[qty]"], input[name*="[month]"], input[name*="[year]"]', function() {
-            const row = $(this).closest('.dynamic-row');
-            calculatePayout(row);
-        });
-
-        // Row count
-        let rowCount = {
-            {
-                isset($details) ? count($details) : 0
-            }
-        };
-
-        // Add new row
         $('#add-row').click(function() {
             let newRow = `
         <div class="row dynamic-row mt-2" style="margin-bottom: 20px;">
             <div class="col-md-3">
                 <div class="form-group app-label">
-                    <label class="text-muted">Particular <span class="validateRq">*</span></label> <br>
-                    <select class="form-control" name="items[${rowCount}][particluar]" required>
-                        <option value="">-- Select Post --</option>
-                        <option value="SUPERVISOR">SUPERVISOR</option>
-                        <option value="WEEKLY OFF">WEEKLY OFF</option>
-                        <option value="GUARD">GUARD</option>
-                        <option value="BOUNCER">BOUNCER</option>
-                        <option value="GUNMAN">GUNMAN</option>
-                        <option value="OFFICE BOY">OFFICE BOY</option>
-                        <option value="DATA ENTRY OPERATOR">DATA ENTRY OPERATOR</option>
-                        <option value="DRIVER">DRIVER</option>
-                        <option value="HOUSEKEEPING">HOUSEKEEPING</option>
-                        <option value="MAN POWER SUPPLY FOR WORKSHOP">MAN POWER SUPPLY FOR WORKSHOP</option>
-                        <option value="OTHER">OTHER</option>
-                    </select>
+                    <label class="text-muted">Particluar <span class="validateRq">*</span></label> <br>
+                    <div class="form-group">
+                        <select class="form-control select2" id="particluar" name="items[${rowCount}][particluar]" required>
+                            <option value="">-- Select Post --</option>
+                            @foreach ($jobs as $job)
+                                <option value="{{ $job->job_id }}">{{ $job->post }}</option>
+                            @endforeach
+                        </select>
+                        <span class="text-danger" id="particluar_err"></span>
+                    </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <label class="text-muted">Gender <span class="validateRq">*</span></label> <br>
-                <select class="form-control" name="items[${rowCount}][gender]" required>
-                    <option value="">-- Select Gender --</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
+                <div class="form-group">
+                    <select class="form-control" id="gender" name="items[${rowCount}][gender]" required>
+                        <option value="">-- Select Gender --</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                    <span class="text-danger" id="gender_err"></span>
+                </div>
             </div>
-            <div class="col-md-2"><label>Month <span>*</span></label><input type="number" name="items[${rowCount}][month]" class="form-control" min="1" max="12" required></div>
-            <div class="col-md-2"><label>Year <span>*</span></label><input type="number" name="items[${rowCount}][year]" class="form-control" min="2020" required></div>
-            <div class="col-md-2"><label>Working Hour <span>*</span></label><input type="number" name="items[${rowCount}][working_hour]" class="form-control" min="1" required></div>
-            <div class="col-md-2"><label>Days <span>*</span></label><input type="number" name="items[${rowCount}][days]" class="form-control" min="1" required></div>
-            <div class="col-md-2"><label>QTY <span>*</span></label><input type="number" name="items[${rowCount}][qty]" class="form-control" min="1" required></div>
-            <div class="col-md-2"><label>Rate <span>*</span></label><input type="number" name="items[${rowCount}][rate]" class="form-control" min="0" required></div>
-            <div class="col-md-2"><label>Payout <span>*</span></label><input type="text" name="items[${rowCount}][payout]" class="form-control" readonly required></div>
-            <div class="col-md-1"><br><button type="button" class="btn btn-danger remove-row"><i class="fa fa-trash"></i></button></div>
-        </div>
-        `;
+            <div class="col-md-3">
+                <label class="text-muted">Month <span>*</span></label> <br>
+                <div class="form-group">
+                    <input type="number" name="items[${rowCount}][month]" class="form-control" placeholder="Month" min="1" max="12" required />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="text-muted">Year <span>*</span></label> <br>
+                <div class="form-group">
+                    <input type="number" name="items[${rowCount}][year]" class="form-control" placeholder="Year" min="2020" required />
+                </div>
+            </div>
+            
+            <div class="col-md-2">
+                <label class="text-muted">Working Hour <span class="validateRq">*</span></label> <br>
+                <div class="form-group">
+                    <input type="number" name="items[${rowCount}][working_hour]" class="form-control" placeholder="Working Hour" min="0" required />
+                </div>
+            </div>
+            
+            <div class="col-md-2">
+                <label class="text-muted">Days <span>*</span></label> <br>
+                <div class="form-group">
+                    <input type="number" name="items[${rowCount}][days]" class="form-control" placeholder="No Of Days" min="1" required />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="text-muted">QTY <span>*</span></label> <br>
+                <div class="form-group">
+                    <input type="number" name="items[${rowCount}][qty]" class="form-control" placeholder="QTY" min="1" required />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="text-muted">Rate <span>*</span></label> <br>
+                <div class="form-group">
+                    <input type="number" name="items[${rowCount}][rate]" class="form-control" placeholder="rate" min="0" required />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="text-muted">Payout <span>*</span></label> <br>
+                <div class="form-group">
+                    <input type="number" name="items[${rowCount}][payout]" class="form-control payout" placeholder="Payout" readonly />
+                </div>
+            </div>
+            <div class="col-md-1">
+                <label class="text-muted"></label> <br>
+                <button type="button" class="btn btn-danger remove-row"><i class="fa fa-trash"></i></button>
+            </div>
+        </div>`;
             $('#dynamic-rows-wrapper').append(newRow);
             rowCount++;
         });
@@ -348,6 +478,146 @@
         // Remove row
         $(document).on('click', '.remove-row', function() {
             $(this).closest('.dynamic-row').remove();
+            calculateGrandTotal();
         });
+
+
+        // Calculate payout per row
+        function calculatePayout(row) {
+            const days = parseFloat(row.find('input[name*="[days]"]').val()) || 0;
+            const rate = parseFloat(row.find('input[name*="[rate]"]').val()) || 0;
+            const qty = parseFloat(row.find('input[name*="[qty]"]').val()) || 1;
+            const month = parseInt($('#month').val()) || new Date().getMonth() + 1;
+            const year = parseInt($('#year').val()) || new Date().getFullYear();
+
+            if (month >= 1 && month <= 12) {
+                const daysInMonth = new Date(year, month, 0).getDate();
+                // const payout = (days * rate * qty) / daysInMonth;
+                const payout = days * rate * qty;
+                row.find('.payout').val(payout.toFixed(2));
+            } else {
+                row.find('.payout').val('');
+            }
+            calculateGrandTotal();
+        }
+
+        // Calculate totals
+        function calculateGrandTotal() {
+            let subTotal = 0;
+            $('.dynamic-row').each(function() {
+                subTotal += parseFloat($(this).find('.payout').val()) || 0;
+            });
+
+            let totalPF = $('input[name="deduction[]"][value="PF"]').is(':checked') ? subTotal * PF_RATE : 0;
+            let totalESI = $('input[name="deduction[]"][value="ESI"]').is(':checked') ? subTotal * ESI_RATE : 0;
+            let totalBeforeGST = subTotal + totalPF + totalESI;
+
+            let totalCGST = 0,
+                totalSGST = 0,
+                totalIGST = 0;
+            if ($('input[name="deduction[]"][value="IGST"]').is(':checked')) {
+                totalIGST = totalBeforeGST * IGST_RATE;
+            } else {
+                totalCGST = $('input[name="deduction[]"][value="CGST"]').is(':checked') ? totalBeforeGST * CGST_RATE : 0;
+                totalSGST = $('input[name="deduction[]"][value="SGST"]').is(':checked') ? totalBeforeGST * SGST_RATE : 0;
+            }
+
+            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST;
+
+            $('#sub-total').text(subTotal.toFixed(2));
+            $('#pf-total').text(totalPF.toFixed(2));
+            $('#esi-total').text(totalESI.toFixed(2));
+            $('#total').text(totalBeforeGST.toFixed(2));
+            $('#cgst-total').text(totalCGST.toFixed(2));
+            $('#sgst-total').text(totalSGST.toFixed(2));
+            $('#igst-total').text(totalIGST.toFixed(2));
+            $('#grand-total').text(grandTotal.toFixed(2));
+        }
+
+        // Trigger calculation when input changes
+        $(document).on('input', 'input[name*="[days]"], input[name*="[rate]"], input[name*="[qty]"], #month, #year', function() {
+            const row = $(this).closest('.dynamic-row');
+            calculatePayout(row);
+        });
+
+        $(document).on('change', 'input[name="deduction[]"]', calculateGrandTotal);
+
+
+
+        function loadAssignJobs() {
+            const companyId = $('#company_id').val();
+            const month = $('#month').val();
+            const year = $('#year').val();
+
+            if (companyId && month && year && companyId !== 'other') {
+                $.ajax({
+                    url: "{{ url('invoice/get-assign-jobs') }}",
+                    data: {
+                        company_id: companyId,
+                        month: month,
+                        year: year
+                    },
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.length > 0) {
+                            // Clear existing dynamic rows
+                            $('#dynamic-rows-wrapper').html('');
+
+                            // Populate rows from assign jobs
+                            data.forEach(function(job, index) {
+                                let row = `
+                        <div class="row dynamic-row mt-2" style="margin-bottom: 20px;">
+                            <div class="col-md-3">
+                                <label>Particular</label>
+                                <input type="text" name="items[${index}][particluar]" class="form-control" value="${job.post}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Gender</label>
+                                <input type="text" name="items[${index}][gender]" class="form-control" value="${job.gender}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Month</label>
+                                <input type="number" name="items[${index}][month]" class="form-control" value="${month}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Year</label>
+                                <input type="number" name="items[${index}][year]" class="form-control" value="${year}" readonly>
+                            </div>
+                            <div class="col-md-2">
+                                <label>Working Hour</label>                                    
+                                <input type="number" name="items[${index}][working_hour]" class="form-control" value="${job.shift_timing}" min="1" readonly />
+                            </div>
+                            <div class="col-md-2">
+                                <label>Days</label>
+                                <input type="number" name="items[${index}][days]" class="form-control" value="${job.total_attendance_days}">
+                            </div>
+                            <div class="col-md-2">
+                                <label>QTY</label>
+                                <input type="number" name="items[${index}][qty]" class="form-control" value="${job.total_assign_jobs}">
+                            </div>
+                            <div class="col-md-3">
+                                <label>Rate</label>
+                                <input type="number" name="items[${index}][rate]" class="form-control" value="${job.rate}">
+                            </div>
+                            <div class="col-md-3">
+                                <label>Payout</label>
+                                <input type="text" name="items[${index}][payout]" class="form-control payout" readonly>
+                            </div>
+                        </div><hr>`;
+                                $('#dynamic-rows-wrapper').append(row);
+
+                                // Calculate  initial payout
+                                calculatePayout($('.dynamic-row').last());
+                            });
+                        } else {
+                            $('#dynamic-rows-wrapper').html('<p>No assigned jobs found for selected company/month/year.</p>');
+                        }
+                    }
+                });
+            }
+        }
+
+        // Trigger AJAX when company, month, or year changes
+        $('#company_id, #month, #year').on('change', loadAssignJobs);
     </script>
     @endsection
