@@ -20,6 +20,8 @@ class Quotation extends Model
         'email',
         'gst_no',
         'deduction',
+        'labour_surcharge', // add if storing
+        'service_charge',   // add if storing
         'total_amount',
         'address',
         'quotation_no',

@@ -102,8 +102,10 @@ Attendance
 										<th><input type="checkbox" id="select_all"></th>
 										<th>Emp. ID</th>
 										<th>Name</th>
+										<th>Father Name</th>
 										<th>Gender</th>
 										<th>Post</th>
+										<th>Shift</th>
 										<th>Shift Timing (hrs.)</th>
 										<th>Days Worked</th>
 									</tr>
@@ -156,11 +158,13 @@ Attendance
                                 <td><input type="checkbox" name="selected[]" value="${emp.emp_id}" class="select_emp"></td>
                                 <td>${emp.employee_id}</td>
                                 <td>${emp.name}</td>
+								<td>${emp.father_name}</td>
                                 <td>${emp.gender}</td>
                                 <td>${emp.post}</td>
+								<td>${emp.shift}</td>
 								<td>${emp.shift_timing}</td>
                                 <td>
-									<input type="number" name="days[${emp.emp_id}]" class="form-control" min="0" max="31">
+									<input type="text" name="days[${emp.emp_id}]" class="form-control" min="0" max="31" style="width:100px">
 									<input type="hidden" name="assign_job_id[${emp.emp_id}]" value="${emp.job_id}">
 								</td>
 

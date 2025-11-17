@@ -180,7 +180,7 @@
 
         <table>
             <tr>
-                <td style="width:62%"><strong>Quotation No.:</strong>101{{ $quotation->id }}</td>
+                <td style="width:62%"><strong>Quotation No.:</strong> {{ $quotation->quotation_no }}</td>
                 <td style="width:38%"><strong>State Code:</strong> {{ $quotation->state_code }}</td>
             </tr>
             <tr>
@@ -261,9 +261,14 @@
 
         @php
         $deductions = is_array($quotation->deduction) ? $quotation->deduction : json_decode($quotation->deduction ?? '[]');
+        
+        $subtotal = $quotation->total_amount;
 
         $pf = in_array('PF', $deductions) ? $subtotal * 0.13 : 0;
         $esi = in_array('ESI', $deductions) ? $subtotal * 0.0325 : 0;
+
+        $labour = $quotation->labour_surcharge ?? 0;
+        $service = $quotation->service_charge ?? 0;
 
         $total = $subtotal + $pf + $esi;
 
@@ -271,7 +276,7 @@
         $sgst = in_array('SGST', $deductions) ? $total * 0.09 : 0;
         $igst = in_array('IGST', $deductions) ? $total * 0.18 : 0;
 
-        $grandTotal = $subtotal + $pf + $esi + $cgst + $sgst + $igst;
+        $grandTotal = $subtotal + $pf + $esi + $cgst + $sgst + $igst + $labour + $service;
 
         @endphp
 
@@ -318,6 +323,20 @@
                 <td colspan="2" class="right-align">{{ number_format($igst, 2) }}</td>
             </tr>
             @endif
+             @if($labour > 0)
+            <tr>
+                <td colspan="4" style="border: none;"></td>
+                <th colspan="2" class="right-align">Labour Surcharge</th>
+                <td colspan="2" class="right-align">₹ {{ number_format($labour, 2) }}</td>
+            </tr>
+            @endif
+            @if($service > 0)
+            <tr>
+                <td colspan="4" style="border: none;"></td>
+                <th colspan="2" class="right-align">Service Charge</th>
+                <td colspan="2" class="right-align">₹ {{ number_format($service, 2) }}</td>
+            </tr>
+            @endif
             <tr>
                 <td colspan="4" class="right-align" style="text-transform:uppercase">
                     <strong>Note:</strong>
@@ -332,6 +351,7 @@
                     <span>None</span>
                     @endif
                 </td>
+                    
                 <td colspan="2" class="right-align"><strong>Grand Total:</strong></td>
                 <td colspan="2" class="right-align"><strong>{{ number_format($grandTotal, 2) }}</strong></td>
             </tr>

@@ -63,10 +63,10 @@ class BranchController extends Controller
 
         $count = Employee::where('branch_id', '=', $id)->count();
 
-        if ($count > 0) {
+        // if ($count > 0) {
 
-            return 'hasForeignKey';
-        }
+        //     return 'hasForeignKey';
+        // }
 
         try {
             $branch = Branch::findOrFail($id);

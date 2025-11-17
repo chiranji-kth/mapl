@@ -336,8 +336,10 @@
         $pf = in_array('PF', $deductions) ? $subtotal * 0.13 : 0;
         $esi = in_array('ESI', $deductions) ? $subtotal * 0.0325 : 0;
         
-        $labour = $invoice->labour_surcharge ?? 0;
-        $service = $invoice->service_charge ?? 0;
+        $totalQty = $invoice->details->sum('qty');
+        
+        $labour = ($invoice->labour_surcharge ?? 0) * $totalQty;
+        $service = ($invoice->service_charge ?? 0) * $totalQty;
         
         $total = $subtotal + $pf + $esi + $labour + $service;
         

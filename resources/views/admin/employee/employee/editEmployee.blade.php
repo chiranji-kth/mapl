@@ -1,7 +1,7 @@
 @extends('admin.master')
 @section('content')
 @section('title')
-@lang('employee.edit_employee')
+Edit Staff
 @endsection
 <style>
     .appendBtnColor {
@@ -23,7 +23,7 @@
         <div class="col-lg-7 col-md-7 col-sm-7 col-xs-12">
             <a href="{{ route('employee.index') }}"
                 class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light"><i
-                    class="fa fa-list-ul" aria-hidden="true"></i> @lang('employee.view_employee')</a>
+                    class="fa fa-list-ul" aria-hidden="true"></i> View Staff</a>
         </div>
     </div>
     <div class="row">

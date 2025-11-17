@@ -172,7 +172,22 @@ class EmployeeController extends Controller
             $employeeAccountDataFormat = $this->employeeRepositories->makeEmployeeAccountDataFormat($request->all());
             $parentData                = User::create($employeeAccountDataFormat);
 
+            // ✅ Generate next employee number
+            $lastEmployee = Employee::orderBy('employee_id', 'desc')->first();
+            if ($lastEmployee && $lastEmployee->employee_no) {
+                // Extract numeric part and increment
+                $lastNumber = (int) str_replace('OPR/', '', $lastEmployee->employee_no);
+                $nextNumber = $lastNumber + 1;
+            } else {
+                $nextNumber = 1;
+            }
+            $employeeNo = 'OPR/' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
+            // ✅ Add to employee data
             $employeeData['user_id'] = $parentData->user_id;
+            $employeeData['employee_no'] = $employeeNo;
+            
+
             $childData               = Employee::create($employeeData);
 
             $employeeEducationData = $this->employeeRepositories->makeEmployeeEducationDataFormat($request->all(), $childData->employee_id);

@@ -40,11 +40,11 @@ class AssignJobController extends Controller
             }
 
             $results = $query->get();
-
             return view('admin.recruitment.career.pagination', compact('results'))->render();
         }
 
         $results = $query->get();
+        // echo "<pre>"; print_r($results->toArray()); exit;
         return view('admin.assignjob.index', compact('results'));
     }
 
@@ -95,8 +95,10 @@ class AssignJobController extends Controller
             'shift_timing'   => $request->shift_timing,
             'salary'         => $request->salary,
             'perday_wages'   => $request->perday_wages,
-            'from_date'      => dateConvertFormtoDB($request->from_date),
-            'to_date'        => dateConvertFormtoDB($request->to_date),
+            'from_date'      => $this->formatDate($request->from_date),
+            'to_date'        => $this->formatDate($request->to_date),
+            'time_from'      => $request->time_from,
+            'time_to'        => $request->time_to,
             'deduction'      => (!is_array($request->deduction)) ? '' : implode(',', $request->deduction),
             'status'         => $request->status,
 
@@ -142,8 +144,10 @@ class AssignJobController extends Controller
             'shift_timing'   => $request->shift_timing,
             'salary'         => $request->salary,
             'perday_wages'   => $request->perday_wages,
-            'from_date'      => dateConvertFormtoDB($request->from_date),
-            'to_date'        => dateConvertFormtoDB($request->to_date),
+            'from_date'      => $this->formatDate($request->from_date),
+            'to_date'        => $this->formatDate($request->to_date),
+            'time_from'      => $request->time_from,
+            'time_to'        => $request->time_to,
             'deduction'      => (!is_array($request->deduction)) ? '' : implode(',', $request->deduction),
             'status'         => $request->status,
 
@@ -230,4 +234,26 @@ class AssignJobController extends Controller
             ]
         ]);
     }
+
+    private function formatDate($date)
+    {
+        if (empty($date)) {
+            return null;
+        }
+
+        try {
+            // Handle both dd/mm/yyyy and yyyy-mm-dd
+            if (strpos($date, '/') !== false) {
+                return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+            } elseif (strpos($date, '-') !== false) {
+                return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
+            }
+        } catch (\Exception $e) {
+            \Log::error("Date parse failed: " . $date . " | " . $e->getMessage());
+        }
+
+        // fallback to null if invalid
+        return null;
+    }
+
 }

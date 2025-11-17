@@ -32,6 +32,8 @@
                     <span class="font-medium">
                         <a href="{!! route('employee.show', $value->employee_id) !!}">{!! $value->first_name !!}&nbsp;{!! $value->last_name !!}</a>
                     </span>
+                    <br />
+                    <span class="font-medium">{{ $value->employee_no ? $value->employee_no : 'N/A' }}</span>
                     <br /><span class="text-muted">@lang('employee.role') :
                         @if (isset($value->userName->role->role_name))
                         {!! $value->userName->role->role_name !!}

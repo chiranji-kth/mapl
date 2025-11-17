@@ -102,10 +102,12 @@
         $pf = in_array('PF', $deductions) ? $subtotal * 0.13 : 0;
         $esi = in_array('ESI', $deductions) ? $subtotal * 0.0325 : 0;
         
-        $labour = $invoice->labour_surcharge ?? 0;
-        $service = $invoice->service_charge ?? 0;
+        $totalQty = $invoice->details->sum('qty');
         
-        $total = $subtotal + $pf + $esi + $labour + $service;
+        $labour = ($invoice->labour_surcharge ?? 0) * $totalQty;
+        $service = ($invoice->service_charge ?? 0) * $totalQty;
+        
+        $total = $subtotal + $pf + $esi;
         
         $cgst = in_array('CGST', $deductions) ? $total * 0.09 : 0;
         $sgst = in_array('SGST', $deductions) ? $total * 0.09 : 0;
@@ -137,21 +139,7 @@
                 <td>₹ {{ number_format($esi, 2) }}</td>
             </tr>
             @endif
-            @if($labour > 0)
-            <tr>
-                <td colspan="3"></td>
-                <th>Labour Surcharge</th>
-                <td>₹ {{ number_format($labour, 2) }}</td>
-            </tr>
-            @endif
-            @if($service > 0)
-            <tr>
-                <td colspan="3"></td>
-                <th>Service Charge</th>
-                <td>₹ {{ number_format($service, 2) }}</td>
-            </tr>
-            @endif
-            
+                       
             <tr>
                 <td colspan="3"></td>
                 <th>Total</th>
@@ -184,6 +172,20 @@
                 <th>Round Off</th>
                 <td>₹ {{ $roundOff }}</td>
             </tr>
+            @if($labour > 0)
+            <tr>
+                <td colspan="3"></td>
+                <th>Labour Surcharge</th>
+                <td>₹ {{ number_format($labour, 2) }}</td>
+            </tr>
+            @endif
+            @if($service > 0)
+            <tr>
+                <td colspan="3"></td>
+                <th>Service Charge</th>
+                <td>₹ {{ number_format($service, 2) }}</td>
+            </tr>
+            @endif
             <tr>
                 <td colspan="3"></td>
                 <th>Grand Total</th>

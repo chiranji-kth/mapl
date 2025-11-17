@@ -141,7 +141,7 @@ class AttendanceController extends Controller
                 ->get();
 
             // echo "<pre>";
-            // print_r($jobs->employee->toArray());
+            // print_r($jobs->toArray());
             // exit;
 
             $employees = $jobs->map(function ($job) {
@@ -150,10 +150,12 @@ class AttendanceController extends Controller
                     'emp_id'       => $job->employee->emp_id,
                     'employee_id'  => $job->employee->employee_id,
                     'name'         => $job->employee->name,
+                    'father_name'  => $job->employee->father_name,
                     'gender'       => $job->employee->gender,
+                    'shift'        => $job->shift,
                     'shift_timing' => $job->shift_timing,
                     'post'         => $job->employee->job->post,
-                    'job_id'      => $job->job_id,
+                    'job_id'       => $job->job_id,
                 ];
             })->filter()->values();
 
@@ -196,7 +198,7 @@ class AttendanceController extends Controller
                     $value->employee->employee_id ?? '-',
                     $value->employee->name ?? '-',
                     $value->employee->gender ?? '-',
-                    $value->assignJob->job->post ?? '-',
+                    $value->employee->job->post ?? '-',
                     $value->assignJob->shift ?? '-',
                     $value->assignJob->shift_timing ?? '-',
                     $value->days_worked,

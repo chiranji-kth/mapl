@@ -4,12 +4,10 @@
 			<tr class="tr_header">
 				<th>@lang('common.serial')</th>
 				<th>Emp ID</th>
-				<th>Employee</th>
-				<th>Company</th>
-				<th>Wages (Per day)</th>
-				<th>Deduction</th>
-				<th>From Date</th>
-				<th>To Date</th>
+				<th>Job Role</th>
+				<th>Salary (Month)</th>
+				<th>Shift</th>
+				<th>Working(hrs)</th>
 				<th>Status</th>
 				<th style="text-align: center;">@lang('common.action')</th>
 			</tr>
@@ -20,25 +18,19 @@
 			<tr class="{!! $value->promotion_id !!}">
 				<td style="width: 100px;">{!! ++$sl !!}</td>
 				<td>
-					{{ $value->employee_id ?? 'N/A' }}
+					{{ $value->employees->employee_id ?? 'N/A' }}
 				</td>
 				<td>
-					{{ $value->employees->name }}
+					{{ $value->employees->job->post }}
 				</td>
 				<td>
-					{{ $value->company->company_name }}
+					{{ $value->salary ?? 'N/A' }}
 				</td>
 				<td>
-					{{ $value->perday_wages }}
+					{{ $value->shift }}
 				</td>
 				<td>
-					{{ $value->deduction }}
-				</td>
-				<td>
-					{{ $value->from_date }}
-				</td>
-				<td>
-					{{ $value->to_date }}
+					{{ $value->shift_timing }}
 				</td>
 				<td>
 					@if ($value->status == 1)

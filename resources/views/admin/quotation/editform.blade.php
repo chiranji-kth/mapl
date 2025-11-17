@@ -13,7 +13,7 @@
                 </ol>
             </div>
             <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
-                <a href="{{ route('customer.index') }}"
+                <a href="{{ route('quotation.index') }}"
                     class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light"><i
                         class="fa fa-list-ul" aria-hidden="true"></i> View Quotation </a>
             </div>
@@ -94,14 +94,6 @@
                                 </div>
                                 <br />
                                 <div class="row">
-                                    <div class="col-md-8">
-                                        <label for="exampleInput">Address</label>
-                                        <div class="input-group col-md-12">
-                                            <input class="form-control" id="address"
-                                                placeholder="Address" name="address" type="text"
-                                                value="{{ old('address', $quotation->address ?? '') }}">
-                                        </div>
-                                    </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="exampleInput">Deduction</label><br />
@@ -117,7 +109,33 @@
 
                                         </div>
                                     </div>
+                                    
+                                    <div class="col-md-4">
+                                    <label>Labour Surcharge</label>
+                                    <div class="input-group col-md-12">
+                                        <input class="form-control" id="labour_surcharge" name="labour_surcharge" type="text"
+                                            value="{{ old('labour_surcharge', $quotation->labour_surcharge) }}" placeholder="Labour Surcharge">
+                                    </div>
+                                </div>
 
+                                <div class="col-md-4">
+                                    <label>Service Charge</label>
+                                    <div class="input-group col-md-12">
+                                        <input class="form-control" id="service_charge" name="service_charge" type="text"
+                                            value="{{ old('service_charge', $quotation->service_charge) }}" placeholder="Service Charge">
+                                    </div>
+                                </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <label for="exampleInput">Address</label>
+                                        <div class="input-group col-md-12">
+                                            <input class="form-control" id="address"
+                                                placeholder="Address" name="address" type="text"
+                                                value="{{ old('address', $quotation->address ?? '') }}">
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">

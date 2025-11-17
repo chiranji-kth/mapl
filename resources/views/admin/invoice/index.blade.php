@@ -19,6 +19,7 @@
 
 	<div class="row">
 		<div class="col-sm-12">
+		    
 			<div class="panel panel-info">
 				<div class="panel-heading"><i class="mdi mdi-table fa-fw"></i> Invoice</div>
 				<div class="panel-wrapper collapse in" aria-expanded="true">
@@ -35,6 +36,23 @@
 							<i class="glyphicon glyphicon-remove"></i>&nbsp;<strong>{{ session()->get('error') }}</strong>
 						</div>
 						@endif
+						
+						<style>
+                            .filter-box {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                margin-bottom: 20px;
+                            }
+                        </style>
+                        
+                        <form method="GET" action="{{ route('invoice.index') }}" class="filter-box">
+                            <select name="status" class="form-control text-center" style="width: 250px;" onchange="this.form.submit()">
+                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active Only</option>
+                                <option value="deleted" {{ request('status') == 'deleted' ? 'selected' : '' }}>Deleted Only</option>
+                            </select>
+                        </form>
+						
 						<div class="table-responsive">
 							<table id="myTable" class="table table-bordered">
 								<thead>
@@ -49,6 +67,7 @@
 										<th>Invoice Date</th>
 										<th>Create Date</th>
 										<th>Action</th>
+										<th>Status</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -69,6 +88,7 @@
 										<td>{!! $value->total_amount + $value->service_charge + $value->labour_surcharge !!}</td>
 										<td>{!! $value->qdate !!}</td>
 										<td>{!! $value->created_at !!}</td>
+									
 										<!-- <td>
 											<select id="updateStatus" class="form-control status">
 												<option value="0" <?= $value->status == 0 ? 'selected' : '' ?>>Inactive</option>
@@ -76,15 +96,33 @@
 											</select>
 											<input type="hidden" class="customer_id" value="{{$value->customer_id}}">
 										</td> -->
-										<td style="width: 100px;">
-											<a title="View" href="{{ route('invoice.show', $value->id) }}" class="btn btn-primary btn-xs btnColor">
-												<i class="glyphicon glyphicon-th-large" aria-hidden="true"></i>
-											</a>
-											<a href="{!! route('invoice.edit',$value->id ) !!}" class="btn btn-success btn-xs btnColor">
-												<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-											</a>
-											<a href="{!!route('invoice.delete',$value->id  )!!}" data-token="{!! csrf_token() !!}" data-id="{!! $value->id !!}" class="delete btn btn-danger btn-xs deleteBtn btnColor"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-										</td>
+                						<td style="width: 100px;">
+                                            <a title="View" href="{{ route('invoice.show', $value->id) }}" class="btn btn-primary btn-xs btnColor">
+                                                <i class="glyphicon glyphicon-th-large" aria-hidden="true"></i>
+                                            </a>
+                                        
+                                            @if(is_null($value->deleted_at))
+                                                {{-- Only show edit & delete if not deleted --}}
+                                                <a href="{{ route('invoice.edit', $value->id) }}" class="btn btn-success btn-xs btnColor">
+                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                                </a>
+                                                <a href="{{ route('invoice.delete', $value->id) }}" data-token="{{ csrf_token() }}" data-id="{{ $value->id }}" class="delete btn btn-danger btn-xs deleteBtn btnColor">
+                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                </a>
+                                                @else
+                                                <a href="{{ route('invoice.enable', $value->id) }}" data-token="{{ csrf_token() }}" data-id="{{ $value->id }}" class="enable btn btn-success btn-xs enableBtn btnColor">
+                                                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                                                </a>
+                                            @endif
+                                        </td>
+
+										<td>
+                                            @if($value->deleted_at)
+                                                <span class="text-danger fw-bold">Cancelled</span>
+                                            @else
+                                                <span class="text-success fw-bold">Active</span>
+                                            @endif
+                                        </td>
 									</tr>
 									@endforeach
 								</tbody>
@@ -99,6 +137,22 @@
 @endsection
 
 @section('page_scripts')
+<script>
+$(document).ready(function() {
+    if ($.fn.DataTable.isDataTable('#myTable')) {
+        $('#myTable').DataTable().destroy();
+    }
+    
+    $('#myTable').DataTable({
+        pageLength: 50,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        ordering: false,
+        responsive: true
+    });
+});
+</script>
+
+
 <script>
 	$(function() {
 
@@ -144,6 +198,72 @@
 		})
 
 	});
+</script>
+
+  <script>
+$(document).on('click', '.enable', function() {
+    var actionTo = $(this).attr('href');
+    var token = $(this).attr('data-token');
+    var id = $(this).attr('data-id');
+
+    swal({
+        title: "Are you sure?",
+        text: "You want to enable this record!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, enable it!",
+        closeOnConfirm: false
+    },
+    function(isConfirm) {
+        if (isConfirm) {
+            $.ajax({
+                url: actionTo,
+                type: 'POST',
+                data: {
+                    _token: token
+                },
+                success: function(data) {
+                    if (data == 'hasForeignKey') {
+                        swal({
+                            title: "Oops!",
+                            text: "This data is used elsewhere.",
+                            type: "error"
+                        });
+                    } else if (data == 'success') {
+                        swal({
+                            title: "Enabled!",
+                            text: "Your record has been enabled successfully.",
+                            type: "success"
+                        }, function(isConfirm) {
+                            if (isConfirm) {
+                                // ✅ reload entire page
+                                location.reload();
+                            }
+                        });
+                    } else {
+                        swal({
+                            title: "Error!",
+                            text: "Something went wrong!",
+                            type: "error"
+                        });
+                    }
+                },
+                error: function() {
+                    swal({
+                        title: "Error!",
+                        text: "Server error occurred.",
+                        type: "error"
+                    });
+                }
+            });
+        } else {
+            swal("Cancelled", "Your data is safe.", "error");
+        }
+    });
+
+    return false;
+});
 </script>
 
 @endsection

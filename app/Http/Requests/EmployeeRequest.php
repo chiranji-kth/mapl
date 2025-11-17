@@ -33,6 +33,7 @@ class EmployeeRequest extends FormRequest
                 'role_id'             => 'required',
                 'user_name'           => 'required|unique:user,user_name,' . $result->user_id . ',user_id',
                 'first_name'          => 'required',
+                'last_name'           => 'required',
                 'finger_id'           => 'required|unique:employee,finger_id,' . $this->employee . ',employee_id',
                 'department_id'       => 'required',
                 'designation_id'      => 'required',
@@ -54,6 +55,7 @@ class EmployeeRequest extends FormRequest
                 'responsibility.*'    => 'required',
                 'skill.*'             => 'required',
                 'photo'               => 'mimes:jpeg,jpg,png|max:1024',
+                'kyc_file'            => 'mimes:pdf|max:1024',
             ];
         }
         return [
@@ -61,6 +63,7 @@ class EmployeeRequest extends FormRequest
             'user_name'           => 'required|unique:user',
             'password'            => 'required|confirmed',
             'first_name'          => 'required',
+            'last_name'           => 'required',
             'finger_id'           => 'required|unique:employee',
             'department_id'       => 'required',
             'designation_id'      => 'required',
@@ -82,6 +85,7 @@ class EmployeeRequest extends FormRequest
             'responsibility.*'    => 'required',
             'skill.*'             => 'required',
             'photo'               => 'mimes:jpeg,jpg,png|max:1024',
+            'kyc_file'            => 'mimes:pdf|max:1024',
         ];
     }
 

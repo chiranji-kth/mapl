@@ -22,11 +22,24 @@ use PDF;
 class InvoiceController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $results = Invoice::orderBy('id', 'DESC')->get();
-        return view('admin.invoice.index', ['results' => $results]);
+        $status = $request->get('status', 'active'); // Default: all
+    
+        if ($status === 'deleted') {
+            // Only show deleted (soft-deleted) invoices
+            $results = Invoice::onlyTrashed()->orderBy('id', 'DESC')->get();
+        } elseif ($status === 'active') {
+            // Only show active invoices
+            $results = Invoice::whereNull('deleted_at')->orderBy('id', 'DESC')->get();
+        } else {
+            // Show all (active + deleted)
+            $results = Invoice::withTrashed()->orderBy('id', 'DESC')->get();
+        }
+    
+        return view('admin.invoice.index', compact('results'));
     }
+
 
     public function create()
     {
@@ -55,7 +68,7 @@ class InvoiceController extends Controller
                 }
             }
 
-            $invoiceno = Invoice::select('invoice_id')
+            $invoiceno = Invoice::withTrashed()->select('invoice_id')
                 ->where('branch_id', $request->branch_id)
                 ->orderBy('id', 'desc')
                 ->first();
@@ -110,13 +123,14 @@ class InvoiceController extends Controller
 
     public function show($id)
     {
-        $invoice = Invoice::with('details')->findOrFail($id);
+        $invoice = Invoice::withTrashed()->with('details')->findOrFail($id);
         // echo "<pre>"; print_r($invoice); exit;
         return view('admin.invoice.view', compact('invoice'));
     }
 
     public function edit($id)
     {
+       // die(' edit');
         $invoice = Invoice::with('details')->findOrFail($id);
 
         $companys = Company::orderBy('company_id', 'DESC')->get();
@@ -207,13 +221,51 @@ class InvoiceController extends Controller
             $data = Invoice::FindOrFail($id);
             $data->delete();
             $bug = 0;
+            return response('success');
         } catch (\Exception $e) {
             $bug = $e->errorInfo[1];
         }
     }
+    
+
+    public function enable($id)
+    {
+        DB::beginTransaction();
+    
+        try {
+            // Include soft-deleted records
+            $invoice = Invoice::withTrashed()->findOrFail($id);
+    
+            // Restore (sets deleted_at = NULL)
+            $invoice->restore();
+    
+            // Optionally update metadata
+            $invoice->update([
+                'updated_by' => Auth::user()->user_id,
+            ]);
+    
+            DB::commit();
+            return response('success');
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            Log::error('Invoice not found for enable: ' . $e->getMessage());
+            return response()->json(['error' => 'Invoice not found.'], 404);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            Log::error('Database error on enable: ' . json_encode($e->errorInfo));
+            return response()->json(['error' => 'Database error occurred.'], 500);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Unexpected error on enable: ' . $e->getMessage());
+            return response()->json(['error' => 'Unexpected error occurred.'], 500);
+        }
+    }
+
+
+    
     public function export($id)
     {
-        $invoice = Invoice::with('details')->findOrFail($id);
+        $invoice = Invoice::withTrashed()->with('details')->findOrFail($id);
 
         if ($invoice->branch_id == 1) {
             $pdf = PDF::loadView('exports.invoice-pdf-mapl', compact('invoice'))
@@ -241,44 +293,53 @@ class InvoiceController extends Controller
     }
 
     public function getAssignJobs(Request $request)
-    {
-        $companyId = $request->company_id;
-        $month = $request->month;
-        $year = $request->year;
+{
+    $companyId = $request->company_id;
+    $month = $request->month;
+    $year = $request->year;
 
-        if (!$companyId || !$month || !$year) {
-            return response()->json([]);
-        }
-
-        $assignJobs = AssignJob::join('employees', 'employees.emp_id', '=', 'assignjob.emp_id')
-            ->join('job', 'job.job_id', '=', 'employees.post_applied')
-            ->leftJoin('attendance', function ($join) use ($month, $year) {
-                $join->on('attendance.emp_id', '=', 'employees.emp_id')
-                    ->where('attendance.month', $month)
-                    ->where('attendance.year', $year);
-            })
-            ->leftJoin('quotation', function ($join) use ($companyId) {
-                $join->on('quotation.company_id', '=', 'assignjob.company_id');
-            })
-            ->leftJoin('quotation_detail', function ($join) {
-                $join->on('quotation_detail.quotation_id', '=', 'quotation.id')
-                    ->whereColumn('quotation_detail.particluar', 'employees.post_applied')
-                    ->whereColumn('quotation_detail.working_hour', 'assignjob.shift_timing');
-            })
-            ->where('assignjob.company_id', $companyId)
-            ->where('quotation.status', true)
-            ->select(
-                'job.post',
-                'employees.post_applied',
-                'employees.gender',
-                'assignjob.shift_timing',
-                DB::raw('COUNT(assignjob.job_id) as total_assign_jobs'),
-                DB::raw('SUM(COALESCE(attendance.days_worked, 0)) as total_attendance_days'),
-                'quotation_detail.rate'
-            )
-            ->groupBy('employees.post_applied', 'employees.gender', 'assignjob.shift_timing', 'job.post', 'quotation_detail.rate')
-            ->get();
-
-        return response()->json($assignJobs);
+    if (!$companyId || !$month || !$year) {
+        return response()->json([]);
     }
+
+    $assignJobs = AssignJob::join('employees', 'employees.emp_id', '=', 'assignjob.emp_id')
+        ->join('job', 'job.job_id', '=', 'employees.post_applied')
+        ->leftJoin('attendance', function ($join) use ($month, $year, $companyId) {
+            $join->on('attendance.emp_id', '=', 'employees.emp_id')
+                 ->where('attendance.company_id', $companyId)
+                 ->where('attendance.month', $month)
+                 ->where('attendance.year', $year);
+        })
+        ->leftJoin('quotation', function ($join) use ($companyId) {
+            $join->on('quotation.company_id', '=', 'assignjob.company_id');
+        })
+        ->leftJoin('quotation_detail', function ($join) {
+            $join->on('quotation_detail.quotation_id', '=', 'quotation.id')
+                 ->whereColumn('quotation_detail.particluar', 'employees.post_applied')
+                 ->whereColumn('quotation_detail.working_hour', 'assignjob.shift_timing');
+        })
+        ->where('assignjob.company_id', $companyId)
+        ->where('assignjob.status', true)
+        ->where('quotation.status', true)
+        ->select(
+            'job.post',
+            'attendance.days_worked',
+            'employees.post_applied',
+            'employees.gender',
+            'assignjob.shift_timing',
+            DB::raw('COUNT(DISTINCT assignjob.emp_id) as total_assign_jobs'),
+            DB::raw('SUM(COALESCE(attendance.days_worked, 0)) as total_attendance_days'),
+            DB::raw('MAX(quotation_detail.rate) as rate')
+        )
+        ->groupBy(
+            'employees.post_applied',
+            'employees.gender',
+            'assignjob.shift_timing',
+            'job.post'
+        )
+        ->get();
+
+    return response()->json($assignJobs);
+}
+
 }

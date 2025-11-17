@@ -115,8 +115,13 @@
         @php
         $deductions = is_array($quotation->deduction) ? $quotation->deduction : json_decode($quotation->deduction ?? '[]');
 
+        $subtotal = $quotation->total_amount;
+
         $pf = in_array('PF', $deductions) ? $subtotal * 0.13 : 0;
         $esi = in_array('ESI', $deductions) ? $subtotal * 0.0325 : 0;
+
+        $labour = $quotation->labour_surcharge ?? 0;
+        $service = $quotation->service_charge ?? 0;
 
         $total = $subtotal + $pf + $esi;
 
@@ -124,7 +129,7 @@
         $sgst = in_array('SGST', $deductions) ? $total * 0.09 : 0;
         $igst = in_array('IGST', $deductions) ? $total * 0.18 : 0;
 
-        $finalTotal = $subtotal + $pf + $esi + $cgst + $sgst + $igst;
+        $finalTotal = $subtotal + $pf + $esi + $cgst + $sgst + $igst + $labour + $service;
         @endphp
 
         <tfoot>
@@ -152,7 +157,7 @@
                 <td>₹ {{ number_format($esi, 2) }}</td>
             </tr>
             @endif
-
+            
             <tr>
                 <td colspan="5"></td>
                 <th><strong>Total</strong></th>
@@ -178,6 +183,20 @@
                 <td colspan="5"></td>
                 <th>IGST (18%)</th>
                 <td>₹ {{ number_format($igst, 2) }}</td>
+            </tr>
+            @endif
+             @if($labour > 0)
+            <tr>
+                <td colspan="5"></td>
+                <th>Labour Surcharge</th>
+                <td>₹ {{ number_format($labour, 2) }}</td>
+            </tr>
+            @endif
+            @if($service > 0)
+            <tr>
+                <td colspan="5"></td>
+                <th>Service Charge</th>
+                <td>₹ {{ number_format($service, 2) }}</td>
             </tr>
             @endif
             <tr>

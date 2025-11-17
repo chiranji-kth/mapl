@@ -645,6 +645,7 @@ $front_setting = getFrontData();
                                             if (isConfirm) {
                                                 $('.' + id).fadeOut();
                                             }
+                                            location.reload();
                                         });
                                     $('#example').DataTable().ajax.reload(null, false);
                                 } else {

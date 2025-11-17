@@ -1,8 +1,0 @@
-[24-Mar-2025 23:45:17 UTC] PHP Fatal error:  Uncaught Error: Class 'Route' not found in /home4/maplbharat/public_html/routes/web.php:16
-Stack trace:
-#0 {main}
-  thrown in /home4/maplbharat/public_html/routes/web.php on line 16
-[15-Apr-2025 12:34:56 UTC] PHP Fatal error:  Uncaught Error: Class 'Route' not found in /home4/maplbharat/public_html/routes/api.php:16
-Stack trace:
-#0 {main}
-  thrown in /home4/maplbharat/public_html/routes/api.php on line 16

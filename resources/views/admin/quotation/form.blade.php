@@ -71,10 +71,6 @@
                             <br />
 
                             <div class="row">
-                                <div class="col-md-8">
-                                    <label>Address</label>
-                                    <input class="form-control" id="address" placeholder="Address" name="address" type="text" value="{{ old('address') }}">
-                                </div>
                                 <div class="col-md-4">
                                     <label>Deduction / Tax</label><br>
                                     <input type="checkbox" name="deduction[]" value="PF"> PF
@@ -83,8 +79,38 @@
                                     <input type="checkbox" name="deduction[]" value="SGST"> SGST
                                     <input type="checkbox" name="deduction[]" value="IGST"> IGST
                                 </div>
+                                <div class="col-md-4">
+                                    <label for="exampleInput">Labour Surcharge</label>
+                                    <div class="input-group col-md-12">
+                                        <input class="form-control" id="labour_surcharge"
+                                            placeholder="Labour Surcharge" name="labour_surcharge" type="text"
+                                            value="{{ old('labour_surcharge') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="exampleInput">Service Charge</label>
+                                    <div class="input-group col-md-12">
+                                        <input class="form-control" id="service_charge"
+                                            placeholder="Service Charge" name="service_charge" type="text"
+                                            value="{{ old('service_charge') }}">
+                                    </div>
+                                </div>
                             </div>
-
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label>Address</label>
+                                    <input class="form-control" id="address" placeholder="Address" name="address" type="text" value="{{ old('address') }}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="note">NOTE:</label><br />
+                                            <input type="checkbox" name="note[]" value="PF & ESI IS INCLUDED & GST IS EXTRA"> PF & ESI IS INCLUDED & GST IS EXTRA<br />
+                                            <input type="checkbox" name="note[]" value="PF ESI & GST ARE APPLICABLE AS PER GOVT. NORMS" > PF ESI & GST ARE APPLICABLE AS PER GOVT. NORMS
+                                        </div>
+                                    </div>
+                                </div>
                             <br /><br />
 
                             <hr>
@@ -166,6 +192,14 @@
                                             <div class="col-md-6">IGST (18%):</div>
                                             <div class="col-md-6 text-right"><span id="igst-total">0.00</span></div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-md-6">Labour Surcharge:</div>
+                                            <div class="col-md-6 text-right"><span id="labour-charge">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">Service Charge:</div>
+                                            <div class="col-md-6 text-right"><span id="service-charge">0.00</span></div>
+                                        </div>
                                         <hr>
                                         <div class="row">
                                             <div class="col-md-6"><strong>Grand Total:</strong></div>
@@ -189,16 +223,7 @@
     @endsection
 
     @section('page_scripts')
-    <script>
-    $(function() {
-        $(".date").datepicker({
-            dateFormat: "dd/mm/y",
-            changeMonth: true,
-            changeYear: true,
-            yearRange: "1980:2025"
-        });
-    });
-</script>
+    
     <script>
         let rowCount = 1;
 
@@ -300,8 +325,12 @@
             if ($('input[value="SGST"]').is(':checked')) totalSGST = totalBeforeGST * SGST_RATE;
             if ($('input[value="IGST"]').is(':checked')) totalIGST = totalBeforeGST * IGST_RATE;
 
-            // Grand total
-            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST;
+            let labourSurcharge = parseFloat($('#labour_surcharge').val()) || 0;
+            let serviceCharge = parseFloat($('#service_charge').val()) || 0;
+
+            // Grand Total (including all charges)
+            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST + labourSurcharge + serviceCharge;
+
 
             $('#sub-total').text(subTotal.toFixed(2));
             $('#pf-total').text(totalPF.toFixed(2));
@@ -310,6 +339,8 @@
             $('#cgst-total').text(totalCGST.toFixed(2));
             $('#sgst-total').text(totalSGST.toFixed(2));
             $('#igst-total').text(totalIGST.toFixed(2));
+            $('#labour-charge').text(labourSurcharge);
+            $('#service-charge').text(serviceCharge);
             $('#grand-total').text(grandTotal.toFixed(2));
         }
 
@@ -320,6 +351,10 @@
         });
 
         $(document).on('change', 'input[name="deduction[]"]', function() {
+            calculateGrandTotal();
+        });
+
+        $(document).on('input', '#labour_surcharge, #service_charge', function() {
             calculateGrandTotal();
         });
 

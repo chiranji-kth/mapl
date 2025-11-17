@@ -204,6 +204,14 @@
                                             <div class="col-md-6">IGST (18%):</div>
                                             <div class="col-md-6 text-right"><span id="igst-total">0.00</span></div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-md-6">Labour Surcharge:</div>
+                                            <div class="col-md-6 text-right"><span id="labour-charge">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">Service Charge:</div>
+                                            <div class="col-md-6 text-right"><span id="service-charge">0.00</span></div>
+                                        </div>
                                         <hr>
                                         <div class="row">
                                             <div class="col-md-6"><strong>Grand Total:</strong></div>
@@ -309,7 +317,7 @@
                         <select class="form-control select2" id="particluar" name="items[${rowCount}][particluar]" required>
                             <option value="">-- Select Post --</option>
                             @foreach ($jobs as $job)
-                                <option value="{{ $job->job_id }}">{{ $job->post }}</option>
+                                <option value="{{ $job->post }}">{{ $job->post }}</option>
                             @endforeach
                         </select>
                         <span class="text-danger" id="particluar_err"></span>
@@ -398,7 +406,9 @@
             if (month >= 1 && month <= 12) {
                 const daysInMonth = new Date(year, month, 0).getDate();
                 // const payout = (days * rate * qty) / daysInMonth;
-                const payout = days * rate * qty;
+                const payout = (days * rate) / daysInMonth;
+                // const payout = days * rate * qty;
+                // const payout = days * rate;
                 row.find('.payout').val(payout.toFixed(2));
             } else {
                 row.find('.payout').val('');
@@ -409,6 +419,16 @@
         // Calculate totals
         function calculateGrandTotal() {
             let subTotal = 0;
+            let totalQty = 0;
+
+            // Loop through all rows to calculate subtotal and total qty
+            $('.dynamic-row').each(function() {
+                const payout = parseFloat($(this).find('.payout').val()) || 0;
+                const qty = parseFloat($(this).find('input[name*="[qty]"]').val()) || 0;
+                subTotal += payout;
+                totalQty += qty;
+            });
+
             $('.dynamic-row').each(function() {
                 subTotal += parseFloat($(this).find('.payout').val()) || 0;
             });
@@ -427,7 +447,13 @@
                 totalSGST = $('input[name="deduction[]"][value="SGST"]').is(':checked') ? totalBeforeGST * SGST_RATE : 0;
             }
 
-            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST;
+            let labourSurcharge = parseFloat($('#labour_surcharge').val()) || 0;
+            let serviceCharge = parseFloat($('#service_charge').val()) || 0;
+
+           labourSurcharge = labourSurcharge * totalQty;
+           serviceCharge = serviceCharge * totalQty;
+
+            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST + labourSurcharge + serviceCharge;
 
             $('#sub-total').text(subTotal.toFixed(2));
             $('#pf-total').text(totalPF.toFixed(2));
@@ -436,6 +462,8 @@
             $('#cgst-total').text(totalCGST.toFixed(2));
             $('#sgst-total').text(totalSGST.toFixed(2));
             $('#igst-total').text(totalIGST.toFixed(2));
+            $('#labour-charge').text(labourSurcharge);
+            $('#service-charge').text(serviceCharge);
             $('#grand-total').text(grandTotal.toFixed(2));
         }
 
@@ -444,10 +472,13 @@
             const row = $(this).closest('.dynamic-row');
             calculatePayout(row);
         });
+        
 
         $(document).on('change', 'input[name="deduction[]"]', calculateGrandTotal);
 
-
+        $(document).on('input', '#labour_surcharge, #service_charge', function() {
+            calculateGrandTotal();
+        });
 
         function loadAssignJobs() {
             const companyId = $('#company_id').val();

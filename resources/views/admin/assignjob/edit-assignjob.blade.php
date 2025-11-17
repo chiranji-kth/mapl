@@ -35,9 +35,7 @@ Edit Assign Job
 
                         {{ Form::open(['route' => ['assignJob.update', $editModeData->job_id], 'method'=>'PUT', 'enctype' => 'multipart/form-data', 'class' => ' ajaxFormSubmit', 'id' => 'promotionForm', 'data-redirect' => route('assignJob.index')]) }}
 
-
                         <div class="form-body">
-
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -166,6 +164,44 @@ Edit Assign Job
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
+                                        <label for="time_from">Time From</label>
+                                        <div class="input-group bootstrap-timepicker">
+                                            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                            {!! Form::text(
+                                                'time_from',
+                                                old('time_from', isset($editModeData) ? $editModeData->time_from : ''),
+                                                [
+                                                    'class' => 'form-control timepicker',
+                                                    'id' => 'time_from',
+                                                    'placeholder' => 'HH:MM AM/PM',
+                                                    'autocomplete' => 'off'
+                                                ]
+                                            ) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="time_to">Time To </label>
+                                        <div class="input-group bootstrap-timepicker">
+                                            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                            {!! Form::text(
+                                                'time_to',
+                                                old('time_to', isset($editModeData) ? $editModeData->time_to : ''),
+                                                [
+                                                    'class' => 'form-control timepicker',
+                                                    'id' => 'time_to',
+                                                    'placeholder' => 'HH:MM AM/PM',
+                                                    'autocomplete' => 'off'
+                                                ]
+                                            ) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
                                         <label for="exampleInput">Deduction</label><br />
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="PF" <?= in_array('PF', explode(',',  $editModeData->deduction)) ? 'checked' : '' ?>> PF
                                         <input type="checkbox" name="deduction[]" class="form-controle" value="ESI" <?= in_array('ESI', explode(',',  $editModeData->deduction)) ? 'checked' : '' ?>> ESI
@@ -207,6 +243,36 @@ Edit Assign Job
 </div>
 @endsection
 @section('page_scripts')
+
+<link rel="stylesheet" href="{{ asset('admin_assets/plugins/timepicker/bootstrap-timepicker.min.css') }}">
+<script src="{{ asset('admin_assets/plugins/timepicker/bootstrap-timepicker.min.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.timepicker').timepicker({
+            showInputs: false,
+            minuteStep: 5,
+            showMeridian: true,
+            defaultTime: false
+        });
+    });
+
+    $('select[name="shift"]').on('change', function() {
+    const shift = $(this).val();
+
+    if (shift === 'DAY') {
+        $('#time_from').timepicker('setTime', '09:00 AM');
+        $('#time_to').timepicker('setTime', '06:00 PM');
+    } else if (shift === 'NIGHT') {
+        $('#time_from').timepicker('setTime', '08:00 PM');
+        $('#time_to').timepicker('setTime', '05:00 AM');
+    } else {
+        $('#time_from').timepicker('setTime', false);
+        $('#time_to').timepicker('setTime', false);
+    }
+});
+</script>
+
 <script>
     $(function() {
         $(".date").datepicker({

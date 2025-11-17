@@ -90,16 +90,22 @@ class EmployeesController extends Controller
                     'phone' => $employee->phone . '<br /><span class="text-muted">Gender: ' . $employee->gender . '</span>',
                     'father_name' => $employee->father_name ?? 'N/A',
                     'joining_date' => (!empty($employee->date_of_joining) && strtotime($employee->date_of_joining))
-                        ? \Carbon\Carbon::parse($employee->date_of_joining)->format('d/m/y')
+                        ? \Carbon\Carbon::parse($employee->date_of_joining)->format('d-m-Y')
                         : 'N/A',
                     'state_name' => $employee->states['state_name'] ?? '',
                     'district_name' => $employee->districts['dist_name'] ?? '',
                     'created_at' => $employee->created_at
-                        ? $employee->created_at->format('Y-m-d')
+                        ? $employee->created_at->format('d-m-Y')
                         : '',
-                    'photo' => $employee->photo && file_exists(public_path('uploads/employeePhoto/' . $employee->photo))
-                        ? '<a href="' . route('employees.show', $employee->emp_id) . '"><img src="' . asset('uploads/employeePhoto/' . $employee->photo) . '" class="img-circle" style="width:70px"></a>'
-                        : '<a href="' . route('employees.show', $employee->emp_id) . '"><img src="' . asset('admin_assets/img/default.png') . '" class="img-circle" style="width:70px"></a>',
+                    'photo' => ($employee->photo && file_exists(base_path('uploads/employeePhoto/' . $employee->photo)))
+                        ? '<a href="' . route('employees.show', $employee->emp_id) . '">
+                            <img src="' . asset('uploads/employeePhoto/' . $employee->photo) . '" 
+                                class="img-circle" style="width:70px">
+                        </a>'
+                        : '<a href="' . route('employees.show', $employee->emp_id) . '">
+                            <img src="' . asset('admin_assets/img/default.png') . '" 
+                                class="img-circle" style="width:70px">
+                        </a>',
                     'actions' => '<a title="View" href="' . route('employees.show', $employee->emp_id) . '"
                                 class="btn btn-primary btn-xs btnColor">
                                 <i class="glyphicon glyphicon-th-large" aria-hidden="true"></i>

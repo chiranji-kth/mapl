@@ -27,6 +27,8 @@ class AssignJob extends Model
         'deduction',
         'from_date',
         'to_date',
+        'time_from',
+        'time_to',
         'created_at',
         'updated_at',
         'status'

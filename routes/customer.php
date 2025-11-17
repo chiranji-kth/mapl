@@ -42,13 +42,14 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
 
     Route::group(['prefix' => 'invoice'], function () {
         Route::get('/', ['as' => 'invoice.index', 'uses' => 'Customer\InvoiceController@index']);
-
+        
         Route::get('/create', ['as' => 'invoice.create', 'uses' => 'Customer\InvoiceController@create']);
         Route::post('/', ['as' => 'invoice.store', 'uses' => 'Customer\InvoiceController@store']);
         Route::get('invoice/{id}', ['as' => 'invoice.show', 'uses' => 'Customer\InvoiceController@show']);
         Route::get('/{company}/edit', ['as' => 'invoice.edit', 'uses' => 'Customer\InvoiceController@edit']);
         Route::put('/{company}', ['as' => 'invoice.update', 'uses' => 'Customer\InvoiceController@update']);
         Route::delete('/{company}/delete', ['as' => 'invoice.delete', 'uses' => 'Customer\InvoiceController@destroy']);
+        Route::post('/{company}/enable', ['as' => 'invoice.enable', 'uses' => 'Customer\InvoiceController@enable']);
         Route::get('invoice/export/{id}', ['as' => 'invoice.export', 'uses' => 'Customer\InvoiceController@export']);
         Route::get('/get-branch/{company_id}', ['as' => 'invoice.getBranch', 'uses' => 'Customer\InvoiceController@getBranch']);
         Route::get('/get-assign-jobs', ['as' => 'invoice.getAssignJobs', 'uses' => 'Customer\InvoiceController@getAssignJobs']);

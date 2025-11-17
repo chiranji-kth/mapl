@@ -60,7 +60,7 @@ Salary
                         <!--</div>-->
                         <br>
                         <div class="data">
-                            <form method="GET" action="{{ route('attendance.index') }}">
+                            <form method="GET" action="{{ route('payroll.index') }}">
                                 <div class="row">
                                     <div class="col-md-3">
                                         <label>Company</label>
@@ -77,14 +77,14 @@ Salary
                                         <label for="exampleInput">@lang('common.month')<span class="validateRq">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input class="form-control monthFieldOnly required" id="month" placeholder="Month" name="month" type="text" value="">
+                                            <input class="form-control monthFieldOnly required" id="month" placeholder="Month" name="month" type="text" value="{{ old('month', request('month')) }}">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <label for="exampleInput">Year<span class="validateRq">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input class="form-control yearField required" id="year" placeholder="Year" name="year" type="text">
+                                            <input class="form-control yearField required" id="year" placeholder="Year" name="year" type="text" value="{{ old('year', request('year')) }}">
                                         </div>
                                     </div>
 
@@ -112,10 +112,14 @@ Salary
 <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap.js"></script>
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
+    const $table = $('#example');
+    const hasData = $table.find('tbody tr').length > 0 && !$table.find('tbody tr td').first().hasClass('text-center');
 
-        $('#example').DataTable({
-            buttons: [{
+    if (hasData) {
+        $table.DataTable({
+            buttons: [
+                {
                     extend: 'copyHtml5',
                     exportOptions: {
                         columns: [0, ':visible']
@@ -123,15 +127,18 @@ Salary
                 },
                 'colvis'
             ],
-
             language: {
                 searchPlaceholder: "Search records",
                 search: "",
+                emptyTable: "No records found"
             },
             pageLength: 25
         });
+    } else {
+        console.log('No data found — DataTable not initialized');
+    }
+});
 
-    });
 </script>
 
 @endsection

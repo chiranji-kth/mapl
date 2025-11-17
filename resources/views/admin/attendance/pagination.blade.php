@@ -6,9 +6,10 @@
 				<th>Month</th>
 				<th>EMP ID</th>
 				<th>Name</th>
+				<th>Father Name</th>
 				<th>Gender</th>
 				<th>Post</th>
-				<th>Shift Timing</th>
+				<!-- <th>Shift</th> -->
 				<th>Working Days</th>
 				<th>Last Updated</th>
 				<th>Advance</th>
@@ -27,14 +28,15 @@
 				<td>{{ \Carbon\Carbon::createFromDate($value->year, $value->month)->format('F, Y') }}</td>
 				<td>{{ $value->employee->employee_id ?? '-' }}</td>
 				<td>{{ $value->employee->name ?? '-' }}</td>
+				<td>{{ $value->employee->father_name ?? '-' }}</td>
 				<td>{{ $value->employee->gender ?? '-' }}</td>
-				<td>{{ $value->assignJob->job->post ?? '-' }}</td>
-				<td>{{ $value->assignJob->shift_timing ?? '-' }} (hrs.)</td>
+				<td>{{ $value->employee->job->post ?? '-' }}</td>
+				<!-- <td>{{ $value->assignJob->shift ?? '-' }}</td> -->
 				<td>{{ $value->days_worked }}</td>
 				<td>{{ $value->updated_at }}</td>
-				<td><input type="number" class="advance" value="{{ $value->advance ?? 0 }}" /></td>
-				<td><input type="number" class="dress" value="{{ $value->dress_deduction ?? 0 }}" /></td>
-				<td><input type="number" class="other" value="{{ $value->other_deduction ?? 0 }}" /></td>
+				<td><input type="number" class="advance" value="{{ $value->advance ?? 0 }}" style="width: 50px;"/></td>
+				<td><input type="number" class="dress" value="{{ $value->dress_deduction ?? 0 }}" style="width: 50px;" /></td>
+				<td><input type="number" class="other" value="{{ $value->other_deduction ?? 0 }}" style="width: 50px;" /></td>
 				<td>
 					<button type="button" class="btn btn-sm btn-success updateBtn">Update</button>
 				</td>

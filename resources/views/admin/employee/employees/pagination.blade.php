@@ -66,6 +66,7 @@
                 <th>EMP ID</th>
                 <th>Job</th>
                 <th>Name</th>
+                <th>Father Name</th>
                 <th>Phone</th>
                 <th>@lang('employee.date_of_joining')</th>
                 <th>Created</th>
@@ -115,6 +116,9 @@
                 }, // Job
                 {
                     data: 'name'
+                }, // Name
+                {
+                    data: 'father_name'
                 }, // Name
                 {
                     data: 'phone'
