@@ -27,6 +27,7 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::get('/{branch}/edit', ['as' => 'branch.edit', 'uses' => 'Employee\BranchController@edit']);
         Route::put('/{branch}', ['as' => 'branch.update', 'uses' => 'Employee\BranchController@update']);
         Route::delete('/{branch}/delete', ['as' => 'branch.delete', 'uses' => 'Employee\BranchController@destroy']);
+        Route::get('/branch/restore/{id}', ['as' => 'branch.restore', 'uses' => 'Employee\BranchController@restore']);
     });
 
     Route::group(['prefix' => 'job'], function () {

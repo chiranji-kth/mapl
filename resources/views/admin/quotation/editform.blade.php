@@ -68,7 +68,7 @@
                                 <br />
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label for="phone">Contact<span class="validateRq">*</span></label>
+                                        <label for="phone">Contact </label>
                                         <div class="input-group col-md-12">
                                             <input class="form-control" id="contact"
                                                 placeholder="Contact" name="contact" type="text"
@@ -109,22 +109,22 @@
 
                                         </div>
                                     </div>
-                                    
-                                    <div class="col-md-4">
-                                    <label>Labour Surcharge</label>
-                                    <div class="input-group col-md-12">
-                                        <input class="form-control" id="labour_surcharge" name="labour_surcharge" type="text"
-                                            value="{{ old('labour_surcharge', $quotation->labour_surcharge) }}" placeholder="Labour Surcharge">
-                                    </div>
-                                </div>
 
-                                <div class="col-md-4">
-                                    <label>Service Charge</label>
-                                    <div class="input-group col-md-12">
-                                        <input class="form-control" id="service_charge" name="service_charge" type="text"
-                                            value="{{ old('service_charge', $quotation->service_charge) }}" placeholder="Service Charge">
+                                    <div class="col-md-4">
+                                        <label>Labour Surcharge</label>
+                                        <div class="input-group col-md-12">
+                                            <input class="form-control" id="labour_surcharge" name="labour_surcharge" type="text"
+                                                value="{{ old('labour_surcharge', $quotation->labour_surcharge) }}" placeholder="Labour Surcharge">
+                                        </div>
                                     </div>
-                                </div>
+
+                                    <div class="col-md-4">
+                                        <label>Service Charge (%)</label>
+                                        <div class="input-group col-md-12">
+                                            <input class="form-control" id="service_charge" name="service_charge" type="text"
+                                                value="{{ old('service_charge', $quotation->service_charge) }}" placeholder="Service Charge">
+                                        </div>
+                                    </div>
 
                                 </div>
                                 <div class="row">
@@ -156,7 +156,7 @@
                                     @if(isset($details) && count($details))
                                     @foreach($details as $index => $item)
                                     <div class="row dynamic-row" style="margin-bottom: 20px;">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="form-group app-label">
                                                 <label class="text-muted">Particluar <span>*</span></label> <br>
                                                 <div class="form-group">
@@ -170,7 +170,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-2">
                                             <label class="text-muted">Gender <span>*</span></label> <br>
                                             <div class="form-group">
                                                 <select class="form-control" name="items[{{ $index }}][gender]" required>
@@ -180,19 +180,19 @@
                                                 <span class="text-danger" id="gender_err"></span>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-1">
                                             <label class="text-muted">Working Hour <span>*</span></label> <br>
                                             <div class="form-group">
                                                 <input type="number" name="items[{{ $index }}][working_hour]" value="{{ $item->working_hour }}" class="form-control" placeholder="Working Hour" required />
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-1">
                                             <label class="text-muted">QTY <span>*</span></label> <br>
                                             <div class="form-group">
                                                 <input type="number" name="items[{{ $index }}][qty]" value="{{ $item->qty }}" class="form-control qty" placeholder="QTY" required />
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-2">
                                             <label class="text-muted">Rate <span>*</span></label> <br>
                                             <div class="form-group">
                                                 <input type="number" name="items[{{ $index }}][rate]" value="{{ $item->rate }}" class="form-control rate" placeholder="rate" required />
@@ -210,7 +210,7 @@
                                             <label>Total</label>
                                             <input type="text" name="items[{{ $index }}][total]" class="form-control line-total" value="0.00" readonly>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-1">
                                             <label class="text-muted"></label> <br>
                                             <button type="button" class="btn btn-danger remove-row"><i class="fa fa-trash"></i></button>
                                         </div>
@@ -220,7 +220,58 @@
                                 </div>
                                 <br>
                                 <button type="button" id="add-row" class="btn btn-primary pb-5" style="margin-bottom: 50px;"><i class="fa fa-plus"></i> Add Row</button>
-                                <br>
+                                <br><br>
+
+                                <!-- Totals Section -->
+                                <div class="row">
+                                    <div class="col-md-8">&nbsp;</div>
+                                    <div class="col-md-4">
+                                        <div class="panel panel-default" style="padding: 15px;">
+                                            <h4><strong>Totals</strong></h4>
+                                            <div class="row">
+                                                <div class="col-md-6"><strong>Sub Total:</strong></div>
+                                                <div class="col-md-6 text-right"><span id="sub-total">0.00</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">PF (13%):</div>
+                                                <div class="col-md-6 text-right"><span id="pf-total">0.00</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">ESI (3.25%):</div>
+                                                <div class="col-md-6 text-right"><span id="esi-total">0.00</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">Labour Surcharge:</div>
+                                                <div class="col-md-6 text-right"><span id="labour-charge">0.00</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">Service Charge (%):</div>
+                                                <div class="col-md-6 text-right"><span id="service-charge">0.00</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6"><strong>Total:</strong></div>
+                                                <div class="col-md-6 text-right"><span id="total">0.00</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">CGST (9%):</div>
+                                                <div class="col-md-6 text-right"><span id="cgst-total">0.00</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">SGST (9%):</div>
+                                                <div class="col-md-6 text-right"><span id="sgst-total">0.00</span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">IGST (18%):</div>
+                                                <div class="col-md-6 text-right"><span id="igst-total">0.00</span></div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-md-6"><strong>Grand Total:</strong></div>
+                                                <div class="col-md-6 text-right"><strong><span id="grand-total">0.00</span></strong></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="form-actions">
                                     <div class="row">
@@ -242,23 +293,30 @@
 
         @section('page_scripts')
         <script>
-    $(function() {
-        $(".date").datepicker({
-            dateFormat: "dd/mm/y",
-            changeMonth: true,
-            changeYear: true,
-            yearRange: "1980:2025"
-        });
-    });
-</script>
+            $(function() {
+                $(".date").datepicker({
+                    dateFormat: "dd/mm/y",
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1980:2025"
+                });
+            });
+        </script>
         <script>
             let rowCount = 1;
+
+            // Percentages
+            const PF_RATE = 0.13;
+            const ESI_RATE = 0.0325;
+            const CGST_RATE = 0.09;
+            const SGST_RATE = 0.09;
+            const IGST_RATE = 0.18;
 
             // Add new row
             $('#add-row').click(function() {
                 let newRow = `
         <div class="row dynamic-row" style="margin-bottom: 20px;">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="text-muted">Particular <span class="validateRq">*</span></label>
                 <select name="items[${rowCount}][particluar]" class="form-control select2" required>
                     <option value="">--Select--</option>
@@ -267,7 +325,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <label class="text-muted">Gender <span class="validateRq">*</span></label>
                 <select class="form-control" name="items[${rowCount}][gender]" required>
                     <option value="">-- Select Gender --</option>
@@ -275,23 +333,23 @@
                     <option value="Female">Female</option>
                 </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-1">
                 <label class="text-muted">Working Hour <span class="validateRq">*</span></label>
                 <input type="number" name="items[${rowCount}][working_hour]" class="form-control" placeholder="Working Hour" required />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-1">
                 <label class="text-muted">QTY <span class="validateRq">*</span></label>
                 <input type="number" name="items[${rowCount}][qty]" class="form-control qty" placeholder="QTY" required />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="text-muted">Rate <span class="validateRq">*</span></label>
                 <input type="number" name="items[${rowCount}][rate]" class="form-control rate" placeholder="Rate" required />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="text-muted">Total</label>
                 <input type="text" name="items[${rowCount}][total]" class="form-control line-total" value="0.00" readonly />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-1">
                 <label class="text-muted">&nbsp;</label><br>
                 <button type="button" class="btn btn-danger remove-row"><i class="fa fa-trash"></i></button>
             </div>
@@ -306,39 +364,61 @@
                 calculateGrandTotal();
             });
 
-            // Calculate per-row total
+            // Calculate row total
             function calculateRowTotal(row) {
                 let qty = parseFloat(row.find('.qty').val()) || 0;
                 let rate = parseFloat(row.find('.rate').val()) || 0;
                 let baseTotal = qty * rate;
 
-                // Global deductions from top checkboxes
-                // let pfChecked = $('input[value="PF"]').is(':checked');
-                // let esiChecked = $('input[value="ESI"]').is(':checked');
-                // let cgstChecked = $('input[value="CGST"]').is(':checked');
-                // let sgstChecked = $('input[value="SGST"]').is(':checked');
-                // let igstChecked = $('input[value="IGST"]').is(':checked');
-
-                // let pf = pfChecked ? baseTotal * 0.13 : 0;
-                // let esi = esiChecked ? baseTotal * 0.0325 : 0;
-                // let cgst = cgstChecked ? baseTotal * 0.09 : 0;
-                // let sgst = sgstChecked ? baseTotal * 0.09 : 0;
-                // let igst = igstChecked ? baseTotal * 0.18 : 0;
-
-                // Apply deductions per row
-                // let rowTotal = baseTotal + pf + esi + cgst + sgst + igst;
-                let rowTotal = baseTotal;
-                row.find('.line-total').val(rowTotal.toFixed(2));
-
+                row.find('.line-total').val(baseTotal.toFixed(2));
                 calculateGrandTotal();
             }
 
             // Calculate grand total
             function calculateGrandTotal() {
-                let grandTotal = 0;
-                $('.line-total').each(function() {
-                    grandTotal += parseFloat($(this).val()) || 0;
+                let subTotal = 0;
+                let totalPF = 0;
+                let totalESI = 0;
+                let totalCGST = 0;
+                let totalSGST = 0;
+                let totalIGST = 0;
+
+                $('.dynamic-row').each(function() {
+                    let row = $(this);
+                    let qty = parseFloat(row.find('.qty').val()) || 0;
+                    let rate = parseFloat(row.find('.rate').val()) || 0;
+                    let baseTotal = qty * rate;
+
+                    subTotal += baseTotal;
                 });
+
+                // PF and ESI
+                if ($('input[value="PF"]').is(':checked')) totalPF = subTotal * PF_RATE;
+                if ($('input[value="ESI"]').is(':checked')) totalESI = subTotal * ESI_RATE;
+
+                let labourSurcharge = parseFloat($('#labour_surcharge').val()) || 0;
+                let serviceCharge = parseFloat($('#service_charge').val()) || 0;
+                serviceCharge = subTotal * (serviceCharge / 100);
+                // Total before GST
+                let totalBeforeGST = subTotal + labourSurcharge + serviceCharge + totalPF + totalESI;
+
+                // GST on totalBeforeGST
+                if ($('input[value="CGST"]').is(':checked')) totalCGST = totalBeforeGST * CGST_RATE;
+                if ($('input[value="SGST"]').is(':checked')) totalSGST = totalBeforeGST * SGST_RATE;
+                if ($('input[value="IGST"]').is(':checked')) totalIGST = totalBeforeGST * IGST_RATE;
+
+                // Grand Total (including all charges)
+                let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST;
+
+                $('#sub-total').text(subTotal.toFixed(2));
+                $('#pf-total').text(totalPF.toFixed(2));
+                $('#esi-total').text(totalESI.toFixed(2));
+                $('#total').text(totalBeforeGST.toFixed(2));
+                $('#cgst-total').text(totalCGST.toFixed(2));
+                $('#sgst-total').text(totalSGST.toFixed(2));
+                $('#igst-total').text(totalIGST.toFixed(2));
+                $('#labour-charge').text(labourSurcharge);
+                $('#service-charge').text(serviceCharge);
                 $('#grand-total').text(grandTotal.toFixed(2));
             }
 
@@ -348,14 +428,15 @@
                 calculateRowTotal(row);
             });
 
-            // When global deduction checkboxes change
             $(document).on('change', 'input[name="deduction[]"]', function() {
-                $('.dynamic-row').each(function() {
-                    calculateRowTotal($(this));
-                });
+                calculateGrandTotal();
             });
 
-            // Initial calc
+            $(document).on('input', '#labour_surcharge, #service_charge', function() {
+                calculateGrandTotal();
+            });
+
+            // Initial calculation
             $('.dynamic-row').each(function() {
                 calculateRowTotal($(this));
             });

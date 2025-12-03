@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Employee;
 
+use App\Exports\SalaryExport;
 use App\Http\Controllers\Controller;
 use App\Lib\Enumerations\LeaveStatus;
 use App\Model\Branch;
@@ -28,6 +29,7 @@ use App\Model\Employees;
 use App\Model\EmployeesSalary;
 use App\Model\AssignJob;
 use App\Model\Attendance;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PayrollController extends Controller
 {
@@ -104,16 +106,16 @@ class PayrollController extends Controller
 
             // Default values
             $netSalary = $pf = $esi = $tds = 0;
-        
+
             // Ensure assignJob relationship exists
             if ($value->assignJob) {
-        
+
                 $perDayWages = $value->assignJob->perday_wages ?? 0;
                 $netSalary = $value->days_worked * $perDayWages;
-        
+
                 if (!empty($value->assignJob->deduction)) {
                     $deductions = array_map('trim', explode(',', $value->assignJob->deduction));
-        
+
                     if (in_array('PF', $deductions)) {
                         $pf = (12 / 100) * ($value->days_worked * $perDayWages);
                     }
@@ -126,9 +128,9 @@ class PayrollController extends Controller
                 }
             } else {
                 // Optionally log missing data for debugging
-                \Log::warning('Missing assignJob for attendance ID: '.$value->id);
+                \Log::warning('Missing assignJob for attendance ID: ' . $value->id);
             }
-        
+
             $results[$key]->netSalary = round($netSalary - ($pf + $esi + $tds));
         }
 
@@ -712,14 +714,14 @@ class PayrollController extends Controller
 
     public function exportSalaryCsv(Request $request)
     {
-   
+
         $query = Attendance::with([
             'employee',
             'company.districts',
             'company.branch',
             'assignJob.job',
         ]);
-    
+
         if ($request->has('company_id') && $request->company_id !== null) {
             $query->where('company_id', $request->company_id);
         }
@@ -729,36 +731,52 @@ class PayrollController extends Controller
         if ($request->has('yearField') && $request->yearField !== null) {
             $query->where('year', $request->yearField);
         }
-    
+
         $results = $query->orderBy('company_id')
-                         ->orderBy('year')
-                         ->orderBy('month')
-                         ->get();
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get();
 
         $filename = 'salary_report.csv';
-    
+
         $callback = function () use ($results) {
             $handle = fopen('php://output', 'w');
-    
+
             // UTF-8 BOM for Excel
             fwrite($handle, "\xEF\xBB\xBF");
-    
+
+            // ROW 1 → Main Title
+            fputcsv($handle, ['MAPL - SALARY SHEET']);
+
+            // ROW 2 → Company Address
+            fputcsv($handle, [
+                'Party Name & Add. : AS MOTORS, SIDDHI IMPEX, BHILWARA (Raj.)-324005, +91 78345658963',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                'Month/Year : OCT-25'
+            ]);
+
+            // ROW 3 → Blank Row
+            fputcsv($handle, ['']);
+
             // CSV Header
             fputcsv($handle, [
                 'Serial',
-                'District',
-                'Branch',
-                'Company',
-                'Month',
                 'EMP ID',
                 'Name',
-                'Gender',
                 'Post',
-                'Shift Timing',
                 'Total Salary',
                 'Basic Salary Per Day',
-                'Basic Salary',
                 'Working Days For Basic',
+                'Basic Salary',
                 'Per Day Salary',
                 'Month Days',
                 'Total Duties',
@@ -775,51 +793,51 @@ class PayrollController extends Controller
                 'Net Payable',
                 'CTC'
             ]);
-    
+
             $serial = 1;
-           
+
             foreach ($results as $value) {
                 // SAFE ACCESS: prevent "property of non-object"
                 $assignJob = $value->assignJob;
                 $salary        = ($assignJob && isset($assignJob->salary))        ? $assignJob->salary        : 0;
                 $perday_wages  = ($assignJob && isset($assignJob->perday_wages))  ? $assignJob->perday_wages  : 0;
                 $deduction     = ($assignJob && $assignJob->deduction)           ? $assignJob->deduction     : '';
-                
+
                 $shift_timing  = ($assignJob && $assignJob->shift_timing)        ? $assignJob->shift_timing  : 'N/A';
-    
+
                 // Calculations
                 $days_worked = $value->days_worked ?? 0;
                 $basic_work_days = $days_worked >= 26 ? 26 : $days_worked;
-    
+
                 $month = $value->month ?? 10;
                 $year  = $value->year  ?? date('Y');
                 $monthdays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
                 $perday_salary = $monthdays > 0 ? round($salary / $monthdays, 2) : 0;
-    
+
                 $otdays    = $days_worked > 26 ? $days_worked - 26 : 0;
                 $ot_salary  = round($perday_salary * $otdays, 2);
                 $allowance = round(($perday_salary - $perday_wages) * $basic_work_days, 2);
 
                 $basic_salary = $perday_wages * $basic_work_days;
                 $gross     = $basic_salary + $ot_salary + $allowance;
-    
+
                 // PF / ESI
                 $deductions = $deduction ? array_map('trim', explode(',', $deduction)) : [];
                 $pf_applicable  = in_array('PF',  $deductions) ? 'YES' : 'NO';
                 $esi_applicable = in_array('ESI', $deductions) ? 'YES' : 'NO';
-    
+
                 $pf_employee  = $pf_applicable  === 'YES' ? round(0.12   * $basic_salary, 2) : 0;
                 $esi_employee = $esi_applicable === 'YES' ? round(0.0075 * $gross, 2) : 0;
                 $pf_employer  = $pf_applicable  === 'YES' ? round(0.13   * $basic_salary, 2) : 0;
                 $esi_employer = $esi_applicable === 'YES' ? round(0.0325 * $gross, 2) : 0;
-    
+
                 $advance         = is_numeric($value->advance)         ? (float)$value->advance         : 0;
                 $dress_deduction = is_numeric($value->dress_deduction) ? (float)$value->dress_deduction : 0;
                 $other_deduction = is_numeric($value->other_deduction) ? (float)$value->other_deduction : 0;
-    
+
                 $net_payable = $gross - $pf_employee - $esi_employee - $advance - $dress_deduction - $other_deduction;
                 $ctc = $gross + $pf_employer + $esi_employer;
-    
+
                 // Safe company/employee fields
                 $district     = ($value->company && $value->company->districts) ? $value->company->districts->dist_name : '-';
                 $branch       = ($value->company && $value->company->branch)     ? $value->company->branch->branch_name   : '-';
@@ -828,25 +846,19 @@ class PayrollController extends Controller
                 $job_post     = $value->employee->job->post ? $value->employee->job->post : 'N/A';
                 $name         = $value->employee ? $value->employee->name       : '-';
                 $gender       = $value->employee ? $value->employee->gender     : '-';
-    
+
                 $monthName = Carbon::createFromDate($year, $month)->format('F, Y');
-    
+
                 // Write CSV row
                 fputcsv($handle, [
                     $serial++,
-                    $district,
-                    $branch,
-                    $company_name,
-                    $monthName,
                     $emp_id,
                     $name,
-                    $gender,
                     $job_post,
-                    $shift_timing,
                     $salary,
                     $perday_wages,
-                    $basic_salary,
                     $basic_work_days,
+                    $basic_salary,
                     $perday_salary,
                     $monthdays,
                     $days_worked,
@@ -867,7 +879,7 @@ class PayrollController extends Controller
 
             fclose($handle);
         };
-    
+
         $headers = [
             'Content-Type'        => 'text/csv; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
@@ -875,7 +887,28 @@ class PayrollController extends Controller
             'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
             'Expires'             => '0',
         ];
-    
+
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function exportSalaryExcel(Request $request)
+    {
+        $query = Attendance::with(['employee', 'company', 'assignJob.job']);
+
+        if ($request->company_id) {
+            $query->where('company_id', $request->company_id);
+        }
+
+        if ($request->monthField) {
+            $query->where('month', $request->monthField);
+        }
+
+        if ($request->yearField) {
+            $query->where('year', $request->yearField);
+        }
+
+        $results = $query->get();
+
+        return Excel::download(new SalaryExport($results), 'Salary_Report.xlsx');
     }
 }

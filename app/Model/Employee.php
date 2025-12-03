@@ -23,6 +23,7 @@ class Employee extends Model
         'email',
         'first_name',
         'last_name',
+        'father_name',
         'date_of_birth',
         'date_of_joining',
         'date_of_leaving',

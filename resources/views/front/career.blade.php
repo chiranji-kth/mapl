@@ -516,27 +516,23 @@ $front_setting = getFrontData();
                     contentType: false,
                     cache: false,
                     async: false,
-                    // beforeSend: function() {
-                    //     $('#registerbtn').html('<i class="fa-solid fa-spinner fa-spin"></i>');
-                    //     $('#registerbtn').attr("disabled", true);
-                    // },
                     success: function(result) {
-                        var obj = JSON.parse(result);
+                        // var obj = JSON.parse(result);
+                        var obj = result;
                         if (obj.status == true) {
+                            alert('Application Submitted Successfully');
                             $('#signup_message').html(obj.message);
                             setTimeout(function() {
                                 $('#post_career').trigger("reset");
-                                $('#submitcareer').html('Apply');
                             }, 1000);
+
                         } else {
                             $('#signup_message').html(obj.message);
-                            if (obj.error) {
-
-                                $.each(response.errors, function(key, val) {
+                            alert('Application Submission Failed');
+                            if (obj.errors) {
+                                $.each(obj.errors, function(key, val) {
                                     $("#" + key + "_err").html(val[0]);
-                                })
-
-
+                                });
                             }
                         }
                     }

@@ -290,29 +290,44 @@ class EmployeesController extends Controller
     public function destroy($id)
     {
         try {
+            $employee = Employees::findOrFail($id);
+
+            // ✔ Check if employee is assigned in assignjob table
+            if ($employee->assignedJobs()->count() > 0) {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Employee cannot be deleted because he/she is assigned to a company."
+                ]);
+            }
+
             DB::beginTransaction();
-            $data = Employees::FindOrFail($id);
-            if (!is_null($data->photo)) {
-                if (file_exists('uploads/employeePhoto/' . $data->photo) and !empty($data->photo)) {
-                    unlink('uploads/employeePhoto/' . $data->photo);
+
+            // ✔ Delete employee photo
+            if (!empty($employee->photo)) {
+                $path = 'uploads/employeePhoto/' . $employee->photo;
+                if (file_exists($path)) {
+                    unlink($path);
                 }
             }
-            $result = $data->delete();
-            DB::commit();
-            $bug = 0;
-        } catch (\Exception $e) {
-            DB::rollback();
-            Log::error($e->getMessage());
-            // return $e;
-            $bug = $e->errorInfo[1];
-        }
 
-        if ($bug == 0) {
-            echo "success";
-        } elseif ($bug == 1451) {
-            echo 'hasForeignKey';
-        } else {
-            echo 'error';
+            // ✔ Delete employee
+            $employee->delete();
+
+            DB::commit();
+
+            return response()->json([
+                "status" => true,
+                "message" => "success"
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+            Log::error($e->getMessage());
+
+            return response()->json([
+                "status" => false,
+                "message" => "error"
+            ]);
         }
     }
 }

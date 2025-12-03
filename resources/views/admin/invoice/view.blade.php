@@ -28,11 +28,11 @@
                     <td>@if($invoice->branch_id == 1)
                         {{ date('Y') . '-' . date('y', strtotime('+1 year')) }}/{{ $invoice->invoice_id ?? $invoice->invoice_id }}
                         @else
-                            {{ $invoice->invoice_id ?? $invoice->invoice_id }}
+                        {{ $invoice->invoice_id ?? $invoice->invoice_id }}
                         @endif
                     </td>
                 </tr>
-                 <tr>
+                <tr>
                     <th>Date</th>
                     <td>{{ $invoice->qdate }}</td>
                 </tr>
@@ -97,97 +97,101 @@
         @php
         $deductions = is_array($invoice->deduction) ? $invoice->deduction : json_decode($invoice->deduction ?? '[]');
 
-        $subtotal = $invoice->total_amount;
-        
+        $subtotal = $invoice->details->sum('payout');
+
+
         $pf = in_array('PF', $deductions) ? $subtotal * 0.13 : 0;
         $esi = in_array('ESI', $deductions) ? $subtotal * 0.0325 : 0;
-        
-        $totalQty = $invoice->details->sum('qty');
-        
-        $labour = ($invoice->labour_surcharge ?? 0) * $totalQty;
-        $service = ($invoice->service_charge ?? 0) * $totalQty;
-        
-        $total = $subtotal + $pf + $esi;
-        
+
+        $labour = $invoice->labour_surcharge ?? 0;
+        $service = $invoice->service_charge ?? 0;
+
+        $service = $subtotal * ($service / 100);
+
+        $total = $subtotal + $labour + $service + $pf + $esi;
+
         $cgst = in_array('CGST', $deductions) ? $total * 0.09 : 0;
         $sgst = in_array('SGST', $deductions) ? $total * 0.09 : 0;
         $igst = in_array('IGST', $deductions) ? $total * 0.18 : 0;
-        
-        
-        
-        $totalBeforeRound = $subtotal + $pf + $esi + $cgst + $sgst + $igst + $labour + $service;
+
+
+
+        $totalBeforeRound = $total + $cgst + $sgst + $igst;
         $roundedTotal = round($totalBeforeRound);
         $roundOff = number_format($roundedTotal - $totalBeforeRound, 2);
         @endphp
+        <tr>
+            <td colspan="7"></td>
+        </tr>
         <tfoot>
             <tr>
-                <td colspan="3"></td>
-                <th>Sub Total</th>
+                <td colspan="5"></td>
+                <th><strong>Sub Total</strong></th>
                 <td>₹ {{ number_format($subtotal, 2) }}</td>
             </tr>
             @if($pf > 0)
             <tr>
-                <td colspan="3"></td>
+                <td colspan="5"></td>
                 <th>PF (13%)</th>
                 <td>₹ {{ number_format($pf, 2) }}</td>
             </tr>
             @endif
             @if($esi > 0)
             <tr>
-                <td colspan="3"></td>
+                <td colspan="5"></td>
                 <th>ESI (3.25%)</th>
                 <td>₹ {{ number_format($esi, 2) }}</td>
             </tr>
             @endif
-                       
-            <tr>
-                <td colspan="3"></td>
-                <th>Total</th>
-                <td><strong>₹ {{ number_format($total, 2) }}</strong></td>
-            </tr>
-            @if($cgst > 0)
-            <tr>
-                <td colspan="3"></td>
-                <th>CGST (9%)</th>
-                <td>₹ {{ number_format($cgst, 2) }}</td>
-            </tr>
-            @endif
-            @if($sgst > 0)
-            <tr>
-                <td colspan="3"></td>
-                <th>SGST (9%)</th>
-                <td>₹ {{ number_format($sgst, 2) }}</td>
-            </tr>
-            @endif
-            @if($igst > 0)
-            <tr>
-                <td colspan="3"></td>
-                <th>IGST (18%)</th>
-                <td>₹ {{ number_format($igst, 2) }}</td>
-            </tr>
-            @endif
-            
-            <tr>
-                <td colspan="3"></td>
-                <th>Round Off</th>
-                <td>₹ {{ $roundOff }}</td>
-            </tr>
             @if($labour > 0)
             <tr>
-                <td colspan="3"></td>
+                <td colspan="5"></td>
                 <th>Labour Surcharge</th>
                 <td>₹ {{ number_format($labour, 2) }}</td>
             </tr>
             @endif
             @if($service > 0)
             <tr>
-                <td colspan="3"></td>
+                <td colspan="5"></td>
                 <th>Service Charge</th>
                 <td>₹ {{ number_format($service, 2) }}</td>
             </tr>
             @endif
+
             <tr>
-                <td colspan="3"></td>
+                <td colspan="5"></td>
+                <th><strong>Total</strong></th>
+                <td><strong>₹ {{ number_format($total, 2) }}</strong></td>
+            </tr>
+            @if($cgst > 0)
+            <tr>
+                <td colspan="5"></td>
+                <th>CGST (9%)</th>
+                <td>₹ {{ number_format($cgst, 2) }}</td>
+            </tr>
+            @endif
+            @if($sgst > 0)
+            <tr>
+                <td colspan="5"></td>
+                <th>SGST (9%)</th>
+                <td>₹ {{ number_format($sgst, 2) }}</td>
+            </tr>
+            @endif
+            @if($igst > 0)
+            <tr>
+                <td colspan="5"></td>
+                <th>IGST (18%)</th>
+                <td>₹ {{ number_format($igst, 2) }}</td>
+            </tr>
+            @endif
+
+            <tr>
+                <td colspan="5"></td>
+                <th>Round Off</th>
+                <td>₹ {{ $roundOff }}</td>
+            </tr>
+            <tr>
+                <td colspan="5"></td>
                 <th>Grand Total</th>
                 <td><strong>₹ {{ number_format($roundedTotal, 2) }}</strong></td>
             </tr>

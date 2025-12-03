@@ -144,7 +144,7 @@
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label>Service Charge</label>
+                                    <label>Service Charge (%)</label>
                                     <div class="input-group col-md-12">
                                         <input class="form-control" id="service_charge" name="service_charge" type="text"
                                             value="{{ old('service_charge', $invoice->service_charge) }}" placeholder="Service Charge">
@@ -238,6 +238,14 @@
                                             <div class="col-md-6 text-right"><span id="esi-total">0.00</span></div>
                                         </div>
                                         <div class="row">
+                                            <div class="col-md-6">Labour Surcharge:</div>
+                                            <div class="col-md-6 text-right"><span id="labour-charge">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">Service Charge:</div>
+                                            <div class="col-md-6 text-right"><span id="service-charge">0.00</span></div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-md-6"><strong>Total:</strong></div>
                                             <div class="col-md-6 text-right"><span id="total">0.00</span></div>
                                         </div>
@@ -252,14 +260,6 @@
                                         <div class="row">
                                             <div class="col-md-6">IGST (18%):</div>
                                             <div class="col-md-6 text-right"><span id="igst-total">0.00</span></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">Labour Surcharge:</div>
-                                            <div class="col-md-6 text-right"><span id="labour-charge">0.00</span></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">Service Charge:</div>
-                                            <div class="col-md-6 text-right"><span id="service-charge">0.00</span></div>
                                         </div>
                                         <hr>
                                         <div class="row">
@@ -491,28 +491,28 @@
 
 
         function calculatePayout(row) {
-            
-                const days = parseFloat(row.find('input[name*="[days]"]').val()) || 0;
-                const rate = parseFloat(row.find('input[name*="[rate]"]').val()) || 0;
-                const qty = parseFloat(row.find('input[name*="[qty]"]').val()) || 1;
-                const month = parseInt($('#month').val()) || new Date().getMonth() + 1;
-                const year = parseInt($('#year').val()) || new Date().getFullYear();
-                
-                // if (month >= 1 && month <= 12) {
-                //     const daysInMonth = new Date(year, month, 0).getDate();
-                //     // const payout = (days * rate * qty) / daysInMonth;
-                //     const payout = (days * rate) / daysInMonth;
-                //     // const payout = days * rate * qty;
-                //     const payout = days * rate;
-                //     row.find('.payout').val(payout.toFixed(2));
-                // } else {
-                //     row.find('.payout').val('');
-                // }
-                const daysInMonth = new Date(year, month, 0).getDate();
-                const payout = (days * rate) / daysInMonth;
-            
-                row.find('.payout').val(payout.toFixed(2));
-                calculateGrandTotal();
+
+            const days = parseFloat(row.find('input[name*="[days]"]').val()) || 0;
+            const rate = parseFloat(row.find('input[name*="[rate]"]').val()) || 0;
+            const qty = parseFloat(row.find('input[name*="[qty]"]').val()) || 1;
+            const month = parseInt($('#month').val()) || new Date().getMonth() + 1;
+            const year = parseInt($('#year').val()) || new Date().getFullYear();
+
+            // if (month >= 1 && month <= 12) {
+            //     const daysInMonth = new Date(year, month, 0).getDate();
+            //     // const payout = (days * rate * qty) / daysInMonth;
+            //     const payout = (days * rate) / daysInMonth;
+            //     // const payout = days * rate * qty;
+            //     const payout = days * rate;
+            //     row.find('.payout').val(payout.toFixed(2));
+            // } else {
+            //     row.find('.payout').val('');
+            // }
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const payout = (days * rate) / daysInMonth;
+
+            row.find('.payout').val(payout.toFixed(2));
+            calculateGrandTotal();
         }
 
         // Calculate totals
@@ -527,14 +527,21 @@
                 subTotal += payout;
                 totalQty += qty;
             });
-
-            $('.dynamic-row').each(function() {
-                subTotal += parseFloat($(this).find('.payout').val()) || 0;
-            });
+            // console.log(subTotal);
+            // $('.dynamic-row').each(function() {
+            //     subTotal += parseFloat($(this).find('.payout').val()) || 0;
+            // });
 
             let totalPF = $('input[name="deduction[]"][value="PF"]').is(':checked') ? subTotal * PF_RATE : 0;
             let totalESI = $('input[name="deduction[]"][value="ESI"]').is(':checked') ? subTotal * ESI_RATE : 0;
-            let totalBeforeGST = subTotal + totalPF + totalESI;
+
+            let labourSurcharge = parseFloat($('#labour_surcharge').val()) || 0;
+            let serviceCharge = parseFloat($('#service_charge').val()) || 0;
+
+            serviceCharge = (subTotal * (serviceCharge / 100));
+            serviceCharge = parseFloat(serviceCharge.toFixed(2));
+
+            let totalBeforeGST = subTotal + labourSurcharge + serviceCharge + totalPF + totalESI;
 
             let totalCGST = 0,
                 totalSGST = 0,
@@ -546,13 +553,7 @@
                 totalSGST = $('input[name="deduction[]"][value="SGST"]').is(':checked') ? totalBeforeGST * SGST_RATE : 0;
             }
 
-            let labourSurcharge = parseFloat($('#labour_surcharge').val()) || 0;
-            let serviceCharge = parseFloat($('#service_charge').val()) || 0;
-
-           labourSurcharge = labourSurcharge * totalQty;
-           serviceCharge = serviceCharge * totalQty;
-
-            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST + labourSurcharge + serviceCharge;
+            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST;
 
             $('#sub-total').text(subTotal.toFixed(2));
             $('#pf-total').text(totalPF.toFixed(2));
@@ -654,6 +655,6 @@
         // Trigger AJAX when company, month, or year changes
         $('#company_id, #month, #year').on('change', loadAssignJobs);
     </script>
-    
-    
+
+
     @endsection

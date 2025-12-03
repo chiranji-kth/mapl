@@ -80,7 +80,7 @@ Edit Staff
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="exampleInput">@lang('employee.first_name')<span
+                                        <label for="exampleInput">Name<span
                                                 class="validateRq">*</span></label>
                                         <input class="form-control required first_name" id="first_name"
                                             placeholder="@lang('employee.first_name')" name="first_name" type="text"
@@ -89,13 +89,21 @@ Edit Staff
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
+                                        <label for="exampleInput">Father Name</label>
+                                        <input class="form-control father_name" id="father_name"
+                                            placeholder="@lang('employee.father_name')" name="father_name" type="text"
+                                            value="{{ $editModeData->father_name }}">
+                                    </div>
+                                </div>
+                                <!-- <div class="col-md-3">
+                                    <div class="form-group">
                                         <label for="exampleInput">@lang('employee.last_name')</label>
                                         <input class="form-control last_name" id="last_name"
                                             placeholder="@lang('employee.last_name')" name="last_name" type="text"
                                             value="{{ $editModeData->last_name }}">
                                     </div>
-                                </div>
-                                <div class="col-md-3">
+                                </div> -->
+                                <!-- <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.finger_print_no')<span
                                                 class="validateRq">*</span></label>
@@ -103,7 +111,7 @@ Edit Staff
                                             placeholder="@lang('employee.finger_print_no')" name="finger_id" type="text"
                                             value="{{ $editModeData->finger_id }}">
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('designation.designation_name')<span
@@ -119,6 +127,21 @@ Edit Staff
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="exampleInput">@lang('branch.branch_name')</label>
+                                        <select name="branch_id" class="form-control branch_id select2">
+                                            <option value="">--- @lang('common.please_select') ---</option>
+                                            @foreach ($branchList as $value)
+                                            <option value="{{ $value->branch_id }}"
+                                                @if ($value->branch_id == $editModeData->branch_id) {{ 'selected' }} @endif>
+                                                {{ $value->branch_name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <!-- <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.supervisor')</label>
@@ -156,21 +179,6 @@ Edit Staff
                                     </option>
                                 </select>
 
-
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="exampleInput">@lang('branch.branch_name')</label>
-                                        <select name="branch_id" class="form-control branch_id select2">
-                                            <option value="">--- @lang('common.please_select') ---</option>
-                                            @foreach ($branchList as $value)
-                                            <option value="{{ $value->branch_id }}"
-                                                @if ($value->branch_id == $editModeData->branch_id) {{ 'selected' }} @endif>
-                                                {{ $value->branch_name }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="col-md-3">
                                     <label for="exampleInput">@lang('employee.email')</label>
                                     <div class="input-group">
@@ -203,6 +211,18 @@ Edit Staff
                                                 @if ('Female'==$editModeData->gender) {{ 'selected' }} @endif>
                                                 @lang('employee.female')</option>
                                         </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="exampleInput">@lang('employee.date_of_birth')<span
+                                            class="validateRq">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input class="form-control date_of_birth dateField" id="date_of_birth"
+                                            readonly placeholder="@lang('employee.date_of_birth')" name="date_of_birth"
+                                            type="text"
+                                            value="{{ dateConvertDBtoForm($editModeData->date_of_birth) }}">
                                     </div>
                                 </div>
 
@@ -269,17 +289,6 @@ Edit Staff
                                     </div>
                                 </div> -->
                                 <div class="col-md-3">
-                                    <label for="exampleInput">@lang('employee.date_of_birth')<span
-                                            class="validateRq">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                        <input class="form-control date_of_birth dateField" id="date_of_birth"
-                                            readonly placeholder="@lang('employee.date_of_birth')" name="date_of_birth"
-                                            type="text"
-                                            value="{{ dateConvertDBtoForm($editModeData->date_of_birth) }}">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
                                     <label for="exampleInput">@lang('employee.date_of_joining')<span
                                             class="validateRq">*</span></label>
                                     <div class="input-group">
@@ -315,10 +324,6 @@ Edit Staff
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-
-
-                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">Status<span class="validateRq">*</span></label>
@@ -335,6 +340,10 @@ Edit Staff
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+
+
+                            <div class="row">
                                 <div class="col-md-3">
                                     <label for="exampleInput">@lang('employee.photo')</label>
                                     <div class="input-group">
@@ -363,13 +372,11 @@ Edit Staff
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="	fa fa-file-o"></i></span>
                                         <input class="form-control kyc" id="kyc_file"
-                                            accept="image/png, image/jpeg, image/gif,image/jpg, doc, pdf" name="kyc_file"
+                                            accept="pdf" name="kyc_file"
                                             type="file">
                                     </div>
+                                    <span class="text-red">Note: PDF only</span>
                                 </div>
-                            </div>
-                            <div class="row">
-
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.address')</label>
@@ -377,6 +384,8 @@ Edit Staff
                                             rows="2" name="address">{{ $editModeData->address }}</textarea>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="exampleInput">@lang('employee.emergency_contact')</label>

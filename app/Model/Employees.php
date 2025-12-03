@@ -80,6 +80,11 @@ class Employees extends Model
         ]);
     }
 
+    public function assignedJobs()
+    {
+        return $this->hasMany(AssignJob::class, 'emp_id', 'emp_id');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 1);

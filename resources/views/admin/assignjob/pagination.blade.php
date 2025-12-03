@@ -4,6 +4,8 @@
 			<tr class="tr_header">
 				<th>@lang('common.serial')</th>
 				<th>Emp ID</th>
+				<th>Name</th>
+				<th>Company</th>
 				<th>Job Role</th>
 				<th>Salary (Month)</th>
 				<th>Shift</th>
@@ -19,6 +21,12 @@
 				<td style="width: 100px;">{!! ++$sl !!}</td>
 				<td>
 					{{ $value->employees->employee_id ?? 'N/A' }}
+				</td>
+				<td>
+					{{ $value->employees->name ?? 'N/A' }}
+				</td>
+				<td>
+					{{ $value->company->company_name ?? 'N/A' }}
 				</td>
 				<td>
 					{{ $value->employees->job->post }}

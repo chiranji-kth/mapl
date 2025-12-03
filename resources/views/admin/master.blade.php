@@ -312,6 +312,7 @@ $front_setting = getFrontData();
 
                     </div>
                 </div>
+
                 <ul class="nav" id="side-menu">
                     <!-- <li><a href="{{ url('dashboard') }}" class="waves-effect"><i class="mdi mdi-home hideMenu"
                                 data-icon="v"></i> <span class="hide-menu hideMenu"> {{ __('menu.dashboard') }}
@@ -629,7 +630,14 @@ $front_setting = getFrontData();
                                 _token: token
                             },
                             success: function(data) {
-                                if (data == 'hasForeignKey') {
+
+                                if (data.status === false && data.message.includes('assigned')) {
+                                    swal({
+                                        title: "Cannot Delete!",
+                                        text: data.message,
+                                        type: "error"
+                                    });
+                                } else if (data == 'hasForeignKey') {
                                     swal({
                                         title: "Oops!",
                                         text: "This data is used anywhere",
@@ -651,7 +659,7 @@ $front_setting = getFrontData();
                                 } else {
                                     swal({
                                         title: "Error!",
-                                        text: "application is demo mode or something went wrong!.",
+                                        text: "something went wrong!.",
                                         type: "error"
                                     });
                                 }

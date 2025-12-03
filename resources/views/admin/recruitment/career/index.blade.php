@@ -12,11 +12,11 @@ Career
                 <li>@yield('title')</li>
             </ol>
         </div>
-        <!--<div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">-->
-        <!--    <a href="{{ route('jobPost.create') }}"-->
-        <!--        class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light"> <i-->
-        <!--            class="fa fa-plus-circle" aria-hidden="true"></i> Career</a>-->
-        <!--</div>-->
+        <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+            <a href="{{ route('career') }}"
+                class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light" target="_blank"> <i
+                    class="fa fa-plus-circle" aria-hidden="true"></i> ADD Career</a>
+        </div>
     </div>
 
     <div class="row">

@@ -56,8 +56,7 @@ class ResetPasswordController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        try
-        {
+        try {
 
             $checkUser = Employee::where('email', $request->email)->first();
             if (!$checkUser) {
@@ -83,7 +82,6 @@ class ResetPasswordController extends Controller
             });
 
             return redirect()->back()->with('success', 'We have sent you a reset password link please check your inbox');
-
         } catch (Exception $e) {
 
             Log::error($e->getMessage());
@@ -108,8 +106,7 @@ class ResetPasswordController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        try
-        {
+        try {
 
             $userToken = ResetPassword::where('reset_token', $request->token)->first();
 
@@ -124,12 +121,10 @@ class ResetPasswordController extends Controller
             $userToken->delete();
 
             return redirect('login')->with('success', 'Please login with your new password');
-
         } catch (Exception $e) {
             dd($e);
             Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
         }
     }
-
 }

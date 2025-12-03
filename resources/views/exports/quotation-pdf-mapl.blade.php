@@ -302,13 +302,15 @@
         $labour = $quotation->labour_surcharge ?? 0;
         $service = $quotation->service_charge ?? 0;
 
-        $total = $subtotal + $pf + $esi;
+        $service = $subtotal * ($service / 100);
+
+        $total = $subtotal + $labour + $service + $pf + $esi;
 
         $cgst = in_array('CGST', $deductions) ? $total * 0.09 : 0;
         $sgst = in_array('SGST', $deductions) ? $total * 0.09 : 0;
         $igst = in_array('IGST', $deductions) ? $total * 0.18 : 0;
 
-        $grandTotal = $subtotal + $pf + $esi + $cgst + $sgst + $igst + $labour + $service;
+        $grandTotal = $total + $cgst + $sgst + $igst;
 
 
         @endphp
@@ -330,6 +332,20 @@
                 <td colspan="4" style="border: none;"></td>
                 <td colspan="2" class="right-align"><strong>ESI (3.25%):</strong></td>
                 <td colspan="2" class="right-align">{{ number_format($esi, 2) }}</td>
+            </tr>
+            @endif
+            @if($labour > 0)
+            <tr>
+                <td colspan="4" style="border: none;"></td>
+                <th colspan="2" class="right-align">Labour Surcharge</th>
+                <td colspan="2" class="right-align">₹ {{ number_format($labour, 2) }}</td>
+            </tr>
+            @endif
+            @if($service > 0)
+            <tr>
+                <td colspan="4" style="border: none;"></td>
+                <th colspan="2" class="right-align">Service Charge</th>
+                <td colspan="2" class="right-align">₹ {{ number_format($service, 2) }}</td>
             </tr>
             @endif
             <tr>
@@ -354,20 +370,6 @@
                 <td colspan="4" style="border: none;"></td>
                 <td colspan="2" class="right-align"><strong>IGST (18%):</strong></td>
                 <td colspan="2" class="right-align">{{ number_format($igst, 2) }}</td>
-            </tr>
-            @endif
-             @if($labour > 0)
-            <tr>
-                <td colspan="4" style="border: none;"></td>
-                <th colspan="2" class="right-align">Labour Surcharge</th>
-                <td colspan="2" class="right-align">₹ {{ number_format($labour, 2) }}</td>
-            </tr>
-            @endif
-            @if($service > 0)
-            <tr>
-                <td colspan="4" style="border: none;"></td>
-                <th colspan="2" class="right-align">Service Charge</th>
-                <td colspan="2" class="right-align">₹ {{ number_format($service, 2) }}</td>
             </tr>
             @endif
             <tr>

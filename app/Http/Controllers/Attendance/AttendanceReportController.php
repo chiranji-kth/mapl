@@ -161,8 +161,6 @@ class AttendanceReportController extends Controller
             return $pdf->download("attendance-summaryReport.pdf");
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
-
         }
     }
-
 }

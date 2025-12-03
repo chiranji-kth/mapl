@@ -88,7 +88,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="exampleInput">Service Charge</label>
+                                    <label for="exampleInput">Service Charge (%)</label>
                                     <div class="input-group col-md-12">
                                         <input class="form-control" id="service_charge"
                                             placeholder="Service Charge" name="service_charge" type="text"
@@ -103,14 +103,14 @@
                                 </div>
                             </div>
                             <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="note">NOTE:</label><br />
-                                            <input type="checkbox" name="note[]" value="PF & ESI IS INCLUDED & GST IS EXTRA"> PF & ESI IS INCLUDED & GST IS EXTRA<br />
-                                            <input type="checkbox" name="note[]" value="PF ESI & GST ARE APPLICABLE AS PER GOVT. NORMS" > PF ESI & GST ARE APPLICABLE AS PER GOVT. NORMS
-                                        </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="note">NOTE:</label><br />
+                                        <input type="checkbox" name="note[]" value="PF & ESI IS INCLUDED & GST IS EXTRA"> PF & ESI IS INCLUDED & GST IS EXTRA<br />
+                                        <input type="checkbox" name="note[]" value="PF ESI & GST ARE APPLICABLE AS PER GOVT. NORMS"> PF ESI & GST ARE APPLICABLE AS PER GOVT. NORMS
                                     </div>
                                 </div>
+                            </div>
                             <br /><br />
 
                             <hr>
@@ -177,6 +177,14 @@
                                             <div class="col-md-6 text-right"><span id="esi-total">0.00</span></div>
                                         </div>
                                         <div class="row">
+                                            <div class="col-md-6">Labour Surcharge:</div>
+                                            <div class="col-md-6 text-right"><span id="labour-charge">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">Service Charge:</div>
+                                            <div class="col-md-6 text-right"><span id="service-charge">0.00</span></div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-md-6"><strong>Total:</strong></div>
                                             <div class="col-md-6 text-right"><span id="total">0.00</span></div>
                                         </div>
@@ -191,14 +199,6 @@
                                         <div class="row">
                                             <div class="col-md-6">IGST (18%):</div>
                                             <div class="col-md-6 text-right"><span id="igst-total">0.00</span></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">Labour Surcharge:</div>
-                                            <div class="col-md-6 text-right"><span id="labour-charge">0.00</span></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">Service Charge:</div>
-                                            <div class="col-md-6 text-right"><span id="service-charge">0.00</span></div>
                                         </div>
                                         <hr>
                                         <div class="row">
@@ -223,7 +223,7 @@
     @endsection
 
     @section('page_scripts')
-    
+
     <script>
         let rowCount = 1;
 
@@ -317,20 +317,19 @@
             if ($('input[value="PF"]').is(':checked')) totalPF = subTotal * PF_RATE;
             if ($('input[value="ESI"]').is(':checked')) totalESI = subTotal * ESI_RATE;
 
+            let labourSurcharge = parseFloat($('#labour_surcharge').val()) || 0;
+            let serviceCharge = parseFloat($('#service_charge').val()) || 0;
+            serviceCharge = subTotal * (serviceCharge / 100);
             // Total before GST
-            let totalBeforeGST = subTotal + totalPF + totalESI;
+            let totalBeforeGST = subTotal + labourSurcharge + serviceCharge + totalPF + totalESI;
 
             // GST on totalBeforeGST
             if ($('input[value="CGST"]').is(':checked')) totalCGST = totalBeforeGST * CGST_RATE;
             if ($('input[value="SGST"]').is(':checked')) totalSGST = totalBeforeGST * SGST_RATE;
             if ($('input[value="IGST"]').is(':checked')) totalIGST = totalBeforeGST * IGST_RATE;
 
-            let labourSurcharge = parseFloat($('#labour_surcharge').val()) || 0;
-            let serviceCharge = parseFloat($('#service_charge').val()) || 0;
-
             // Grand Total (including all charges)
-            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST + labourSurcharge + serviceCharge;
-
+            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST;
 
             $('#sub-total').text(subTotal.toFixed(2));
             $('#pf-total').text(totalPF.toFixed(2));

@@ -189,6 +189,14 @@
                                             <div class="col-md-6 text-right"><span id="esi-total">0.00</span></div>
                                         </div>
                                         <div class="row">
+                                            <div class="col-md-6">Labour Surcharge:</div>
+                                            <div class="col-md-6 text-right"><span id="labour-charge">0.00</span></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">Service Charge (%):</div>
+                                            <div class="col-md-6 text-right"><span id="service-charge">0.00</span></div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-md-6"><strong>Total:</strong></div>
                                             <div class="col-md-6 text-right"><span id="total">0.00</span></div>
                                         </div>
@@ -203,14 +211,6 @@
                                         <div class="row">
                                             <div class="col-md-6">IGST (18%):</div>
                                             <div class="col-md-6 text-right"><span id="igst-total">0.00</span></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">Labour Surcharge:</div>
-                                            <div class="col-md-6 text-right"><span id="labour-charge">0.00</span></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">Service Charge:</div>
-                                            <div class="col-md-6 text-right"><span id="service-charge">0.00</span></div>
                                         </div>
                                         <hr>
                                         <div class="row">
@@ -429,13 +429,20 @@
                 totalQty += qty;
             });
 
-            $('.dynamic-row').each(function() {
-                subTotal += parseFloat($(this).find('.payout').val()) || 0;
-            });
+            // $('.dynamic-row').each(function() {
+            //     subTotal += parseFloat($(this).find('.payout').val()) || 0;
+            // });
 
             let totalPF = $('input[name="deduction[]"][value="PF"]').is(':checked') ? subTotal * PF_RATE : 0;
             let totalESI = $('input[name="deduction[]"][value="ESI"]').is(':checked') ? subTotal * ESI_RATE : 0;
-            let totalBeforeGST = subTotal + totalPF + totalESI;
+
+            let labourSurcharge = parseFloat($('#labour_surcharge').val()) || 0;
+            let serviceCharge = parseFloat($('#service_charge').val()) || 0;
+
+            serviceCharge = (subTotal * (serviceCharge / 100));
+            serviceCharge = parseFloat(serviceCharge.toFixed(2));
+
+            let totalBeforeGST = subTotal + labourSurcharge + serviceCharge + totalPF + totalESI;
 
             let totalCGST = 0,
                 totalSGST = 0,
@@ -447,13 +454,7 @@
                 totalSGST = $('input[name="deduction[]"][value="SGST"]').is(':checked') ? totalBeforeGST * SGST_RATE : 0;
             }
 
-            let labourSurcharge = parseFloat($('#labour_surcharge').val()) || 0;
-            let serviceCharge = parseFloat($('#service_charge').val()) || 0;
-
-           labourSurcharge = labourSurcharge * totalQty;
-           serviceCharge = serviceCharge * totalQty;
-
-            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST + labourSurcharge + serviceCharge;
+            let grandTotal = totalBeforeGST + totalCGST + totalSGST + totalIGST;
 
             $('#sub-total').text(subTotal.toFixed(2));
             $('#pf-total').text(totalPF.toFixed(2));
@@ -472,7 +473,7 @@
             const row = $(this).closest('.dynamic-row');
             calculatePayout(row);
         });
-        
+
 
         $(document).on('change', 'input[name="deduction[]"]', calculateGrandTotal);
 

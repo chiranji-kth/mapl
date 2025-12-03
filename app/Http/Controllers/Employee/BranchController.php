@@ -18,7 +18,7 @@ class BranchController extends Controller
 
     public function index()
     {
-        $results = Branch::get();
+        $results = Branch::withTrashed()->get();
         return view('admin.employee.branch.index', ['results' => $results]);
     }
 
@@ -83,5 +83,17 @@ class BranchController extends Controller
         } else {
             echo 'error';
         }
+    }
+
+    public function restore($id)
+    {
+        $branch = Branch::withTrashed()->findOrFail($id);
+
+        if ($branch->deleted_at) {
+            $branch->restore();
+            return back()->with('success', 'Branch reactivated successfully.');
+        }
+
+        return back()->with('info', 'Branch is already active.');
     }
 }

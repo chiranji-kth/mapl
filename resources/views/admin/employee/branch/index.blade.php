@@ -1,7 +1,7 @@
 @extends('admin.master')
 @section('content')
 @section('title')
-@lang('branch.branch_list');
+@lang('branch.branch_list')
 @endsection
 <div class="container-fluid">
 	<div class="row bg-title">
@@ -40,22 +40,48 @@
 									<tr class="tr_header">
 										<th>@lang('common.serial')</th>
 										<th>@lang('branch.branch_name')</th>
+										<th>Status</th>
 										<th style="text-align: center;">@lang('common.action')</th>
 									</tr>
 								</thead>
 								<tbody>
 									{!! $sl=null !!}
 									@foreach($results AS $value)
-									<tr class="{!! $value->branch_id !!}">
+									<tr class="{{ $value->branch_id }}">
 										<td style="width: 100px;">{!! ++$sl !!}</td>
 										<td>{!! $value->branch_name !!}</td>
+
+										<td>
+											<span class="{{ $value->deleted_at ? 'text-danger' : 'text-success' }}">
+												{{ $value->deleted_at ? 'Deleted' : 'Active' }}
+											</span>
+										</td>
+
 										<td style="width: 100px;">
-											<a href="{!! route('branch.edit',$value->branch_id) !!}" class="btn btn-success btn-xs btnColor">
-												<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+											@if($value->deleted_at)
+											<!-- Restore button -->
+											<a href="{{ route('branch.restore', $value->branch_id) }}"
+												class="btn btn-warning btn-xs btnColor">
+												<i class="fa fa-undo"></i> Restore
 											</a>
-											<a href="{!!route('branch.delete',$value->branch_id )!!}" data-token="{!! csrf_token() !!}" data-id="{!! $value->branch_id!!}" class="delete btn btn-danger btn-xs deleteBtn btnColor"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+											@else
+											<!-- Edit button -->
+											<a href="{{ route('branch.edit', $value->branch_id) }}"
+												class="btn btn-success btn-xs btnColor">
+												<i class="fa fa-pencil-square-o"></i>
+											</a>
+
+											<!-- Soft Delete button -->
+											<a href="{{ route('branch.delete', $value->branch_id) }}"
+												data-token="{{ csrf_token() }}"
+												data-id="{{ $value->branch_id }}"
+												class="delete btn btn-danger btn-xs deleteBtn btnColor">
+												<i class="fa fa-trash-o"></i>
+											</a>
+											@endif
 										</td>
 									</tr>
+
 									@endforeach
 								</tbody>
 							</table>

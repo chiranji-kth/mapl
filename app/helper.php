@@ -36,42 +36,52 @@ function permissionCheck()
 function showMenu()
 {
     $role_id = session('logged_session_data.role_id');
-    $modules = json_decode(DB::table('modules')->get()->toJson(), true);
-    $menus   = json_decode(DB::table('menus')
-        ->select(DB::raw('menus.id, menus.name, menus.menu_url, menus.parent_id, menus.module_id'))
-        ->join('menu_permission', 'menu_permission.menu_id', '=', 'menus.id')
-        ->where('menu_permission.role_id', $role_id)
-        ->where('menus.status', 1)
-        ->whereNull('action')
-        ->orderBy('menus.id', 'ASC')
-        ->get()->toJson(), true);
 
-    $sideMenu = [];
-    if ($menus) {
-        foreach ($menus as $menu) {
-            if (!isset($sideMenu[$menu['module_id']])) {
-                $moduleId = array_search($menu['module_id'], array_column($modules, 'id'));
+    return cache()->remember("sideMenu_{$role_id}", 60, function () use ($role_id) {
 
-                $sideMenu[$menu['module_id']]               = [];
-                $sideMenu[$menu['module_id']]['id']         = $modules[$moduleId]['id'];
-                $sideMenu[$menu['module_id']]['name']       = $modules[$moduleId]['name'];
-                $sideMenu[$menu['module_id']]['icon_class'] = $modules[$moduleId]['icon_class'];
-                $sideMenu[$menu['module_id']]['menu_url']   = '#';
-                $sideMenu[$menu['module_id']]['parent_id']  = '';
-                $sideMenu[$menu['module_id']]['module_id']  = $modules[$moduleId]['id'];
-                $sideMenu[$menu['module_id']]['sub_menu']   = [];
-            }
-            if ($menu['parent_id'] == 0) {
-                $sideMenu[$menu['module_id']]['sub_menu'][$menu['id']]             = $menu;
-                $sideMenu[$menu['module_id']]['sub_menu'][$menu['id']]['sub_menu'] = [];
-            } else {
-                array_push($sideMenu[$menu['module_id']]['sub_menu'][$menu['parent_id']]['sub_menu'], $menu);
+        $modules = json_decode(DB::table('modules')->get()->toJson(), true);
+
+        $menus = json_decode(DB::table('menus')
+            ->select(DB::raw('menus.id, menus.name, menus.menu_url, menus.parent_id, menus.module_id'))
+            ->join('menu_permission', 'menu_permission.menu_id', '=', 'menus.id')
+            ->where('menu_permission.role_id', $role_id)
+            ->where('menus.status', 1)
+            ->whereNull('action')
+            ->orderBy('menus.id', 'ASC')
+            ->get()->toJson(), true);
+
+        $sideMenu = [];
+
+        if ($menus) {
+            foreach ($menus as $menu) {
+
+                if (!isset($sideMenu[$menu['module_id']])) {
+                    $moduleId = array_search($menu['module_id'], array_column($modules, 'id'));
+
+                    $sideMenu[$menu['module_id']] = [
+                        'id'         => $modules[$moduleId]['id'],
+                        'name'       => $modules[$moduleId]['name'],
+                        'icon_class' => $modules[$moduleId]['icon_class'],
+                        'menu_url'   => '#',
+                        'parent_id'  => '',
+                        'module_id'  => $modules[$moduleId]['id'],
+                        'sub_menu'   => [],
+                    ];
+                }
+
+                if ($menu['parent_id'] == 0) {
+                    $sideMenu[$menu['module_id']]['sub_menu'][$menu['id']] =
+                        array_merge($menu, ['sub_menu' => []]);
+                } else {
+                    $sideMenu[$menu['module_id']]['sub_menu'][$menu['parent_id']]['sub_menu'][] = $menu;
+                }
             }
         }
-    }
 
-    return $sideMenu;
+        return $sideMenu;
+    });
 }
+
 
 function convartMonthAndYearToWord($data)
 {
@@ -161,45 +171,62 @@ if (!function_exists('ajaxResponse')) {
 
     function convertNumberToIndianWords($number)
     {
-    $no = floor($number);
-    $words = array(
-        '0' => '', '1' => 'one', '2' => 'two',
-        '3' => 'three', '4' => 'four', '5' => 'five',
-        '6' => 'six', '7' => 'seven', '8' => 'eight',
-        '9' => 'nine', '10' => 'ten', '11' => 'eleven',
-        '12' => 'twelve', '13' => 'thirteen', '14' => 'fourteen',
-        '15' => 'fifteen', '16' => 'sixteen', '17' => 'seventeen',
-        '18' => 'eighteen', '19' =>'nineteen', '20' => 'twenty',
-        '30' => 'thirty', '40' => 'forty', '50' => 'fifty',
-        '60' => 'sixty', '70' => 'seventy', '80' => 'eighty',
-        '90' => 'ninety'
-    );
+        $no = floor($number);
+        $words = array(
+            '0' => '',
+            '1' => 'one',
+            '2' => 'two',
+            '3' => 'three',
+            '4' => 'four',
+            '5' => 'five',
+            '6' => 'six',
+            '7' => 'seven',
+            '8' => 'eight',
+            '9' => 'nine',
+            '10' => 'ten',
+            '11' => 'eleven',
+            '12' => 'twelve',
+            '13' => 'thirteen',
+            '14' => 'fourteen',
+            '15' => 'fifteen',
+            '16' => 'sixteen',
+            '17' => 'seventeen',
+            '18' => 'eighteen',
+            '19' => 'nineteen',
+            '20' => 'twenty',
+            '30' => 'thirty',
+            '40' => 'forty',
+            '50' => 'fifty',
+            '60' => 'sixty',
+            '70' => 'seventy',
+            '80' => 'eighty',
+            '90' => 'ninety'
+        );
 
-    $digits = ['', 'hundred', 'thousand', 'lakh', 'crore'];
-    $str = [];
-    $i = 0;
+        $digits = ['', 'hundred', 'thousand', 'lakh', 'crore'];
+        $str = [];
+        $i = 0;
 
-    while ($no > 0) {
-        $divider = ($i == 2) ? 10 : 100;
-        $number = $no % $divider;
-        $no = floor($no / $divider);
-        $i += ($divider == 10) ? 1 : 2;
+        while ($no > 0) {
+            $divider = ($i == 2) ? 10 : 100;
+            $number = $no % $divider;
+            $no = floor($no / $divider);
+            $i += ($divider == 10) ? 1 : 2;
 
-        if ($number) {
-            $plural = '';
-            $hundred = ($str && $number > 9) ? 'and ' : '';
-            if ($number < 21) {
-                $str[] = $words[$number] . ' ' . $digits[count($str)];
+            if ($number) {
+                $plural = '';
+                $hundred = ($str && $number > 9) ? 'and ' : '';
+                if ($number < 21) {
+                    $str[] = $words[$number] . ' ' . $digits[count($str)];
+                } else {
+                    $str[] = $words[floor($number / 10) * 10] . ' ' . $words[$number % 10] . ' ' . $digits[count($str)];
+                }
             } else {
-                $str[] = $words[floor($number / 10) * 10] . ' ' . $words[$number % 10] . ' ' . $digits[count($str)];
+                $str[] = null;
             }
-        } else {
-            $str[] = null;
         }
+
+        $result = implode(' ', array_reverse(array_filter($str)));
+        return 'Rupees ' . ucfirst(trim($result)) . ' only';
     }
-
-    $result = implode(' ', array_reverse(array_filter($str)));
-    return 'Rupees ' . ucfirst(trim($result)) . ' only';
-}
-
 }

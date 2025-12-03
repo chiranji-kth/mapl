@@ -34,9 +34,9 @@
 				<!-- <td>{{ $value->assignJob->shift ?? '-' }}</td> -->
 				<td>{{ $value->days_worked }}</td>
 				<td>{{ $value->updated_at }}</td>
-				<td><input type="number" class="advance" value="{{ $value->advance ?? 0 }}" style="width: 50px;"/></td>
-				<td><input type="number" class="dress" value="{{ $value->dress_deduction ?? 0 }}" style="width: 50px;" /></td>
-				<td><input type="number" class="other" value="{{ $value->other_deduction ?? 0 }}" style="width: 50px;" /></td>
+				<td><input type="number" class="advance" value="{{ $value->advance ?? 0 }}" style="width: 100px;" /></td>
+				<td><input type="number" class="dress" value="{{ $value->dress_deduction ?? 0 }}" style="width: 100px;" /></td>
+				<td><input type="number" class="other" value="{{ $value->other_deduction ?? 0 }}" style="width: 100px;" /></td>
 				<td>
 					<button type="button" class="btn btn-sm btn-success updateBtn">Update</button>
 				</td>

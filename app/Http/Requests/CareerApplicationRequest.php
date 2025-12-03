@@ -4,49 +4,47 @@ namespace App\Http\Requests;
 
 use App\Traits\CustomValidationMessageTrait;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CareerApplicationRequest extends FormRequest
 {
-    
     use CustomValidationMessageTrait;
-    
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
+
     public function authorize()
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
         return [
             'name'  => 'required',
-            // 'email' => 'required|email',
-            'phone' => 'required|integer',
+
+            'phone' => [
+                'required',
+                'digits:10',
+                'numeric',
+                Rule::unique('career_applicant', 'phone'),
+            ],
+
             'father_name' => 'required',
-            // 'dob' => 'required',
             'marital_status' => 'required',
-            // 'aadhar' => 'required|integer',
             'gender' => 'required',
             'highest_qualification' => 'required',
             'employment_status' => 'required',
             'post_applied' => 'required',
-            // 'salary_expectations' => 'required',
             'time_preference' => 'required',
             'filled_by' => 'required',
-            // 'bank' => 'required',
-            // 'acc_no' => 'required',
-            // 'ifc_code' => 'required',
-            // 'branch' => 'required',
-            // 'picture' => 'required|mimes:jpeg,jpg,png',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'phone.required' => 'Mobile number is required',
+            'phone.digits'   => 'Mobile number must be 10 digits',
+            'phone.numeric'  => 'Only numbers allowed',
+            'phone.unique'   => 'This mobile number is already registered',
         ];
     }
 }

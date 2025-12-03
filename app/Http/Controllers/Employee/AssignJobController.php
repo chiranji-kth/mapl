@@ -255,5 +255,4 @@ class AssignJobController extends Controller
         // fallback to null if invalid
         return null;
     }
-
 }
