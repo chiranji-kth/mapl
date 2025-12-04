@@ -17,8 +17,12 @@ Attendance
 				class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
 				<i class="fa fa-plus-circle" aria-hidden="true"></i> Add Attendance</a>
 
-			<a href="{{ route('attendance.export', request()->all()) }}" class="btn btn-danger pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
+			<a href="{{ route('attendance.export', request()->all()) }}" class="btn btn-info pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
 				<i class="fa fa-file-text-o"></i> Export to CSV
+			</a>
+
+			<a href="{{ route('attendance.exportPdf', request()->all()) }}" class="btn btn-danger pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
+				<i class="fa fa-file-text-o"></i> Export to PDF
 			</a>
 			<!--	<a href="{{route('generateSalarySheet.bulk')}}"-->
 			<!--class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">-->

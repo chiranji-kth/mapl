@@ -49,12 +49,12 @@
                                 </div>
                                 <div class="col-md-2">
                                     <label>Month <span class="validateRq">*</span></label>
-                                    <input type="text" name="month" id="month" class="form-control monthFieldOnly" placeholder="MM">
+                                    <input type="text" name="month" id="month" class="form-control monthFieldOnly" placeholder="MM" onkeydown="return false">
                                 </div>
 
                                 <div class="col-md-2">
                                     <label>Year <span class="validateRq">*</span></label>
-                                    <input type="text" name="year" id="year" class="form-control yearField" placeholder="YYYY">
+                                    <input type="text" name="year" id="year" class="form-control yearField" placeholder="YYYY" onkeydown="return false">
                                 </div>
                                 <div class="col-md-3">
                                     <label for="phone">Date<span class="validateRq">*</span></label>

@@ -121,6 +121,7 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::post('/employees', ['as' => 'attendance.getEmployees', 'uses' => 'Employee\AttendanceController@getCompanyEmployees']);
         Route::get('/export', ['as' => 'attendance.export', 'uses' => 'Employee\AttendanceController@exportCsv']);
         Route::post('/update-amounts', ['as' => 'attendance.updateAmounts', 'uses' => 'Employee\AttendanceController@updateAmounts']);
+        Route::get('/export-pdf', ['as' => 'attendance.exportPdf', 'uses' => 'Employee\AttendanceController@exportPdf']);
     });
 
     Route::group(['prefix' => 'payroll'], function () {
@@ -129,5 +130,6 @@ Route::group(['middleware' => ['preventbackbutton', 'auth']], function () {
         Route::get('/salarys', ['as' => 'payroll.salarys', 'uses' => 'Employee\PayrollController@salary']);
         Route::post('/salarys', ['as' => 'payroll.salarys', 'uses' => 'Employee\PayrollController@salary']);
         Route::get('/export', ['as' => 'payroll.export', 'uses' => 'Employee\PayrollController@exportSalaryCsv']);
+        Route::get('/pdf', ['as' => 'payroll.exportSalaryPdf', 'uses' => 'Employee\PayrollController@exportSalaryPdf']);
     });
 });

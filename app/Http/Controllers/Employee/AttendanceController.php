@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\DB;
 use App\Model\EmployeesAttendance;
 use App\Model\AssignJob;
 use App\Model\Attendance;
+use App\Model\Company;
 use Illuminate\Support\Facades\Validator;
+use Svg\Tag\Group;
 
 class AttendanceController extends Controller
 {
@@ -172,57 +174,212 @@ class AttendanceController extends Controller
 
     public function exportCsv(Request $request)
     {
-        $results = Attendance::with(['employee', 'company', 'assignJob'])
-            ->orderBy('company_id')
-            ->orderBy('year')
-            ->orderBy('month');
+        $query = Attendance::with(['employee', 'company', 'assignJob']);
 
-        if ($request->company_id) $results->where('company_id', $request->company_id);
-        if ($request->monthField) $results->where('month', $request->monthField);
-        if ($request->yearField) $results->where('year', $request->yearField);
+        if ($request->company_id) $query->where('company_id', $request->company_id);
+        if ($request->monthField) $query->where('month', $request->monthField);
+        if ($request->yearField)  $query->where('year', $request->yearField);
 
-        $results = $results->get();
-
+        $results = $query->get();
+        // echo "<pre>";
+        // print_r($results->toArray());
+        // exit;
         $filename = 'attendance_report.csv';
 
-        $callback = function () use ($results) {
+        $company = Company::find($request->company_id);
+        $companyname    = $company->company_name ?? 'All Companies';
+        $companyAddress = $company->address ?? '';
+        $companyphone   = $company->phone ?? '';
+
+        $month = $request->monthField ?: date('m');
+        $year  = $request->yearField ?: date('Y');
+
+        $callback = function () use ($results, $companyname, $companyAddress, $companyphone, $month, $year) {
+
             $handle = fopen('php://output', 'w');
 
+            // UTF-8 BOM
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            // Title
+            fputcsv($handle, ['', '', '', 'MAPL - Attendance Sheet']);
+            fputcsv($handle, []);
+            fputcsv($handle, ['', 'Party Name & Address:', $companyname . ', ' . $companyAddress]);
+            fputcsv($handle, ['', 'Phone:', $companyphone, '', '', 'Date:', date("d-m-Y")]);
+            fputcsv($handle, ['', '', '', '', '', 'Month/Year:', $month . '/' . $year]);
+            fputcsv($handle, []);
+
             // CSV header
-            fputcsv($handle, ['Company', 'Month', 'EMP ID', 'Name', 'Gender', 'Post', 'shift', 'Shift Timing', 'Working Days', 'Advance', 'Dress Deduction', 'other Deduction']);
+            fputcsv($handle, [
+                'Sr',
+                'EMP ID',
+                'Name',
+                'Gender',
+                'Post',
+                'Shift',
+                'Per Day Wages',
+                'Shift Timing',
+                'Working Days'
+            ]);
+
+            $serial = 1;
+            $total_days_worked = 0;
 
             foreach ($results as $value) {
+                $post        = $value->employee->job->post ?? '-';
+                $perday_wages = $value->assignJob->perday_wages ?? 0;
+                $shiftName   = $value->assignJob->shift ?? '-';
+                $shiftTime   = $value->assignJob->shift_timing ?? '-';
+                $days_worked = $value->days_worked ?? 0;
+                $total_days_worked += $days_worked;
+
                 fputcsv($handle, [
-                    $value->company->company_name ?? '-',
-                    \DateTime::createFromFormat('!m', $value->month)->format('F') . ' ' . $value->year,
+                    $serial++,
                     $value->employee->employee_id ?? '-',
                     $value->employee->name ?? '-',
                     $value->employee->gender ?? '-',
-                    $value->employee->job->post ?? '-',
-                    $value->assignJob->shift ?? '-',
-                    $value->assignJob->shift_timing ?? '-',
-                    $value->days_worked,
-                    $value->advance ?? '0',
-                    $value->dress_deduction ?? '0',
-                    $value->other_deduction ?? '0',
+                    $post,
+                    $shiftName,
+                    $perday_wages,
+                    $shiftTime,
+                    $days_worked
                 ]);
             }
+
+            fputcsv($handle, []);
+            fputcsv($handle, ['', '', 'TOTAL PERSON', count($results), '', '', '', 'TOTAL WORKING DAYS', $total_days_worked]);
+
+            fputcsv($handle, []);
+            fputcsv($handle, []);
+            fputcsv($handle, []);
+
+            fputcsv($handle, ['', '', '', 'Overall Attedance Summary ', '', '', '', '']);
+
+            fputcsv($handle, [
+                '',
+                '',
+                'Particular (Job Role)',
+                'Gender',
+                'Hrs',
+                'Total Employee/Qty.',
+                'Total Duty',
+                '',
+                ''
+            ]);
+
+            // groupby shift_timing and gender role wise also
+            $grouped = $results->groupBy(function ($item) {
+                $shift = $item->assignJob->shift_timing ?? 'Unknown Shift';
+                $gender = $item->employee->gender ?? 'Unknown Gender';
+                $jobRole = $item->employee->job->post ?? 'Unknown Role';
+                return $jobRole . '|' . $shift . '|' . $gender;
+            });
+            $total = 0;
+            foreach ($grouped as $key => $group) {
+                $parts = explode('|', $key);
+                $jobRole = $parts[0];
+                $shiftTiming = $parts[1];
+                $gender = $parts[2];
+
+
+                $totalEmployees = $group->count();
+                $totalDuty = $group->sum('days_worked');
+                $total += $totalDuty;
+                fputcsv($handle, [
+                    '',
+                    '',
+                    $jobRole,
+                    $gender,
+                    $shiftTiming,
+                    $totalEmployees,
+                    $totalDuty,
+                    '',
+                    ''
+                ]);
+            }
+
+            fputcsv($handle, ['', '', '', '', '', 'Grand Total Duty', $total, '', '']);
+            fputcsv($handle, []);
+            fputcsv($handle, []);
+            fputcsv($handle, ['', '', 'Prepared By', '', '', 'Checked By', '', '', 'Site Supervisor /Field Officer']);
 
             fclose($handle);
         };
 
-        // Headers passed directly to the stream response
-        $headers = [
+        return response()->stream($callback, 200, [
             "Content-type" => "text/csv",
             "Content-Disposition" => "attachment; filename={$filename}",
             "Pragma" => "no-cache",
             "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
             "Expires" => "0"
-        ];
-
-        // Use stream() with headers as the 3rd parameter
-        return response()->stream($callback, 200, $headers);
+        ]);
     }
+
+    public function exportPdf(Request $request)
+    {
+        $query = Attendance::with(['employee', 'company', 'assignJob']);
+
+        if ($request->company_id) $query->where('company_id', $request->company_id);
+        if ($request->monthField) $query->where('month', $request->monthField);
+        if ($request->yearField)  $query->where('year', $request->yearField);
+
+        $results = $query->get();
+
+        $company = Company::find($request->company_id);
+        $companyname    = $company->company_name ?? 'All Companies';
+        $companyAddress = $company->address ?? '';
+        $companyphone   = $company->phone ?? '';
+
+        $month = $request->monthField ?: date('m');
+        $year  = $request->yearField ?: date('Y');
+
+        // SUMMARY GROUPING LIKE CSV
+        $summary = [];
+        $grouped = $results->groupBy(function ($item) {
+            $shift = $item->assignJob->shift_timing ?? 'Unknown Shift';
+            $gender = $item->employee->gender ?? 'Unknown Gender';
+            $role = $item->employee->job->post ?? 'Unknown Role';
+            return $role . '|' . $shift . '|' . $gender;
+        });
+
+        // TOTAL PERSON
+        $total_person = $results->count();
+
+        // TOTAL WORKING DAY
+        $total_working_day = $results->sum('days_worked');
+
+        foreach ($grouped as $key => $group) {
+            [$role, $shift, $gender] = explode('|', $key);
+
+            $summary[] = [
+                'jobRole'         => $role,
+                'gender'          => $gender,
+                'shift'           => $shift,
+                'total_employees' => $group->count(),
+                'total_duty'      => $group->sum('days_worked')
+            ];
+        }
+
+        $total_duty = collect($summary)->sum(function ($x) {
+            return (int) $x['total_duty'];
+        });
+
+        $pdf = PDF::loadView('admin.attendance.attendance_pdf', compact(
+            'results',
+            'summary',
+            'companyname',
+            'companyAddress',
+            'companyphone',
+            'month',
+            'year',
+            'total_person',
+            'total_working_day',
+            'total_duty'
+        ))->setPaper('a4', 'portrait');
+
+        return $pdf->download('attendance_report.pdf');
+    }
+
 
     public function updateAmounts(Request $request)
     {

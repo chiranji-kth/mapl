@@ -313,6 +313,8 @@ $front_setting = getFrontData();
                     </div>
                 </div>
 
+
+
                 <ul class="nav" id="side-menu">
                     <!-- <li><a href="{{ url('dashboard') }}" class="waves-effect"><i class="mdi mdi-home hideMenu"
                                 data-icon="v"></i> <span class="hide-menu hideMenu"> {{ __('menu.dashboard') }}
@@ -428,13 +430,13 @@ $front_setting = getFrontData();
                     // foreach ($sideMenu as $key => $value) {
                     //     $menuItem .=
                     //         '<li class="treeview waves-effect">
-                    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <a href="javascript:void(0)" class="module">
-                    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <i class="iconFontSize ' .
+                    //                                                                                                                                     <a href="javascript:void(0)" class="module">
+                    //             <i class="iconFontSize ' .
                     //         $value['icon_class'] .
                     //         ' hideMenu"></i> <span class="hide-menu hideMenu">&nbsp;' .
                     //         __('menu' . '.' . str_replace(' ', '_', strtolower($value['name']))) .
                     //         '<span class="fa arrow"></span></span>
-                    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 </a>';
+                    //         </a>';
 
                     //     if ($value['sub_menu']) {
                     //         $menuItem .= '<ul class="treeview-menu nav nav-second-level">';
@@ -443,11 +445,11 @@ $front_setting = getFrontData();
                     //             if ($menu['menu_url'] != '' || $menu['sub_menu']) {
                     //                 $menuItem .=
                     //                     '<li>
-                    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     	<a href="' .
+                    //                     <a href="' .
                     //                     ($menu['menu_url'] ? route($menu['menu_url']) : 'javascript:void(0)') .
                     //                     '">
-                    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         <i data-icon="/" class="linea-icon linea-basic fa-fw"></i>
-                    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         <span class="hideMenu">' .
+                    //                     <i data-icon="/" class="linea-icon linea-basic fa-fw"></i>
+                    //                     <span class="hideMenu">' .
                     //                     __('menu' . '.' . str_replace(' ', '_', strtolower($menu['name']))) .
                     //                     '</span>' .
                     //                     ($menu['sub_menu'] ? '<i class="fa arrow"></i>' : '') .
@@ -458,13 +460,13 @@ $front_setting = getFrontData();
                     //                     foreach ($menu['sub_menu'] as $subMenu) {
                     //                         $menuItem .=
                     //                             '<li class="">
-                    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <a class="hideMenu" href="' .
+                    //                         <a class="hideMenu" href="' .
                     //                             ($subMenu['menu_url'] ? route($subMenu['menu_url']) : 'javascript:void(0)') .
                     //                             '"> <i class="fa fa-circle-o"></i> &nbsp;' .
                     //                             __('menu' . '.' . str_replace(' ', '_', strtolower($subMenu['name']))) .
                     //                             '</a>
 
-                    //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             </li>';
+                    //                         </li>';
                     //                     }
                     //                     $menuItem .= '</ul>';
                     //                 }

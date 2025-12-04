@@ -15,7 +15,10 @@ Salary
         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
 
             <a href="{{ route('payroll.export', request()->all()) }}" class="btn btn-danger pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
-                <i class="fa fa-file-text-o"></i> Export Salary
+                <i class="fa fa-file-text-o"></i> Export Salary CSV</a>
+            </a>
+            <a href="{{ route('payroll.exportSalaryPdf', request()->all()) }}" class="btn btn-info pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">
+                <i class="fa fa-file-pdf-o"></i> Export Salary PDF</a>
             </a>
             <!--	<a href="{{route('generateSalarySheet.bulk')}}"-->
             <!--class="btn btn-success pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light">-->
@@ -112,33 +115,31 @@ Salary
 <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap.js"></script>
 <script>
-$(document).ready(function() {
-    const $table = $('#example');
-    const hasData = $table.find('tbody tr').length > 0 && !$table.find('tbody tr td').first().hasClass('text-center');
+    $(document).ready(function() {
+        const $table = $('#example');
+        const hasData = $table.find('tbody tr').length > 0 && !$table.find('tbody tr td').first().hasClass('text-center');
 
-    if (hasData) {
-        $table.DataTable({
-            buttons: [
-                {
-                    extend: 'copyHtml5',
-                    exportOptions: {
-                        columns: [0, ':visible']
-                    }
+        if (hasData) {
+            $table.DataTable({
+                buttons: [{
+                        extend: 'copyHtml5',
+                        exportOptions: {
+                            columns: [0, ':visible']
+                        }
+                    },
+                    'colvis'
+                ],
+                language: {
+                    searchPlaceholder: "Search records",
+                    search: "",
+                    emptyTable: "No records found"
                 },
-                'colvis'
-            ],
-            language: {
-                searchPlaceholder: "Search records",
-                search: "",
-                emptyTable: "No records found"
-            },
-            pageLength: 25
-        });
-    } else {
-        console.log('No data found — DataTable not initialized');
-    }
-});
-
+                pageLength: 25
+            });
+        } else {
+            console.log('No data found — DataTable not initialized');
+        }
+    });
 </script>
 
 @endsection

@@ -2,16 +2,10 @@
 
 namespace App\Exports;
 
-use App\Models\Attendance;
-use Carbon\Carbon;
-use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Events\AfterSheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Sheet;
+use Maatwebsite\Excel\Writers\LaravelExcelWriter;
 
-class SalaryExport implements FromArray, WithEvents, WithStyles
+class SalaryExport
 {
     protected $results;
 
@@ -20,14 +14,78 @@ class SalaryExport implements FromArray, WithEvents, WithStyles
         $this->results = $results;
     }
 
-    public function array(): array
+    public function export()
+    {
+        \Excel::create('Salary_Report', function ($excel) {
+
+            $excel->sheet('Sheet1', function ($sheet) {
+
+                // 1️⃣ Add title row
+                $sheet->mergeCells('A1:W1');
+                $sheet->row(1, ['MAPL - SALARY SHEET']);
+                $sheet->cell('A1', function ($cell) {
+                    $cell->setFontWeight('bold');
+                    $cell->setFontSize(14);
+                    $cell->setAlignment('center');
+                });
+
+                // 2️⃣ Add address row
+                $sheet->mergeCells('A2:W2');
+                $sheet->row(2, ['Party Name & Address : AS MOTORS, BHILWARA (Raj.)']);
+                $sheet->cell('A2', function ($cell) {
+                    $cell->setAlignment('center');
+                });
+
+                // 3️⃣ Header row
+                $headers = [
+                    'S.No',
+                    'Employee ID',
+                    'Name',
+                    'Post',
+                    'Salary',
+                    'Per Day Wages',
+                    'Basic Work Days',
+                    'Basic Salary',
+                    'Per Day Salary',
+                    'Month Days',
+                    'Days Worked',
+                    'OT Days',
+                    'OT Salary',
+                    'Allowance',
+                    'Gross',
+                    'PF/ESI Applicable',
+                    'PF/ESI Employee',
+                    'PF/ESI Employer',
+                    'Advance',
+                    'Dress Deduction',
+                    'Other Deduction',
+                    'Net Payable',
+                    'CTC'
+                ];
+
+                $sheet->row(4, $headers);
+                $sheet->row(4, function ($row) {
+                    $row->setFontWeight('bold');
+                });
+
+                // 4️⃣ Data rows
+                $rows = $this->generateRows();
+                $sheet->fromArray($rows, null, 'A5', false, false);
+
+                // 5️⃣ Auto-size columns
+                foreach (range('A', 'W') as $col) {
+                    $sheet->setAutoSize(true);
+                }
+            });
+        })->download('xlsx');
+    }
+
+    private function generateRows()
     {
         $rows = [];
-
         $serial = 1;
 
         foreach ($this->results as $value) {
-
             $assignJob = $value->assignJob;
 
             $salary = $assignJob->salary ?? 0;
@@ -41,9 +99,7 @@ class SalaryExport implements FromArray, WithEvents, WithStyles
             $year = $value->year;
 
             $monthdays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-
             $perday_salary = $monthdays > 0 ? round($salary / $monthdays, 2) : 0;
-
             $otdays = $days_worked > 26 ? $days_worked - 26 : 0;
             $ot_salary = round($perday_salary * $otdays, 2);
             $allowance = round(($perday_salary - $perday_wages) * $basic_work_days, 2);
@@ -97,38 +153,5 @@ class SalaryExport implements FromArray, WithEvents, WithStyles
         }
 
         return $rows;
-    }
-
-    public function styles(Worksheet $sheet)
-    {
-        return [
-            1 => ['font' => ['bold' => true, 'size' => 14]],
-        ];
-    }
-
-    public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class => function (AfterSheet $event) {
-
-                // Title Row Merge A1:W1
-                $event->sheet->mergeCells('A1:W1');
-                $event->sheet->setCellValue('A1', 'MAPL - SALARY SHEET');
-                $event->sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
-
-                // Address Row A2:W2
-                $event->sheet->mergeCells('A2:W2');
-                $event->sheet->setCellValue('A2', 'Party Name & Address : AS MOTORS, BHILWARA (Raj.)');
-                $event->sheet->getStyle('A2')->getAlignment()->setHorizontal('center');
-
-                // Header row bold
-                $event->sheet->getStyle('A4:W4')->getFont()->setBold(true);
-
-                // Auto column width
-                foreach (range('A', 'W') as $col) {
-                    $event->sheet->getDelegate()->getColumnDimension($col)->setAutoSize(true);
-                }
-            },
-        ];
     }
 }

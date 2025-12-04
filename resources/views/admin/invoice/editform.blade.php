@@ -51,12 +51,12 @@
 
                                 <div class="col-md-2">
                                     <label>Month <span class="validateRq">*</span></label>
-                                    <input type="text" name="month" id="month" class="form-control monthFieldOnly" placeholder="MM" value="{{ old('month', $invoice->month) }}">
+                                    <input type="text" name="month" id="month" class="form-control monthFieldOnly" placeholder="MM" value="{{ old('month', $invoice->month) }}" onkeydown="return false">
                                 </div>
 
                                 <div class="col-md-2">
                                     <label>Year <span class="validateRq">*</span></label>
-                                    <input type="text" name="year" id="year" class="form-control yearField" placeholder="YYYY" value="{{ old('year', $invoice->year) }}">
+                                    <input type="text" name="year" id="year" class="form-control yearField" placeholder="YYYY" value="{{ old('year', $invoice->year) }}" onkeydown="return false">
                                 </div>
 
                                 <!-- Date -->

@@ -24,8 +24,80 @@ class InvoiceController extends Controller
 
     public function index(Request $request)
     {
+        // $role_id = session('logged_session_data.role_id');
+        // $modules = DB::table('modules')->get()->keyBy('id')->toArray();
+
+        // $menus = DB::table('menus')
+        //     ->select(
+        //         'menus.id',
+        //         'menus.name',
+        //         'menus.menu_url',
+        //         'menus.parent_id',
+        //         'menus.module_id'
+        //     )
+        //     ->join('menu_permission', 'menu_permission.menu_id', '=', 'menus.id')
+        //     ->where('menu_permission.role_id', $role_id)
+        //     ->where('menus.status', 1)
+        //     ->whereNull('menus.action')
+        //     ->where('menus.module_id', '>', 0)
+        //     ->orderBy('menus.id', 'ASC')
+        //     ->get()
+        //     ->toArray();
+
+        // $sideMenu = [];
+
+        // foreach ($menus as $menu) {
+
+        //     // Create module group if not exists
+        //     if (!isset($sideMenu[$menu->module_id])) {
+
+        //         $module = $modules[$menu->module_id];
+
+        //         $sideMenu[$menu->module_id] = [
+        //             'id'         => $module->id,
+        //             'name'       => $module->name,
+        //             'icon_class' => $module->icon_class,
+        //             'menu_url'   => '#',
+        //             'parent_id'  => '',
+        //             'module_id'  => $module->id,
+        //             'sub_menu'   => [],
+        //         ];
+        //     }
+
+        //     // Parent
+        //     if ($menu->parent_id == 0) {
+
+        //         $sideMenu[$menu->module_id]['sub_menu'][$menu->id] = [
+        //             'id'        => $menu->id,
+        //             'name'      => $menu->name,
+        //             'menu_url'  => $menu->menu_url,
+        //             'parent_id' => $menu->parent_id,
+        //             'module_id' => $menu->module_id,
+        //             'sub_menu'  => []
+        //         ];
+        //     } else {
+
+        //         if (!isset($sideMenu[$menu->module_id]['sub_menu'][$menu->parent_id])) {
+        //             continue; // parent not valid → skip safely
+        //         }
+
+        //         $sideMenu[$menu->module_id]['sub_menu'][$menu->parent_id]['sub_menu'][] = [
+        //             'id'        => $menu->id,
+        //             'name'      => $menu->name,
+        //             'menu_url'  => $menu->menu_url,
+        //             'parent_id' => $menu->parent_id,
+        //             'module_id' => $menu->module_id
+        //         ];
+        //     }
+        // }
+
+
+        // echo "<pre>";
+        // print_r($sideMenu);
+        // exit;
+
         $status = $request->get('status', 'active'); // Default: all
-    
+
         if ($status === 'deleted') {
             // Only show deleted (soft-deleted) invoices
             $results = Invoice::onlyTrashed()->orderBy('id', 'DESC')->get();
@@ -36,7 +108,7 @@ class InvoiceController extends Controller
             // Show all (active + deleted)
             $results = Invoice::withTrashed()->orderBy('id', 'DESC')->get();
         }
-    
+
         return view('admin.invoice.index', compact('results'));
     }
 
@@ -130,7 +202,7 @@ class InvoiceController extends Controller
 
     public function edit($id)
     {
-       // die(' edit');
+        // die(' edit');
         $invoice = Invoice::with('details')->findOrFail($id);
 
         $companys = Company::orderBy('company_id', 'DESC')->get();
@@ -226,24 +298,24 @@ class InvoiceController extends Controller
             $bug = $e->errorInfo[1];
         }
     }
-    
+
 
     public function enable($id)
     {
         DB::beginTransaction();
-    
+
         try {
             // Include soft-deleted records
             $invoice = Invoice::withTrashed()->findOrFail($id);
-    
+
             // Restore (sets deleted_at = NULL)
             $invoice->restore();
-    
+
             // Optionally update metadata
             $invoice->update([
                 'updated_by' => Auth::user()->user_id,
             ]);
-    
+
             DB::commit();
             return response('success');
         } catch (ModelNotFoundException $e) {
@@ -262,7 +334,7 @@ class InvoiceController extends Controller
     }
 
 
-    
+
     public function export($id)
     {
         $invoice = Invoice::withTrashed()->with('details')->findOrFail($id);
@@ -293,53 +365,52 @@ class InvoiceController extends Controller
     }
 
     public function getAssignJobs(Request $request)
-{
-    $companyId = $request->company_id;
-    $month = $request->month;
-    $year = $request->year;
+    {
+        $companyId = $request->company_id;
+        $month = $request->month;
+        $year = $request->year;
 
-    if (!$companyId || !$month || !$year) {
-        return response()->json([]);
+        if (!$companyId || !$month || !$year) {
+            return response()->json([]);
+        }
+
+        $assignJobs = AssignJob::join('employees', 'employees.emp_id', '=', 'assignjob.emp_id')
+            ->join('job', 'job.job_id', '=', 'employees.post_applied')
+            ->leftJoin('attendance', function ($join) use ($month, $year, $companyId) {
+                $join->on('attendance.emp_id', '=', 'employees.emp_id')
+                    ->where('attendance.company_id', $companyId)
+                    ->where('attendance.month', $month)
+                    ->where('attendance.year', $year);
+            })
+            ->leftJoin('quotation', function ($join) use ($companyId) {
+                $join->on('quotation.company_id', '=', 'assignjob.company_id');
+            })
+            ->leftJoin('quotation_detail', function ($join) {
+                $join->on('quotation_detail.quotation_id', '=', 'quotation.id')
+                    ->whereColumn('quotation_detail.particluar', 'employees.post_applied')
+                    ->whereColumn('quotation_detail.working_hour', 'assignjob.shift_timing');
+            })
+            ->where('assignjob.company_id', $companyId)
+            ->where('assignjob.status', true)
+            ->where('quotation.status', true)
+            ->select(
+                'job.post',
+                'attendance.days_worked',
+                'employees.post_applied',
+                'employees.gender',
+                'assignjob.shift_timing',
+                DB::raw('COUNT(DISTINCT assignjob.emp_id) as total_assign_jobs'),
+                DB::raw('SUM(COALESCE(attendance.days_worked, 0)) as total_attendance_days'),
+                DB::raw('MAX(quotation_detail.rate) as rate')
+            )
+            ->groupBy(
+                'employees.post_applied',
+                'employees.gender',
+                'assignjob.shift_timing',
+                'job.post'
+            )
+            ->get();
+
+        return response()->json($assignJobs);
     }
-
-    $assignJobs = AssignJob::join('employees', 'employees.emp_id', '=', 'assignjob.emp_id')
-        ->join('job', 'job.job_id', '=', 'employees.post_applied')
-        ->leftJoin('attendance', function ($join) use ($month, $year, $companyId) {
-            $join->on('attendance.emp_id', '=', 'employees.emp_id')
-                 ->where('attendance.company_id', $companyId)
-                 ->where('attendance.month', $month)
-                 ->where('attendance.year', $year);
-        })
-        ->leftJoin('quotation', function ($join) use ($companyId) {
-            $join->on('quotation.company_id', '=', 'assignjob.company_id');
-        })
-        ->leftJoin('quotation_detail', function ($join) {
-            $join->on('quotation_detail.quotation_id', '=', 'quotation.id')
-                 ->whereColumn('quotation_detail.particluar', 'employees.post_applied')
-                 ->whereColumn('quotation_detail.working_hour', 'assignjob.shift_timing');
-        })
-        ->where('assignjob.company_id', $companyId)
-        ->where('assignjob.status', true)
-        ->where('quotation.status', true)
-        ->select(
-            'job.post',
-            'attendance.days_worked',
-            'employees.post_applied',
-            'employees.gender',
-            'assignjob.shift_timing',
-            DB::raw('COUNT(DISTINCT assignjob.emp_id) as total_assign_jobs'),
-            DB::raw('SUM(COALESCE(attendance.days_worked, 0)) as total_attendance_days'),
-            DB::raw('MAX(quotation_detail.rate) as rate')
-        )
-        ->groupBy(
-            'employees.post_applied',
-            'employees.gender',
-            'assignjob.shift_timing',
-            'job.post'
-        )
-        ->get();
-
-    return response()->json($assignJobs);
-}
-
 }

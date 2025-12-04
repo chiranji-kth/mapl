@@ -36,52 +36,56 @@ function permissionCheck()
 function showMenu()
 {
     $role_id = session('logged_session_data.role_id');
+    $modules = json_decode(DB::table('modules')->get()->toJson(), true);
+    $menus   = json_decode(DB::table('menus')
+        ->select(DB::raw('menus.id, menus.name, menus.menu_url, menus.parent_id, menus.module_id'))
+        ->join('menu_permission', 'menu_permission.menu_id', '=', 'menus.id')
+        ->where('menu_permission.role_id', $role_id)
+        ->where('menus.status', 1)
+        ->whereNull('action')
+        ->orderBy('menus.id', 'ASC')
+        ->get()->toJson(), true);
 
-    return cache()->remember("sideMenu_{$role_id}", 60, function () use ($role_id) {
+    $sideMenu = [];
+    if ($menus) {
+        foreach ($menus as $menu) {
+            if (!isset($sideMenu[$menu['module_id']])) {
+                $moduleId = array_search($menu['module_id'], array_column($modules, 'id'));
 
-        $modules = json_decode(DB::table('modules')->get()->toJson(), true);
-
-        $menus = json_decode(DB::table('menus')
-            ->select(DB::raw('menus.id, menus.name, menus.menu_url, menus.parent_id, menus.module_id'))
-            ->join('menu_permission', 'menu_permission.menu_id', '=', 'menus.id')
-            ->where('menu_permission.role_id', $role_id)
-            ->where('menus.status', 1)
-            ->whereNull('action')
-            ->orderBy('menus.id', 'ASC')
-            ->get()->toJson(), true);
-
-        $sideMenu = [];
-
-        if ($menus) {
-            foreach ($menus as $menu) {
-
-                if (!isset($sideMenu[$menu['module_id']])) {
-                    $moduleId = array_search($menu['module_id'], array_column($modules, 'id'));
-
-                    $sideMenu[$menu['module_id']] = [
-                        'id'         => $modules[$moduleId]['id'],
-                        'name'       => $modules[$moduleId]['name'],
-                        'icon_class' => $modules[$moduleId]['icon_class'],
-                        'menu_url'   => '#',
-                        'parent_id'  => '',
-                        'module_id'  => $modules[$moduleId]['id'],
-                        'sub_menu'   => [],
+                $sideMenu[$menu['module_id']]               = [];
+                $sideMenu[$menu['module_id']]['id']         = $modules[$moduleId]['id'];
+                $sideMenu[$menu['module_id']]['name']       = $modules[$moduleId]['name'];
+                $sideMenu[$menu['module_id']]['icon_class'] = $modules[$moduleId]['icon_class'];
+                $sideMenu[$menu['module_id']]['menu_url']   = '#';
+                $sideMenu[$menu['module_id']]['parent_id']  = '';
+                $sideMenu[$menu['module_id']]['module_id']  = $modules[$moduleId]['id'];
+                $sideMenu[$menu['module_id']]['sub_menu']   = [];
+            }
+            if ($menu['parent_id'] == 0) {
+                $sideMenu[$menu['module_id']]['sub_menu'][$menu['id']]             = $menu;
+                $sideMenu[$menu['module_id']]['sub_menu'][$menu['id']]['sub_menu'] = [];
+            } else {
+                // FIX: prevent null array_push error
+                if (!isset($sideMenu[$menu['module_id']]['sub_menu'][$menu['parent_id']])) {
+                    $sideMenu[$menu['module_id']]['sub_menu'][$menu['parent_id']] = [
+                        'id' => $menu['parent_id'],
+                        'name' => '',
+                        'menu_url' => '',
+                        'sub_menu' => []
                     ];
                 }
 
-                if ($menu['parent_id'] == 0) {
-                    $sideMenu[$menu['module_id']]['sub_menu'][$menu['id']] =
-                        array_merge($menu, ['sub_menu' => []]);
-                } else {
-                    $sideMenu[$menu['module_id']]['sub_menu'][$menu['parent_id']]['sub_menu'][] = $menu;
+                if (!isset($sideMenu[$menu['module_id']]['sub_menu'][$menu['parent_id']]['sub_menu'])) {
+                    $sideMenu[$menu['module_id']]['sub_menu'][$menu['parent_id']]['sub_menu'] = [];
                 }
+
+                $sideMenu[$menu['module_id']]['sub_menu'][$menu['parent_id']]['sub_menu'][] = $menu;
             }
         }
+    }
 
-        return $sideMenu;
-    });
+    return $sideMenu;
 }
-
 
 function convartMonthAndYearToWord($data)
 {
